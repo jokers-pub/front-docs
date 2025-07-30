@@ -1,0 +1,1063 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>组件的方法</h2>
+        <p>
+            我们的组件开发都基于
+            <code>
+                @("@joker.front/core")
+            </code>
+            这个强大的库。它为开发者提供了一系列的工具和 API，包括生命周期钩子函数、API 函数和属性，这些都可以帮助我们更高效、更便捷地完成组件的开发。在这个章节中，我们将深入探讨一个组件类的组成，让您了解如何利用这个库来打造出一个功能丰富、性能优越的组件。
+        </p>
+        <h3>前提条件</h3>
+        <p>在阅读该章节之前，你应该对这些内容有一个基本的了解：</p>
+        <ul>
+            <li>
+                <p>
+                    <a href="https://www.typescriptlang.org/" target="_blank">TypeScript 编程</a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="/base/component-lifecycle" target="_blank">Joker 生命周期</a>
+                </p>
+            </li>
+        </ul>
+        <p>
+            Joker Core 提供的内置函数都是以
+            <code>$</code>
+            开头，例如：this.$watch、$destroy 等，接下来我们一起了解一下 Joker Core 提供了哪些内置函数：
+        </p>
+        <h3>组件的装载（$mount）</h3>
+        <p>该函数一般是提供外围程序去调用，用于挂载当前组件。</p>
+        <pre><code class="language-ts">import MyComponent from &quot;my-component.joker&quot;;
+
+let myComponent = new MyComponent();
+myComponent.$mounted(document.getElementById(&quot;app&quot;));
+</code></pre>
+        <p>通过下面的例子，来体验一下一个组件的装载。</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Click me to load the child component&lt;/button&gt;
+    &lt;div ref=&quot;container&quot;&gt;&lt;/div&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    isMounted = false;
+
+    handleClick() {
+        if (this.isMounted) return;
+
+        this.isMounted = true;
+
+        new MyComponent().$mount(this.$getRef(&quot;container&quot;)?.output);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>root</td>
+                    <td>要装载的容器，我们常用于将一个组件挂载到一个 dom 节点中</td>
+                    <td>Element/VNode.Component</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                可不传递 root，不传递 root 则不会触发组件的模板渲染，只作为一个附属功能存在，我们可以使用这种模式来做一些组件的功能混入。
+            </p>
+        </blockquote>
+        <h3>组件销毁（$destroy）</h3>
+        <p>通过主动调用一个组件实例的$destroy 方法，可实现组件的卸载。</p>
+        <pre><code class="language-ts">import MyComponent from &quot;my-component.joker&quot;;
+
+let myComponent = new MyComponent();
+myComponent.$mounted(document.getElementById(&quot;app&quot;));
+
+//卸载
+myComponent.$destroy();
+</code></pre>
+        <p>通过下面的例子来了解下 destroy：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent ref=&quot;children&quot; /&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Destroy the child component&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+
+    handleClick() {
+        //选中组件并销毁它
+        this.$getRef(&quot;children&quot;)?.component.$destroy();
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            针对已经保持状态的组件，调用销毁方法不会彻底销毁该组件，该组件会在后台保持数据状态，可通过传入参数 force:true，来彻底销毁该组件。
+        </p>
+        <p>通过下面的例子来看一下销毁方法在保持状态的组件中是如何工作的。</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;div ref=&quot;container&quot;&gt;&lt;/div&gt;
+    &lt;DemoRow&gt;
+        @if(model.isMount === false) {
+            &lt;button @click=&quot;handleMountClick&quot;&gt;Load the child component&lt;/button&gt;
+        }
+        else {
+            &lt;p&gt;
+                You can enter text in the input box of the child component to experience the effect of maintaining the data state after destruction.
+            &lt;/p&gt;
+            &lt;button @click=&quot;handleDestroyClick&quot;&gt;Destroy the child component&lt;/button&gt;
+            &lt;button @click=&quot;handleDestroyClick(true)&quot;&gt;Force destroy the child component&lt;/button&gt;
+        }
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    model = {
+        isMount: false
+    };
+    components = {
+        MyComponent
+    };
+
+    //组件实例
+    myComponent?: Component;
+
+    handleMountClick() {
+        //“??”代表如果有值则使用原始值，没有则初始化新的组件实例
+        this.myComponent ??= new MyComponent(undefined, undefined, true);
+
+        this.myComponent.$mount(this.$getRef(&quot;container&quot;)?.output);
+
+        this.model.isMount = true;
+    }
+
+    handleDestroyClick(e: VNode.Event, force?: boolean) {
+        //force 代表是否强制销毁
+        this.myComponent?.$destroy(force);
+
+        this.model.isMount = false;
+
+        if (force) {
+            //清除缓存实例
+            this.myComponent = undefined;
+        }
+    }
+}
+&lt;/script&gt;
+&lt;style scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>关于保持数据状态的详细介绍后面有单独的章节进行讲解。</p>
+        </blockquote>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>force</td>
+                    <td>是否要强制销毁</td>
+                    <td>Boolean</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>数据观察（$watch）</h3>
+        <p>通过$watch 方法可以实现对已劫持的属性进行值变更的观察，并在值变更后响应对应的函数。</p>
+        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        value: &quot;v1&quot;
+    };
+
+    mounted() {
+        let [val, destroyWatch] = this.$watch(
+            () =&gt; this.model.value,
+            (nv, ov) =&gt; {
+                //值变更了，值为nv，历史值为ov
+            }
+        );
+    }
+}
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;
+        The current value is: @model.value
+    &lt;/p&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Change the value to the current time&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: &quot;v1&quot;
+    };
+
+    mounted() {
+        this.$watch(
+            () =&gt; this.model.value,
+            (nv, ov) =&gt; {
+                MessageBox.alert(`value change：${ov}=&gt;${nv}`);
+            }
+        );
+    }
+
+    handleClick() {
+        this.model.value = new Date().toLocaleTimeString();
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                值的注意的是，观察的值一定是被数据劫持的属性（model 属性内的值会在组件装载前进行
+                <code>observer</code>
+                操作。），否则无法对其进行变更观察，针对数据劫持请看
+                <a href="/base/observer" target="_blank">这里</a>
+                去详细了解。
+            </p>
+        </blockquote>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>express</td>
+                    <td>要观察的表达式</td>
+                    <td>Function</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>callback</td>
+                    <td>变更后回调函数</td>
+                    <td>
+                        (nv:any,ov:any)=&gt;void ，会有两个参数，分别代表
+                        <strong>新值</strong>
+                        和
+                        <strong>原值</strong>
+                    </td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>forceCallBack</td>
+                    <td>是否强制回调（当值相同是否强制回调）</td>
+                    <td>boolean(可选，默认 false)</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>节点观察（$watchNode）</h3>
+        <p>通过节点观察，可以实现对虚拟节点变更的监听，其中包括：节点移除、新增、变更等。</p>
+        <p>
+            在了解该方法时，建议先了解
+            <a href="/base/vnode" target="_blank">什么是 VNode</a>
+            ，虚拟节点是 DOM 和 Script 之间关联的桥梁，它作为实际 DOM 树的一个映射虚拟节点树，用于 DOM 和 Script 之间的数据通讯，并且 VNode 可实现渲染层的解耦，可替换成小程序渲染、移动端原生渲染（V8 内核通讯）。目前
+            <code>Core</code>
+            中默认提供了 H5-Render（H5-DOM 渲染，负责将虚拟 Node 渲染成 H5 标签节点）。
+        </p>
+        <p>对虚拟 Node 有一个大概的了解后，就可以先继续学习该 API 了：</p>
+        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        value: &quot;v1&quot;
+    };
+
+    mounted() {
+        this.$watchNode(&quot;节点ref&quot;, (node, type, property) =&gt; {
+            //node 变更的节点
+            //type 变更类型
+            //property 如果是属性变更，属性名是什么
+        });
+    }
+}
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        @if(model.show) {
+            &lt;div ref=&quot;refNode&quot; class=&quot;@model.className&quot;&gt;I'm a paragraph&lt;/div&gt;
+        }
+    &lt;/DemoRow&gt;
+    &lt;button @click=&quot;handleChangeShow&quot;&gt;Toggle the display state&lt;/button&gt;
+    @if(model.show) {
+        &lt;button @click=&quot;handleChangeClassName&quot;&gt;Toggle the class name&lt;/button&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { Message } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        show: true,
+        className: &quot;normal&quot;
+    };
+
+    mounted() {
+        this.$watchNode(&quot;refNode&quot;, (node, type, property) =&gt; {
+            Message(
+                `From Demo: The node has been ${type}${
+                    type === &quot;update&quot; ? &quot;, and the property value is: &quot; + property : &quot;&quot;
+                }.`
+            );
+        });
+    }
+
+    handleChangeShow() {
+        this.model.show = !this.model.show;
+    }
+
+    handleChangeClassName() {
+        this.model.className = this.model.className === &quot;normal&quot; ? &quot;larger&quot; : &quot;normal&quot;;
+    }
+}
+&lt;/script&gt;
+
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+button {
+    margin-right: 10px;
+}
+
+.larger {
+    font-size: 24px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ref</td>
+                    <td>需要观察节点的 ref</td>
+                    <td>string</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>callback</td>
+                    <td>变更后回调函数</td>
+                    <td>
+                        (node:VNode.Node,type:&quot;append&quot; / &quot;remove&quot; / &quot;update&quot; / &quot;after-enter&quot; / &quot;after-leave&quot;,property:string)=&gt;void ，会有三个参数，分别代表
+                        <strong>变更的节点</strong>
+                        、
+                        <strong>变更类型</strong>
+                        和
+                        <strong>变更的属性值</strong>
+                    </td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>获取节点（$getRef和$getRefs）</h3>
+        <p>
+            通过给标签配置
+            <code>ref</code>
+            属性，来给标签做标记，标记后的标签即可在 script 内通过
+            <strong>$getRef</strong>
+            或者
+            <strong>$getRefs</strong>
+            来获取。
+            该方法返回的是虚拟 Node，在了解该方法时，建议先了解
+            <a href="/base/vnode" target="_blank">什么是 VNode</a>
+            。
+        </p>
+        <pre><code class="language-ts">//获取单个节点
+this.$getRef&lt;VNode.Element&gt;(&quot;ref&quot;);
+
+//获取多个节点
+this.$getRefs(&quot;ref&quot;);
+</code></pre>
+        <p>$getRef 会返回最多一个 VNode，如果遇到多个相同的 ref 时，只返回第一个。</p>
+        <p>$getRefs 会返回多个 VNode，会将当前组件内（不含子组件）ref 值相同的节点进行返回。</p>
+        <p>两个方法都支持 Typescript 的泛型（默认 VNode.Node），可指定返回节点的类型，方便后续的值操作。</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo6)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;ul&gt;
+            @for(let i = 0; i &lt; 5; i++) {
+                &lt;li ref=&quot;li&quot;&gt;
+                    I'm line @i
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Get with getRef&lt;/button&gt;
+    &lt;button @click=&quot;handleClick(true)&quot;&gt;Get with getRefs&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    handleClick(e: VNode.Event, isGetRefs?: boolean) {
+        if (isGetRefs) {
+            MessageBox.alert(`getRefs: ${this.$getRefs(&quot;li&quot;)?.length} nodes are retrieved.`);
+        } else {
+            MessageBox.alert(`getRef: The retrieved node content is: ${this.$getRef(&quot;li&quot;)?.output.innerHTML}`);
+        }
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+
+</code></pre>
+        </DemoContainer>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ref</td>
+                    <td>节点的 ref 值</td>
+                    <td>string</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                当然我们也提供
+                <code>$refs</code>
+                属性，用来存放所有标记的节点，详细知识，请看
+                <a href="/base/component-property" target="_blank">组件属性</a>
+                中的$refs 介绍。
+            </p>
+        </blockquote>
+        <h3>事件（$on / $off / $trigger）</h3>
+        <p>
+            <code>$on</code>
+            、
+            <code>$off</code>
+            和
+            <code>$trigger</code>
+            ，是组件事件机制的核心方法，分别代表事件的注册、事件销毁和事件的触发。
+        </p>
+        <p>
+            其中
+            <strong>trigger</strong>
+            使用的比较多，一般用作组件对外的事件广播。
+        </p>
+        <p>接下来我们一起看一下事件的用法：</p>
+        <pre><code class="language-ts">//事件注册
+this.$on(&quot;事件名称&quot;, (e: VNode.Event, param: any) =&gt; {
+    //其中e代表事件处理对象，负责处理事件总线流转和数据传递
+    //param 代表事件的附加参数
+});
+
+//事件卸载
+this.$off(&quot;事件名称&quot;, 事件函数);
+
+//事件触发，在事件截获转发时，可继续传递第三个参数，保持事件对象一致性传递
+this.$trigger(&quot;事件名称&quot;, 事件参数, e?:VNode.Event);
+</code></pre>
+        <p>案例展示：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo7)">
+            <pre><code class="language-html">&lt;template&gt;
+    @if(model.hasOn) {
+        &lt;button @click=&quot;handleOffClick&quot;&gt;Unbind the event&lt;/button&gt;
+        &lt;button @click=&quot;handleTriggerClick&quot;&gt;Trigger the event&lt;/button&gt;
+    }
+    else {
+        &lt;button @click=&quot;handleOnClick&quot;&gt;Bind the event&lt;/button&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        hasOn: false
+    };
+    handleOnClick() {
+        this.model.hasOn = true;
+        this.$on(&quot;event1&quot;, this.eventHandle);
+    }
+
+    handleOffClick() {
+        this.model.hasOn = false;
+        this.$off(&quot;event1&quot;, this.eventHandle);
+    }
+
+    handleTriggerClick() {
+        this.$trigger(&quot;event1&quot;, &quot;I'm a string parameter. Did you receive it?&quot;);
+    }
+
+    eventHandle = (e: VNode.Event&lt;string&gt;) =&gt; {
+        MessageBox.alert(e.data);
+    };
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                当我们想要监听一个组件的所有事件触发时，我们也提供了
+                <code>*</code>
+                通配符，可以通过
+                <code>$on('*',...)</code>
+                的方式来监听该组件的所有事件处理，该通配符只适用于
+                <code>$on</code>
+                API 方法调用，不适用于
+                <code>template</code>
+                模板中的事件注册。
+            </p>
+        </blockquote>
+        <p>看一个复杂的使用例子：</p>
+        <pre><code class="language-ts">this.childrenComponent.$on(&quot;*&quot;, (e: VNode.Event) =&gt; {
+    if (e.eventName === &quot;click&quot;) {
+        //TODO:...
+        return;
+    }
+
+    //其余事件不做处理，向上继续传递。
+    this.$trigger(e.eventName, e.data, e);
+});
+</code></pre>
+        <h4>VNode.Event 介绍</h4>
+        <p>
+            VNode.Event 作为 Joker 前端中事件处理对象，无论是通过 JS 主动响应的事件还是原生事件触发，都会将该类型作为第一个参数传递到$on 函数中。
+        </p>
+        <p>
+            其中该对象中具有一个
+            <code>data</code>
+            属性，代表事件传递的参数，可通过泛型来指定值类型，方便后续操作，默认为 undefined。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名称</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>eventName</td>
+                    <td>事件名称</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>event</td>
+                    <td>原生事件对象，取决于运行平台</td>
+                    <td>any</td>
+                </tr>
+                <tr>
+                    <td>target</td>
+                    <td>响应该事件的虚拟节点</td>
+                    <td>VNode.Node/undefined</td>
+                </tr>
+                <tr>
+                    <td>data</td>
+                    <td>事件参数</td>
+                    <td>&lt;T&gt;:any</td>
+                </tr>
+                <tr>
+                    <td>preventDefault</td>
+                    <td>阻止默认事件</td>
+                    <td>function</td>
+                </tr>
+                <tr>
+                    <td>stopPropagation</td>
+                    <td>阻止事件传播</td>
+                    <td>function</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>标签或者组件的事件注册及触发</p>
+        <p>父组件</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick('参数1', '参数2')&quot;&gt;按钮&lt;/button&gt;
+    &lt;MyComponent @click=&quot;handleMyComponentClick('参数1', '参数2')&quot;&gt;按钮&lt;/MyComponent&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component, VNode } from &quot;@joker.front/core&quot;;
+    import { MessageBox } from &quot;@joker.front/ui&quot;;
+    import MyComponent from &quot;./children1.joker&quot;;
+
+    export default class extends Component {
+        components = {
+            MyComponent
+        };
+        handleMyComponentClick(e: VNode.Event&lt;string&gt;, param1: string, param2: string) {
+            //这是事件传递的参数值
+            e.data;
+            //这是事件的扩展参数
+            param1;
+            param2;
+        }
+
+        handleClick(e: VNode.Event, param1: string, param2: string) {
+            //这是事件的扩展参数
+            param1;
+            param2;
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <p>子组件</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;我是子组件按钮&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export default class extends Component {
+        handleClick() {
+            this.$trigger(&quot;click&quot;, &quot;我是子组件传递的参数&quot;);
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <p>用实际的例子感受下：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo8)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick('param1', 'param2')&quot;&gt;按钮&lt;/button&gt;
+    &lt;MyComponent @click=&quot;handleMyComponentClick('param1', 'param2')&quot;&gt;按钮&lt;/MyComponent&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+import MyComponent from &quot;./children1.joker&quot;;
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+    handleMyComponentClick(e: VNode.Event&lt;string&gt;, param1: string, param2: string) {
+        MessageBox.alert(
+            `&lt;p&gt;e.data:${e.data};&lt;/p&gt;
+        &lt;p&gt;param1:${param1};&lt;/p&gt;
+        &lt;p&gt;param2:${param2};&lt;/p&gt;`,
+            {
+                useHtml: true
+            }
+        );
+    }
+
+    handleClick(e: VNode.Event, param1: string, param2: string) {
+        MessageBox.alert(
+            `&lt;p&gt;e.data:${e.data};&lt;/p&gt;
+        &lt;p&gt;param1:${param1};&lt;/p&gt;
+        &lt;p&gt;param2:${param2};&lt;/p&gt;`,
+            {
+                useHtml: true
+            }
+        );
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            在上述示例中，我们可以观察到
+            <code>e.data</code>
+            作为事件传递的一个参数，它在组件间传递时负责携带跨组件的数据。另一方面，在注册事件时通过函数传递的参数，例如 handleClick(param1,param2)中的
+            <code>param1,param2</code>
+            ，这些参数作为事件处理函数的扩展参数，并不会随着事件的传播而传递。它们仅限于在当前组件内的事件处理函数中作为扩展参数使用，只会在该次事件响应时作为扩展参数从
+            <code>e:VNode.Event</code>
+            后延续传递。
+        </p>
+        <p>
+            通过调用 e.preventDefault()可实现阻止默认事件，一般用作原生事件的响应。不了解 preventDefault 点击
+            <a href="https://www.w3school.com.cn/jsref/event_preventdefault.asp" target="_blank">这里</a>
+            去了解下。
+        </p>
+        <pre><code class="language-ts">handleClick(e:VNode.Event){
+    e.preventDefault();
+}
+</code></pre>
+        <p>
+            通过调用 e.stopPropagation()来实现阻止事件继续传递。不了解 stopPropagation 点击
+            <a href="https://www.w3school.com.cn/htmldom/event_stoppropagation.asp" target="_blank">这里</a>
+            去了解下。
+        </p>
+        <pre><code class="language-ts">handleClick(e:VNode.Event){
+    e.stopPropagation();
+}
+</code></pre>
+        <p>每一个 Joker 组件都默认提供了一些基础的事件，如有需要可以主动监听这些事件来处理特殊需求场景。</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>事件名称</th>
+                    <th>说明</th>
+                    <th>参数</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>created</td>
+                    <td>组件装载之前触发</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>mounted</td>
+                    <td>组件装载之后触发</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>sleeped</td>
+                    <td>组件睡眠后触发</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>wakeup</td>
+                    <td>组件被唤醒后触发</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>beforeDestroy</td>
+                    <td>组件销毁前触发</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>destroy</td>
+                    <td>组件销毁后触发</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                从上述默认事件中，我们可以发现这些事件与生命周期钩子是相对应的。生命周期钩子通常用于在当前组件内进行周期性扩展，而提供的这些周期性事件则主要用于在组件外部监听并跟踪组件的状态变化。
+            </p>
+        </blockquote>
+        <h3>属性同步（$syncProp）</h3>
+        <p>
+            在学习该方法之前，请先了解下
+            <a href="/base/component-property" target="_blank">组件属性</a>
+            中的
+            <code>model</code>
+            和
+            <code>props</code>
+            知识。
+        </p>
+        <p>
+            由于 props 只可以取值不可以设值，所以当遇到需要在内部流转状态时，必须使用 model 去创建属性，但是需要在 props 变更时同步到 model 中，所以在不使用
+            <code>syncProp</code>
+            方法时代码是这样的：
+        </p>
+        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component&lt;{
+    money: number;
+}&gt; {
+    model = {
+        money: 0
+    };
+
+    created() {
+        //首次值同步
+        this.model.money = this.props.money;
+
+        //监听变更后，同步到model中
+        this.$watch(
+            () =&gt; this.props.money,
+            (nv) =&gt; {
+                this.model.money = nv;
+            }
+        );
+    }
+
+    handleClick() {
+        //模拟内部的值变更
+        this.model.money = 300;
+    }
+}
+</code></pre>
+        <p>
+            可以看到，实现值的单向同步，代码还是比较复杂的，所以我们提供了$syncProp 方法来帮助开发人员快速实现一个单项的数据同步。
+        </p>
+        <pre><code class="language-ts">export default class extends Component&lt;{
+    money: number;
+}&gt; {
+    model = {
+        money: 0
+    };
+
+    created() {
+        this.$syncProp(&quot;money&quot;);
+    }
+
+    handleClick() {
+        //模拟内部的值变更
+        this.model.money = 300;
+    }
+}
+</code></pre>
+        <p>该方法有多个重载，可满足大多数场景的使用：</p>
+        <pre><code class="language-ts">/**
+ * 值单向同步 （全参数）
+ * @param propKey 需要同步的props属性名
+ * @param modelKey 需要落地同步的model属性名
+ * @param convertVal 若props 和 model中同步的值类型不一致，可通过该方法进行转换
+ */
+this.$syncProp(propKey: keyof T, modelKey: string , convertVal?: (val: any) =&gt; any);
+
+//该方法的其他重载
+this.$syncProp(propKey: keyof T, convertVal?: (val: any) =&gt; any);
+
+//例如
+//若属性名不同，并且需要值转换
+this.$syncProp('propsValue','modelValue',(val:string)=&gt;{return parseInt(val);});
+
+//若属性名相同，并且需要值转换
+this.$syncProp('propsValue',(val:string)=&gt;{return parseInt(val);});
+
+//若属性名相同，值类型相同
+this.$syncProp('propsValue');
+</code></pre>
+        <h3>节点动画（$nodeTransition）[高级 API]</h3>
+        <p>
+            在有些场景下，需要通过 js 来主动开始一个节点的动画，例如&quot;淡隐淡出&quot;，该方法可以帮助开发人员主动开启一个节点的动画。
+        </p>
+        <pre><code class="language-ts">this.$nodeTransition(
+    //需要动画的节点或ref
+    nodeOrRef: string | VNode.Node,
+    //动画周期类型
+    mode: &quot;enter&quot; | &quot;leave&quot;,
+    //动画名称，对应动画class name
+    name?: string,
+    //动画结束后回调函数
+    callBack?: Function,
+    //动画类型
+    type?: &quot;transition&quot; | &quot;animation&quot;)
+</code></pre>
+        <p>
+            看一个简单的例子，这里我们应用一个@("@joker.front/ui")提供的一个样式动画：
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo9)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        @if(!model.isShow) {
+            &lt;button @click=&quot;handleClick(true)&quot;&gt;Show&lt;/button&gt;
+        }
+        else {
+            &lt;button @click=&quot;handleClick(false)&quot;&gt;Hide&lt;/button&gt;
+        }
+    &lt;/DemoRow&gt;
+    &lt;div ref=&quot;demo&quot; class=&quot;demo&quot;&gt;&lt;/div&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import { Message } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    handleClick(e: VNode.Event, isShow: boolean) {
+        if (isShow) {
+            this.$getRef(&quot;demo&quot;)!.output.style.display = &quot;block&quot;;
+        }
+
+        this.$nodeTransition(&quot;demo&quot;, isShow ? &quot;enter&quot; : &quot;leave&quot;, &quot;jk-zoom-in-top&quot;, () =&gt; {
+            Message(&quot;The animation is over.&quot;);
+
+            if (!isShow) {
+                this.$getRef(&quot;demo&quot;)!.output.style.display = &quot;none&quot;;
+            }
+            this.model.isShow = isShow;
+        });
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+.demo {
+    width: 150px;
+    height: 150px;
+    background: var(--jk-color-success);
+}
+
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>等待下次渲染</h3>
+        <p>
+            Joker 前端的渲染是即时的，当属性变更会立即在页面中进行更新渲染，但是当我们在使用异步组件时，就需要通过
+            <code>$nextUpdatedRender</code>
+            函数来监听组件是否完成整体渲染更新。
+        </p>
+        <pre><code class="language-ts">//1 用法一
+this.$nextUpdatedRender(() =&gt; {
+    //TODO: 完成了更新
+});
+
+//2 用法二
+await this.$nextUpdatedRender();
+//TODO: 完成了更新
+</code></pre>
+        <h3>渲染模板（$render）[高级 API]</h3>
+        <p>
+            在 Joker 中可以通过
+            <code>&lt;template&gt;</code>
+            标签或者
+            <code>template</code>
+            属性去创建视图模板，当然也可以通过调用$render 函数去渲染模板，我们允许在
+            <strong>过程</strong>
+            中动态变更模板。该 API 是高级用法。
+        </p>
+        <pre><code class="language-ts">/**
+ * 渲染模板
+ * @param asts 新的ast树
+ * @param keepalive 渲染新模板时，是否要保留之前的存活组件（高级用法，请慎用）
+ */
+this.$render(asts:AST.Node[]|()=&gt;AST.Node[],keepalive?:boolean)
+</code></pre>
+        <p>
+            其中 AST 相关内容，请点击
+            <a href="/base/ast" target="_blank">这里</a>
+            去查看。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo10)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;I'm the button from the original template.&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    handleClick() {
+        this.$render((h) =&gt; {
+            return [h.createElement(&quot;div&quot;, undefined, [h.createText(&quot;I'm the newly rendered text.&quot;)])];
+        });
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                模板渲染也是有自己的生命周期的，每次新的渲染都会先执行原模板的销毁（包括节点数据、节点事件等数据的清理），再去依据当前组件模型去创建新的模板，关于模板请点击
+                <a href="/base/ast" target="_blank">这里</a>
+                去查看。
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo9 from "../../../examples/base/component-api/demo9.joker";
+import DEMO_JOKER_demo8 from "../../../examples/base/component-api/demo8.joker";
+import DEMO_JOKER_demo7 from "../../../examples/base/component-api/demo7.joker";
+import DEMO_JOKER_demo6 from "../../../examples/base/component-api/demo6.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/component-api/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/component-api/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/component-api/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/component-api/demo2.joker";
+import DEMO_JOKER_demo10 from "../../../examples/base/component-api/demo10.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/component-api/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo9,
+        DEMO_JOKER_demo8,
+        DEMO_JOKER_demo7,
+        DEMO_JOKER_demo6,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo10,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

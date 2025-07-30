@@ -1,0 +1,37 @@
+<template>
+    <DemoRow>
+        <button @click="handleChangeComponet('Test1')">Load Component 1</button>
+        <button @click="handleChangeComponet('Test2')">Load Component 2</button>
+    </DemoRow>
+    @if(model.name) {
+        <component name="@model.name" message="I'm a parameter" user-name="Zhang San">
+            <span>I'm the content</span>
+        </component>
+    }
+</template>
+<script>
+import { VNode } from "@joker.front/core";
+import { Component } from "@joker.front/core";
+import Test1 from "./component-test1.joker";
+import Test2 from "./component-test2.joker";
+
+export default class extends Component {
+    model = {
+        name: ""
+    };
+    components = {
+        Test1,
+        Test2
+    };
+
+    handleChangeComponet(e: VNode.Event, name: string) {
+        this.model.name = name;
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+button {
+    margin-right: 10px;
+}
+</style>

@@ -1,0 +1,20 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle the rendering state</button>
+    </DemoRow>
+    @if(model.isShow) {
+        <p>I'm a paragraph.</p>
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        isShow: false
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+</script>

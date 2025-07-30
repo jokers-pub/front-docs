@@ -1,0 +1,16 @@
+<template>
+    <button @click="handleClick">Number of clicks:@model.count</button>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        count: 0
+    };
+
+    handleClick() {
+        this.model.count++;
+    }
+}
+</script>

@@ -1,0 +1,114 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Joker 组件概述</h2>
+        <p>组件是 Joker 应用的主要构造块。每个组件包括如下部分：</p>
+        <ul>
+            <li>
+                <p>一个 HTML 模板，用于声明页面要渲染的内容</p>
+            </li>
+            <li>
+                <p>一个用于定义行为的 TypeScript 类</p>
+            </li>
+            <li>
+                <p>要应用在模板上的 CSS 样式</p>
+            </li>
+        </ul>
+        <p>本主题描述如何创建和配置 Joker 组件。</p>
+        <p>
+            首先我们要先明确一个理念，一切皆组件，无论是页面还是功能组件，它都是以组件身份存在的，只不过组件的装载时机不同而已。
+        </p>
+        <h3>创建一个组件</h3>
+        <p>
+            创建一个后缀名为
+            <code>.joker</code>
+            的文件，该文件即是一个组件的 SFC（单文件组件）组件。
+        </p>
+        <p>组件是由三部分组成的，分别是：</p>
+        <ol>
+            <li>
+                <code>&lt;template&gt;</code>
+                模板
+            </li>
+            <li>
+                <code>&lt;script&gt;</code>
+                逻辑脚本
+            </li>
+            <li>
+                <code>&lt;style&gt;</code>
+                组件样式
+            </li>
+        </ol>
+        <p>我们来分别介绍这三个部分</p>
+        <h3>template 模板</h3>
+        <p>
+            在
+            <code>.joker</code>
+            文件内创建一个 template 标签（template 需要为一级标签）即代表该标签内为我们的渲染模板，请看下面示例：
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div&gt;我是内容&lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+        <p>
+            在模板中
+            <code>
+                @("@")
+            </code>
+            代表动态指令，Joker 提供了丰富的动态指令。可通过后面的教程
+            <a href="/base/template" target="_blank">这里</a>
+            来进行学习。
+        </p>
+        <h3>script 逻辑脚本</h3>
+        <p>
+            在
+            <code>.joker</code>
+            文件内创建一个 script 标签（script 需要为一级标签）即代表该标签内为我们的逻辑脚本，请看下面示例：
+        </p>
+        <pre><code class="language-html">&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    export default class extends Component {
+        //这里的内容便是我们的组件逻辑
+    }
+&lt;/script&gt;
+</code></pre>
+        <h3>style 组件样式</h3>
+        <p>
+            在
+            <code>.joker</code>
+            文件内创建一个 style 标签 （style 需要为一级标签）即代表该标签内为我们的组件样式，请看下面示例：
+        </p>
+        <pre><code class="language-html">&lt;style&gt;
+    .div {
+        color: #666;
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>
+            通过 VSCODE 中的
+            <code>JOKER FRONT TOOLS</code>
+            扩展，可以快速的去创建一个基础的组件代码，这个扩展提供了默认提供了快速的模板提示，以帮助你更高效地编写 Joker 组件。
+        </p>
+        <p>
+            <img src="/base/vscode-template.png" alt="vscode-template" />
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,302 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Development Server (server) Configuration</h2>
+        <p>
+            This section mainly introduces the configuration instructions for the
+            <code>server</code>
+            property in the configuration file. The type of this property is
+            <code>ServerOptions</code>
+            .
+        </p>
+        <pre><code class="language-js">module.exports = {
+    server: {
+        //...
+    }
+};
+</code></pre>
+        <h3>port</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>number</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>5858</code>
+            </li>
+        </ul>
+        <p>
+            Specify the port for the development server. When you assign a port to the development server, note that if this port is already in use by another application,
+            <code>Joker CLI</code>
+            will
+            <strong>automatically search</strong>
+            for the next available port to start the service.
+        </p>
+        <h3>host</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>localhost</code>
+            </li>
+        </ul>
+        <p>
+            Specify the IP address that the server listens on. If you set it to
+            <code>0.0.0.0</code>
+            or use the default value, the server will listen on all available network interfaces, which means it will accept connections from both the local area network and the public network.
+        </p>
+        <p>
+            You can also set this via the command-line interface (CLI) using the
+            <code>--host</code>
+            option. Using
+            <code>--host 0.0.0.0</code>
+            will bind the service to all network interfaces, while using
+            <code>--host</code>
+            without a parameter means using the server's default interface.
+        </p>
+        <h3>https</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>boolean | http.HttpsServerOptions</code>
+            </li>
+        </ul>
+        <p>
+            To enable TLS and HTTP/2, note that if the
+            <code>server.proxy</code>
+            option is also used, only the TLS protocol will be used.
+            You need a valid and available certificate to configure the server to use TLS.
+        </p>
+        <h3>cors</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>boolean | CorsOptions</code>
+            </li>
+        </ul>
+        <p>
+            You can configure Cross-Origin Resource Sharing (CORS) for the development server. By default, the CORS feature is enabled, and all origins are allowed. If you need to customize the behavior of CORS, you can pass an
+            <a href="https://github.com/expressjs/cors#configuration-options" target="_blank">options object</a>
+            for adjustment. If you don't want to enable CORS, you can set this option to
+            <code>false</code>
+            .
+        </p>
+        <h3>headers</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>OutgoingHttpHeaders</code>
+            </li>
+        </ul>
+        <p>You can specify the HTTP headers that should be included in the server's response.</p>
+        <h3>proxy</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>Record&lt;string, string | ProxyOptions&gt;</code>
+            </li>
+        </ul>
+        <p>
+            You can set custom proxy rules for the development server by providing an object in the
+            <code>
+                {key: options}
+            </code>
+            format. Any request path starting with the key name will be proxied to the corresponding target. If the key name starts with
+            <code>^</code>
+            , it will be treated as a regular expression. You can use the
+            <code>configure</code>
+            option to access the proxy instance.
+            Note that if you set a non-relative base path
+            <code>base</code>
+            , you must prefix each key name with this
+            <code>base</code>
+            .
+            In specific scenarios, you may also need to configure the underlying development server, such as adding custom middleware to the internal connect application. To do this, you need to write your own plugin and use the
+            <code>configureServer</code>
+            function to apply the changes.
+        </p>
+        <p>Example:</p>
+        <pre><code class="language-js">module.exports = {
+    server: {
+        proxy: {
+            // Shorthand string notation: http://localhost:5173/foo -&gt; http://localhost:4567/foo
+            &quot;/foo&quot;: &quot;http://localhost:4567&quot;,
+            // Notation with options: http://localhost:5173/api/bar -&gt; http://jsonplaceholder.typicode.com/bar
+            &quot;/api&quot;: {
+                target: &quot;http://jsonplaceholder.typicode.com&quot;,
+                changeOrigin: true,
+                rewrite: (path) =&gt; path.replace(/^\/api/, &quot;&quot;)
+            },
+            // Regular expression notation: http://localhost:5173/fallback/ -&gt; http://jsonplaceholder.typicode.com/
+            &quot;^/fallback/.*&quot;: {
+                target: &quot;http://jsonplaceholder.typicode.com&quot;,
+                changeOrigin: true,
+                rewrite: (path) =&gt; path.replace(/^\/fallback/, &quot;&quot;)
+            },
+            // Using the proxy instance
+            &quot;/api&quot;: {
+                target: &quot;http://jsonplaceholder.typicode.com&quot;,
+                changeOrigin: true,
+                configure: (proxy, options) =&gt; {
+                    // proxy is an instance of 'http-proxy'
+                }
+            },
+            // Proxying websockets or socket.io: ws://localhost:5173/socket.io -&gt; ws://localhost:5174/socket.io
+            &quot;/socket.io&quot;: {
+                target: &quot;ws://localhost:5174&quot;,
+                ws: true
+            }
+        }
+    }
+};
+</code></pre>
+        <h3>hmr</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>
+                    boolean |{port?: number; host?: string}
+                </code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            You can disable or customize the Hot Module Replacement (HMR) connection. If you need to use a different HTTP server address to handle the HMR WebSocket connection, you can make the corresponding configuration.
+        </p>
+        <h4>hmr.port</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>number</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>25679</code>
+            </li>
+        </ul>
+        <p>
+            The port for the HMR hot-update ws protocol. When you assign a port to the development server, note that if this port is already in use by another application,
+            <code>Joker CLI</code>
+            will
+            <strong>automatically search</strong>
+            for the next available port to start the service.
+        </p>
+        <h4>hmr.host</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>localhost</code>
+            </li>
+        </ul>
+        <p>
+            Specify the IP address that the
+            <code>HMR server</code>
+            listens on.
+        </p>
+        <h3>fs</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>FileSystemServeOptions</code>
+            </li>
+        </ul>
+        <p>
+            You can configure
+            <code>fs</code>
+            to specify the file indexing scope of Joker CLI.
+        </p>
+        <pre><code class="language-js">{
+    strict: config.server?.fs?.strict ?? true,
+    allow: config.server?.fs?.allow ?? []
+}
+</code></pre>
+        <h4>fs.strict</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>boolean</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            Enable strict mode. Any file reference outside the
+            <code>root</code>
+            scope will be treated as an exception.
+        </p>
+        <h4>fs.allow</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string[]</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>[]</code>
+            </li>
+        </ul>
+        <p>
+            You can specify which files can be served via the
+            <code>
+                /@fs
+                /
+            </code>
+            path. When
+            <code>server.fs.strict</code>
+            is configured to
+            <code>true</code>
+            , only files in this directory list are allowed to be accessed. Any attempt to access files not in the list will return a 403 Forbidden error.
+            You can specify directories and files. Joker CLI will search for possible workspaces under this root directory and use them as the default workspaces. A valid workspace needs to meet several conditions. If these conditions are not met, Joker CLI will default to using the project root directory as an alternative.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,24 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle</button>
+    </DemoRow>
+    @if(model.isShow) {
+        <template keep-alive>
+            <input type="text" placeholder="Enter content to observe the state" />
+        </template>
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+</script>
+

@@ -1,0 +1,207 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>组合回复 combinedReply</h2>
+        <p>本章主要介绍什么是组合回复，和他的使用场景。</p>
+        <p>
+            在阅读本章节前，请先了解
+            <a href="/base/render" target="_blank">模板渲染</a>
+            。
+        </p>
+        <h3>为什么使用组合回复</h3>
+        <p>
+            Joker Core 的即时渲染机制确保了界面与数据状态之间的同步更新，任何数据变动都会即时反映到与之关联的模板上。这种机制在处理诸如用户交互等事件时非常有效，因为用户希望看到实时的反馈。然而，在某些情况下，如方法内部的数据频繁更新，这种即时性可能会导致性能问题，因为每次数据变动都会触发一次渲染更新。
+        </p>
+        <p>
+            为了解决这个问题，我们引入了组合式响应机制。这种方法允许在一定逻辑处理单元（比如一个方法）完成所有数据更新后，再统一收集这些变更，并进行优化处理，如去重和合并更新。这样，只有当真正需要渲染更新时，才实际执行渲染操作，从而避免了在中间过程中由于频繁的小数据变动而导致的多次渲染更新，显著提高了性能。简而言之，这种方法通过在合适的时间点集中处理更新，以最小的性能成本实现了高效的页面渲染。
+        </p>
+        <h3>怎么使用</h3>
+        <p>它的使用方式非常简单：</p>
+        <pre><code class="language-ts">import { combinedReply } from &quot;@joker.front/core&quot;;
+
+combinedReply(() =&gt; {
+    //这里编写你的代码
+});
+</code></pre>
+        <p>我们使用变更计数的方式来看一下不使用组合回复的情况下的示例：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;Click the button, and the value will be changed 5 times.&lt;/p&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change Value ( @model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () =&gt; this.model.value,
+            () =&gt; {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        this.model.value++;
+        this.model.value++;
+        this.model.value++;
+        this.model.value++;
+        this.model.value++;
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>接下来看一下使用组合回复后的效果：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;Click the button, and the value will be changed 5 times.&lt;/p&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change Value ( @model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, combinedReply } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () =&gt; this.model.value,
+            () =&gt; {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        combinedReply(() =&gt; {
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+        });
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            通过上面的例子可以看到，虽然页面最终都顺利的更新到了最新的数据，但是在没有使用组合回复的情况下，它其实在后台更新了 5 次 DOM 节点。
+        </p>
+        <p>
+            接下来我们再看一个例子，主要体现组合回复的最终结果，当最终处理完毕后，对数据订阅进行归纳优化，若没有值变更则会被忽略。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;Click the button, and the value will be changed 5 times.&lt;/p&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change Value ( @model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, combinedReply } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () =&gt; this.model.value,
+            () =&gt; {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        combinedReply(() =&gt; {
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value = 0;
+        });
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            通过上面的例子可以发现，虽然对
+            <code>value</code>
+            值做了频繁的变更，但最后值仍然为
+            <strong>0</strong>
+            ，则不做任何数据订阅的变更广播。
+        </p>
+        <blockquote>
+            <p>
+                <strong>注意：</strong>
+                由于我们在组合回复执行过程中不会去执行
+                <code>Render</code>
+                渲染，所以我们没有办法在代码中立即获取到最新的 DOM。
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/combined-reply/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/combined-reply/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/combined-reply/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

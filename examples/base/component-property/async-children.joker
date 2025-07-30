@@ -1,0 +1,13 @@
+<template>
+    <p>I'm an asynchronous child component.</p>
+    <p>
+        The content you're currently entering is：@props.message
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component<{
+    message: string;
+}> {}
+</script>

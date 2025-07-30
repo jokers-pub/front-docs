@@ -1,0 +1,17 @@
+<template>
+    <div>
+        <p>I'm the content of the test1 component.</p>
+        <p>
+            I've received the `userName` parameter: @props.userName
+        </p>
+    </div>
+    <p>I won't render the section content.</p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component<{
+    userName: string;
+}> {}
+</script>
+

@@ -1,0 +1,41 @@
+<template>
+    <DemoRow>
+        <p>Click the button, and the value will be changed 5 times.</p>
+        <button @click="handleClick">Change Value ( @model.value )</button>
+    </DemoRow>
+</template>
+<script>
+import { Component, combinedReply } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () => this.model.value,
+            () => {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        combinedReply(() => {
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+        });
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+</script>

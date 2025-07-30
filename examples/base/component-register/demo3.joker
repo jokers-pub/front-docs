@@ -1,0 +1,5 @@
+<template>
+    <DemoRow>
+        I'm a text within the global component. This global component comes with a built-in padding property.
+    </DemoRow>
+</template>

@@ -1,0 +1,16 @@
+<template>
+    <p class="title">Top section content:</p>
+    @RenderSection("top")
+    <p class="title">Main content:</p>
+    @RenderSection()
+    <p class="title">Bottom section content:</p>
+    @RenderSection("bottom")
+</template>
+
+<style lang="scss" scoped>
+p.title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+</style>

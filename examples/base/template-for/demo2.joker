@@ -1,0 +1,21 @@
+<template>
+    <p>I'm a loop.</p>
+    <ul>
+        @for(let item of list) {
+            <li>
+                @item
+            </li>
+        }
+    </ul>
+    <p>
+        I'm the value outside the for loop: @('"' + item + '"')
+        .
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    list = ["Zhang San", "Li Si", "Wang Wu"];
+}
+</script>

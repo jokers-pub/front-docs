@@ -1,0 +1,161 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Event Bus</h2>
+        <p>
+            In addition to
+            <code>parameter passing</code>
+            and
+            <code>events</code>
+            for communication between components, we also provide a global
+            <code>event bus</code>
+            to handle the broadcast communication requirements between events.
+        </p>
+        <h3>Overview</h3>
+        <p>
+            The
+            <code>Event Bus</code>
+            is an event-bus architecture pattern. It decouples the event communication between components through a central event dispatching center. Compared with components handling events directly internally, the
+            <code>Event Bus</code>
+            allows events to be passed between different components without direct interaction between components, thus
+            <strong>reducing</strong>
+            the
+            <strong>coupling</strong>
+            between them.
+        </p>
+        <p>
+            Typically, the
+            <code>Event Bus</code>
+            is used to handle global events, such as successful user logins, window size adjustments, etc. These events are often associated with
+            <strong>specific actions</strong>
+            or
+            <strong>operations</strong>
+            , such as a user clicking a button or a change in the browser window size.
+        </p>
+        <p>
+            The
+            <code>Event Bus</code>
+            can be used within components or in any script, but it needs to register and unload global events at appropriate times to ensure effective resource management and reasonable memory release.
+        </p>
+        <h3>How to Use</h3>
+        <p>Definition of the event bus</p>
+        <pre><code class="language-ts">import { EventBus } from &quot;@joker.front/core&quot;;
+
+export let userEvent = new EventBus&lt;{
+    login: { userName: string; id: string };
+    registory: { userId: string };
+}&gt;();
+</code></pre>
+        <p>Broadcast of an event</p>
+        <pre><code class="language-ts">import { userEvent } from &quot;./event-bus/user-event&quot;;
+
+userEvent.trigger(&quot;login&quot;, {
+    userName: &quot;Zhang San&quot;,
+    id: &quot;123&quot;
+});
+</code></pre>
+        <p>Listening for an event</p>
+        <pre><code class="language-ts">import { userEvent } from &quot;./event-bus/user-event&quot;;
+
+let destroyEvent = userEvent.on(&quot;login&quot;, (e, userInfo) =&gt; {
+    let userName = userInfo.userName;
+    //TODO:...
+});
+</code></pre>
+        <p>
+            The event-handling function will receive two parameters. The first parameter is the event-handling object, and the second is the event parameter. The event-handling object provides two properties for use:
+        </p>
+        <ul>
+            <li>
+                <strong>stopPropagation</strong>
+                : Function. Prevents the event from being broadcast further.
+            </li>
+            <li>
+                <strong>callTimes</strong>
+                : Number. Indicates how many times the event has been responded to during this processing.
+            </li>
+        </ul>
+        <blockquote>
+            <p>
+                When using
+                <code>on</code>
+                or
+                <code>once</code>
+                to register an event, a
+                <code>destroy</code>
+                function will be immediately returned after registration. You can call this function to immediately destroy the event registered this time. Of course, you can also use the
+                <code>off</code>
+                method to delete it.
+                After registering an event, a destruction method will be immediately returned. You can call this destruction method to cancel the registration of this event.
+                When registering an event, you can use the
+                <code>*</code>
+                wildcard to receive the handling of all events. You can obtain the current event name from the first parameter
+                <code>e</code>
+                in the event-handling function.
+            </p>
+        </blockquote>
+        <pre><code class="language-ts">import { userEvent } from &quot;./event-bus/user-event&quot;;
+
+// Unload all login events
+userEvent.off(&quot;login&quot;);
+
+// Unload all events under user
+userEvent.off();
+</code></pre>
+        <blockquote>
+            <p>
+                We can specify a generic type when initializing the event bus to constrain the type of event parameters.
+            </p>
+        </blockquote>
+        <h3>API</h3>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Method Name</th>
+                    <th>Description</th>
+                    <th>Parameters</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>on</td>
+                    <td>Event registration</td>
+                    <td>Event name, event-handling function</td>
+                </tr>
+                <tr>
+                    <td>off</td>
+                    <td>Event unloading</td>
+                    <td>Event name, event-handling function (optional)</td>
+                </tr>
+                <tr>
+                    <td>trigger</td>
+                    <td>Trigger an event</td>
+                    <td>Event name, event parameter (optional)</td>
+                </tr>
+                <tr>
+                    <td>once</td>
+                    <td>Event registration (respond only once)</td>
+                    <td>Event name, event-handling function</td>
+                </tr>
+            </tbody>
+        </table>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

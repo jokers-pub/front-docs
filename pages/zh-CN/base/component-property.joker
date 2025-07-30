@@ -1,0 +1,596 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>组件的属性</h2>
+        <p>
+            我们的组件开发都基于
+            <code>
+                @("@joker.front/core")
+            </code>
+            这个强大的库。它为开发者提供了一系列的工具和 API，包括生命周期钩子函数、API 函数和属性，这些都可以帮助我们更高效、更便捷地完成组件的开发。在这个章节中，我们将深入探讨一个组件类的组成，让您了解如何利用这个库来打造出一个功能丰富、性能优越的组件。
+        </p>
+        <p>
+            Joker 默认提供了一些默认属性和属性的规范标准，该章节主要介绍下这些属性，方便我们在开发过程中更好的使用他们。
+        </p>
+        <h3>组件参数（props / propsOption）</h3>
+        <p>
+            在父组件中可以传递参数到子组件，子组件通过 typescript 的泛型来为组件指定参数类型，并可以通过
+            <code>propsOption</code>
+            来为参数设置一些约束或默认值。
+        </p>
+        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component&lt;{
+    message: string;
+    checked: boolean;
+    money: number;
+}&gt; {}
+</code></pre>
+        <p>通过上面的代码示例可以看出，当前组件会接受到三个参数，并指定了三个参数的类型。</p>
+        <blockquote>
+            <p>
+                值的注意的是，Joker 为了最大限度保持灵活度，对组件的参数是弱约束，定义的泛型类型，只是作为组件内的快速提示存在的，不会做值的转换、非空判断等操作。
+            </p>
+        </blockquote>
+        <p>
+            当然，如果你的组件有对参数的约束、默认值、类型的强制要求，我们也提供了
+            <code>propsOption</code>
+            来进行配置。
+        </p>
+        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component&lt;{
+    message: string;
+    age: number;
+    money: number;
+    zIndex: number;
+}&gt; {
+    propsOption = {
+        money: {
+            //必须输入参数
+            required: true,
+            //类型
+            type: [String, Number],
+            //校验
+            validate(val: any) {
+                let value = parseInt(val);
+                if (isNan(value)) {
+                    console.error(&quot;money请输入类型&quot;);
+                    return false;
+                }
+                return true;
+            }
+        },
+        message: &quot;我是默认提示&quot;,
+        age: Boolean,
+        zIndex: 1
+    };
+}
+</code></pre>
+        <p>通过上面的例子可以看到 propsOption 支持丰富的用法，它的规则是：</p>
+        <ol>
+            <li>
+                <p>
+                    如果是 String | ArrayConstructor | Number | Object | Function | Boolean 或 Array&lt;以上类型&gt;，则代表约束该值的类型，并在取值时，按照默认的第一个类型尝试去转换，转换失败则报错。
+                </p>
+            </li>
+            <li>
+                <p>
+                    如果是对象，对象内包括
+                    <code>type</code>
+                    /
+                    <code>required</code>
+                    /
+                    <code>default</code>
+                    /
+                    <code>validate</code>
+                    任意一个属性，则按照全属性作为参数的约束。
+                    全类型参数说明（属性均为可选）：
+                </p>
+                <table class="mkd-table">
+                    <thead>
+                        <tr>
+                            <th>属性名</th>
+                            <th>说明</th>
+                            <th>类型</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>type</td>
+                            <td>值类型</td>
+                            <td>String / Array/ Number / Object / Function / Boolean 或 配置多项[以上类型]</td>
+                        </tr>
+                        <tr>
+                            <td>required</td>
+                            <td>是否为必输项</td>
+                            <td>boolean</td>
+                        </tr>
+                        <tr>
+                            <td>default</td>
+                            <td>默认值</td>
+                            <td>any</td>
+                        </tr>
+                        <tr>
+                            <td>validate</td>
+                            <td>值校验方法</td>
+                            <td>(val:any)=&gt;boolean</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+            <li>
+                <p>
+                    若不满足以上条件，则将该值作为参数的默认值，当参数为
+                    <strong>undefined</strong>
+                    时，则按照此默认值返回。
+                </p>
+            </li>
+        </ol>
+        <p>通过上面的内容可以了解到如何去定义当前组件的参数及参数的约束，接下来我们一起看一下如何读取参数。</p>
+        <pre><code class="language-ts">let money = this.props.money;
+</code></pre>
+        <p>
+            我们定义的参数，可以通过
+            <code>props</code>
+            对象进行获取，值的注意的是，该属性为只读属性，它不允许重新定义或设置新值。
+        </p>
+        <p>
+            在处理参数传递时，我们通常依据元素标签来操作。为了维持命名的一致性和规范性，属性名称可能会采用
+            <code>驼峰式命名</code>
+            或使用
+            <code>-</code>
+            来分隔。为了更好地兼容多种参数命名标准，我们在读取参数时将采取以下策略：首先，直接使用原始的键名尝试获取参数；如果未能成功获取，那么我们将尝试
+            <strong>每个单词首字母大写</strong>
+            转换小写后进行分割，并用
+            <code>-</code>
+            将它们连接起来作为 key，再次尝试获取参数。这样的处理方式能够确保我们能够灵活地适应不同的命名规则。
+        </p>
+        <p>例如：</p>
+        <pre><code class="language-html">&lt;my-component success-message=&quot;我是成功提示&quot; errorMessage=&quot;我是错误提示&quot; /&gt;
+</code></pre>
+        <p>那在组件内可以这样取值，这些取值方式都是允许的。</p>
+        <pre><code class="language-ts">this.props.successMessage;
+this.props[&quot;success-message&quot;];
+this.props.errorMessage;
+</code></pre>
+        <p>
+            Joker 在内部对 boolean 做了进一步的优化，为了避免在标签内使用
+            <code>
+                checked=&quot;@("@true")&quot;
+            </code>
+            这样多余的操作，当我们遇到一个属性被定义但是没有配置值（注意不是 undefined，而是没有
+            <code>=</code>
+            ）,则默认作为 true 处理。例如：
+        </p>
+        <pre><code class="language-html">&lt;my-component checked /&gt;
+</code></pre>
+        <p>
+            更多模板语法可通过阅读
+            <a href="/base/template" target="_blank">模板</a>
+            来进行深度了解。
+        </p>
+        <p>
+            <code>props</code>
+            的数据是响应式数据，当外部值变更后，也会进行同步通知：
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;jk-input @input=&quot;handleInput&quot; placeholder=&quot;Please enter the content.&quot; /&gt;
+    &lt;/DemoRow&gt;
+    &lt;MyComponent message=&quot;@model.inputValue&quot; /&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+
+    model = {
+        inputValue: &quot;&quot;
+    };
+
+    handleInput(e: VNode.Event&lt;string&gt;) {
+        this.model.inputValue = e.data;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>子组件的代码：</p>
+        <pre><code class="language-html">&lt;template&gt; 我是子组件，你当前输入的内容：@props.message &lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export default class extends Component&lt;{
+        message: string
+    }&gt; {}
+&lt;/script&gt;
+</code></pre>
+        <h3>响应式数据（model）</h3>
+        <p>
+            Joker 内部提供了
+            <a href="/base/observer" target="_blank">observer</a>
+            数据劫持的方法，但是为了方便开发人员快速的定义组件内的响应数据，我们默认提供了 model 属性，该属性会在装载开始之前被劫持，并提供数据响应的能力。
+        </p>
+        <pre><code class="language-ts">export default class extends Component {
+    model = {
+        value: &quot;&quot;
+    };
+}
+</code></pre>
+        <p>
+            当然， 你也可以使用
+            <code>observer</code>
+            方法来定义一个响应式数据。
+        </p>
+        <pre><code class="language-ts">export default class extends Component {
+    list = observer({
+        value: &quot;&quot;
+    });
+
+    created() {
+        this.$watch(
+            () =&gt; this.list,
+            () =&gt; {
+                //值变更了
+            }
+        );
+    }
+}
+</code></pre>
+        <p>
+            由于我们使用的是
+            <code>typescript</code>
+            标准，当 model 属性的类型过于复杂，我们可以采用
+            <code>as</code>
+            的方式来为某一个属性做类型指定。例如：
+        </p>
+        <pre><code class="language-ts">export default class extends Component {
+    model: {
+        value?: { key: string; value: number };
+    } = {
+        value: undefined
+    };
+}
+//等同于👇👇👇 对于属性复杂或者多属性时更方便
+export default class extends Component {
+    model = {
+        value: undefined as { key: string; value: number } | undefined,
+        message: &quot;&quot;
+    };
+}
+</code></pre>
+        <blockquote>
+            <p>
+                注意，我们建议 model 中只存放你需要响应式可观察的数据，对于临时的数据，可以直接作为属性配置在组件类内，以减少响应式的数据开销。
+            </p>
+        </blockquote>
+        <h3>渲染模板（template）</h3>
+        <p>
+            我们除了借用
+            <code>SFC</code>
+            模式下的 template 标签去定义模板外，我们也可以通过 template 属性去定义模板，这样的好处是，我们可以通过 js 判断去创建更复杂的渲染模板。
+        </p>
+        <pre><code class="language-html">&lt;script&gt;
+    import { Component, createElement, createText } from &quot;@joker.front/core&quot;;
+    export default class extends Component {
+        template = function () {
+            let children = [];
+            if (__DEV__) {
+                children.push(createText(&quot;我是通过createText创建的内容&quot;));
+            }
+            return [createElement(&quot;div&quot;, undefined, children)];
+        };
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;script&gt;
+import { Component, createElement, createText } from &quot;@joker.front/core&quot;;
+export default class extends Component {
+    template = () =&gt; {
+        let children = [];
+        if (true) {
+            children.push(createText(&quot;I'm the content created by createText.&quot;));
+        }
+        return [createElement(&quot;div&quot;, undefined, children)];
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>私有组件（component）</h3>
+        <p>
+            通过配置
+            <code>component</code>
+            属性来配置当前组件内的私有组件，组件的注册机制可查看
+            <a href="/base/component-register" target="_blank">组件注册</a>
+            。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent /&gt;
+    &lt;MyAsyncComponent /&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    import MyComponent from &quot;./children.joker&quot;;
+    export default class extends Component {
+        component = {
+            MyComponent,
+            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+        };
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent message=&quot;I'm the parameter.&quot; /&gt;
+    &lt;MyAsyncComponent message=&quot;I'm the parameter.&quot; /&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    components = {
+        MyComponent,
+        MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+    };
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            组件的注册是支持异步的，可以使用
+            <code>()=&gt;import('component.joker')</code>
+            的方式来进行组件的异步引用，异步引用组件不会随着父组件的初始化而被加载，直到该组件需要被渲染时才会进行加载，例如：
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    @if(false){
+    &lt;MyAsyncComponent /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export default class extends Component {
+        component = {
+            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+        };
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the display state of the child component.&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.show) {
+        &lt;MyAsyncComponent message=&quot;I'm the parameter.&quot; /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    components = {
+        MyAsyncComponent: () =&gt; import(&quot;./async-children-import.joker&quot;)
+    };
+    model = {
+        show: false
+    };
+
+    handleClick() {
+        this.model.show = !this.model.show;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>可以通过上面的代码和控制台输出（网络）可以看到，异步组件会在被要求加载时才会被加载。</p>
+        <h3>根节点（$root / $rootVNode）</h3>
+        <p>
+            在渲染时，每一个标签/组件/指令都是以树的形式存在的，组件也不例外，我们可以通过调用$root 和 $rootVNode 这两个属性来获取一个组件的装载容器/组件的 root 根节点。
+        </p>
+        <p>那我们怎么区分$root 和 $rootVNode 呢？</p>
+        <ul>
+            <li>
+                <p>
+                    <code>$root</code>
+                    表示当前组件的装载容器，它是当容器被装载时（$mount）时作为参数传递并指定的，它可以是一个 HTML 的 Element，也可以是一个 VNode.Component。
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>$rootVNode</code>
+                    作为当前组件的顶级节点，它的类型一定是 VNode.Root，由于我们的渲染模板是不限制顶级标签个数的，所以必须由一个 VNode.Root 进行包裹，通过这个属性我们就提供向下查找节点等等的操作了。该属性的值会在模板渲染时才会创建，所以在
+                    <code>created</code>
+                    生命周期内无法获取到该属性的值。
+                </p>
+            </li>
+        </ul>
+        <p>例如，我们要获取当前组件所有 Element 节点</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div&gt;1&lt;/div&gt;
+    &lt;div&gt;2&lt;/div&gt;
+    &lt;div&gt;3&lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    //...
+    //获取所有element节点
+    this.$rootVNode?.find((n) =&gt; n instanceof VNode.Element);
+
+    //向上找，找到最近的一个element节点
+    this.$rootVNode?.closest((n) =&gt; n instanceof VNode.Element);
+
+    //...
+&lt;/script&gt;
+</code></pre>
+        <p>
+            其中 VNode.Root 相关知识，可以点击
+            <a href="/base/vnode" target="_blank">虚拟节点</a>
+            去了解。
+        </p>
+        <h3>所有标记节点（$refs）</h3>
+        <p>
+            该属性存放所有已经标记的节点，该属性是一个只读属性，当节点被新增或销毁时，该属性的值也会响应的同步（值同步，非响应式数据，若想做观察建议使用$watchNode API）。
+        </p>
+        <pre><code class="language-ts">let count = this.$refs.refName?.count;
+</code></pre>
+        <p>
+            当然你也可以调用
+            <code>$getRef</code>
+            和
+            <code>$getRefs</code>
+            方法来查找标记节点，这两个方法可以使用 typescript 的泛型类指定输出类型，更方便操作。
+            <a href="/base/component-api" target="_blank">组件内置方法</a>
+        </p>
+        <h3>是否保持状态（isKeepAlive）</h3>
+        <p>
+            通过该属性可以判断组件是否要求保持状态，要求保持状态的组件，在
+            <code>$destroy</code>
+            时会只销毁挂载元素节点，而不是销毁整个组件实例，详细可以去
+            <a href="/base/component-lifecycle" target="_blank">组件生命周期</a>
+            中了解。
+        </p>
+        <p>组件调用，并配置 keep-alive：</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent keep-alive /&gt;
+&lt;/template&gt;
+</code></pre>
+        <p>
+            子组件中可通过
+            <strong>isKeepAlive</strong>
+            来判断本次组件渲染是否要求保持状态。
+        </p>
+        <pre><code class="language-ts">export class extends Component {
+    created() {
+        if (this.isKeepAlive) {
+            //TODO:...
+        }
+    }
+}
+</code></pre>
+        <h3>是否已睡眠（isSleeped）</h3>
+        <p>
+            当组件要求保持状态时，在
+            <code>$destroy</code>
+            时会只销毁挂载元素节点，而不是销毁整个组件实例，详细可以去
+            <a href="/base/component-lifecycle" target="_blank">组件生命周期</a>
+            中了解。
+            我们可以通过这个属性来判断当前组件的状态，例如：
+        </p>
+        <pre><code class="language-ts">export class extends Component {
+    //定时任务触发函数
+    testMethod() {
+        //当组件睡眠时忽略定时执行。
+        if (this.isSleeped) return;
+
+        MessageBox.alert(&quot;定时器被触发。&quot;);
+    }
+}
+</code></pre>
+        <h3>渲染区块（$sections）</h3>
+        <p>
+            该属性为只读属性，代表当前组件内传入的待渲染区块，使用方式可查看
+            <a href="/base/template-section" target="_blank">区块渲染</a>
+            。
+        </p>
+        <pre><code class="language-ts">class extends Component {
+    myFunction() {
+        if (this.$sections.top) {
+            //传入了top区块模板
+        } else {
+            //没有传入top区块模板
+        }
+    }
+}
+</code></pre>
+        <p>
+            该属性类型为对象类型，其中
+            <code>key</code>
+            代表区块名称，
+            <code>value</code>
+            代表待渲染区块的对象数据，它的详细类型如下(SectionType)：
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>asts</td>
+                    <td>
+                        AST 树，可查看
+                        <a href="/base/ast" target="_blank">AST</a>
+                        进行了解
+                    </td>
+                    <td>AST.Node[]</td>
+                </tr>
+                <tr>
+                    <td>ob</td>
+                    <td>渲染该模板时所需的数据对象（ob）</td>
+                    <td>Object</td>
+                </tr>
+                <tr>
+                    <td>parser</td>
+                    <td>渲染该模板时所在的 parser 解析对象</td>
+                    <td>ParserTemplate</td>
+                </tr>
+                <tr>
+                    <td>params</td>
+                    <td>
+                        参数，可参考
+                        <a href="/base/template-section" target="_blank">区块渲染</a>
+                        中的区块参数章节，该属性
+                        <strong>不代表参数值</strong>
+                        ，而是
+                        <strong>参数名称</strong>
+                    </td>
+                    <td>string[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>该属性为只读属性，不建议修改该属性的值，属性值由 Core 内部生成。</p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/component-property/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/component-property/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/component-property/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/component-property/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

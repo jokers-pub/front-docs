@@ -1,0 +1,184 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>可选插件</h2>
+        <p>本章主要介绍官方提供的 Joker CLI 插件。</p>
+        <h3>
+            @("@joker.front/cli-plugin-legacy")
+        </h3>
+        <p>该插件主要负责兼容性转换。</p>
+        <p>
+            Joker CLI 在默认情况下仅处理语法转换，不包含任何 polyfill。如果您需要为老旧浏览器提供支持，可以访问
+            <a href="https://polyfill.io/" target="_blank">Polyfill.io</a>
+            ，这是一个可以根据用户浏览器的 User-Agent 自动生成 polyfill 包的服务。
+        </p>
+        <p>
+            对于需要兼容传统浏览器的场景，可以通过安装并使用插件
+            <code>
+                @("@joker.front/cli-plugin-legacy")
+            </code>
+            来支持。这个插件会自动生成适合老旧浏览器的版本和必要的 polyfill，以确保在这些浏览器上正确运行。这些兼容性版本的 chunk 只有在目标浏览器不支持原生 ESM 时才会被按需加载。
+        </p>
+        <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);
+
+module.exports = {
+    plugins: [
+        legacyPlugin({
+            targets: [&quot;chrome 80&quot;, &quot;ie &gt;= 10&quot;]
+        })
+    ]
+};
+</code></pre>
+        <p>该插件提供以下可选配置：</p>
+        <pre><code class="language-ts">export interface Option {
+    /**
+     * 目标平台
+     * @default 'defaults'
+     */
+    targets?: string | string[];
+    /**
+     * 兼容版本文件名称
+     * @default '-legacy'
+     */
+    legacyName?: string;
+    /**
+     * 是否采用外部SystemJs
+     */
+    externalSystemJs?: boolean;
+    /**
+     * 现代浏览器兼容性
+     */
+    modernPolyfills?: string[];
+    /**
+     * 老浏览器兼容处理机制
+     */
+    legacyPolyfills?: string[];
+}
+</code></pre>
+        <h4>targets</h4>
+        <ul>
+            <li>
+                类型：
+                <code>
+                    string | string[] |{[key： string]: stirng}
+                </code>
+            </li>
+            <li>
+                默认值：
+                <code>last 2 versions and not dead, &gt;0.3%, Firefox ESR</code>
+            </li>
+        </ul>
+        <p>
+            当渲染传统块时，如果显式设置，它会被传递给
+            <code>
+                @("@babel/preset-env")
+            </code>
+            。
+            该查询也兼容 Browserslist。有关详细信息，请参见
+            <a href="https://github.com/browserslist/browserslist#best-practices" target="_blank">Browserslist</a>
+            最佳实践。
+        </p>
+        <p>如果没有设置，plugin-legacy 将加载 browserslist 配置源，然后回退到默认值。</p>
+        <h4>legacyName</h4>
+        <ul>
+            <li>
+                类型：
+                <code>string</code>
+            </li>
+            <li>
+                默认值：
+                <code>-legacy</code>
+            </li>
+        </ul>
+        <p>用于配置兼容性文件的后缀名。</p>
+        <h4>externalSystemJS</h4>
+        <ul>
+            <li>
+                类型：
+                <code>boolean</code>
+            </li>
+            <li>
+                默认值：
+                <code>false</code>
+            </li>
+        </ul>
+        <p>默认值为 false。启用此选项将在 polyfills-legacy 块中排除 systemjs/dist/s.min.js。</p>
+        <h4>modernPolyfills</h4>
+        <ul>
+            <li>
+                类型：
+                <code>boolean | string[]</code>
+            </li>
+            <li>
+                默认值：
+                <code>false</code>
+            </li>
+        </ul>
+        <p>默认值为 false。启用此选项将在现代构建中生成一个单独的 polyfills 块（针对支持广泛可用特性的浏览器）。</p>
+        <p>
+            设置为字符串数组以显式控制要包含的 polyfills。有关详细信息，请参见 Polyfill 指定符。
+            请注意，不建议使用 true 值（使用自动检测），因为
+            <code>core-js3</code>
+            非常激进地包含 polyfills，因为它支持所有前沿特性。即使针对本地 ESM 支持，它也会注入
+            <strong>15kb</strong>
+            的 polyfills！
+        </p>
+        <p>
+            如果你不是特别依赖前沿运行时特性，完全有可能避免在现代构建中使用 polyfills。作为一种替代方案，可以考虑使用按需服务，如 Polyfill.io，仅根据实际浏览器用户代理注入必要的 polyfills（大多数现代浏览器不需要任何东西）。
+        </p>
+        <h4>legacyPolyfills</h4>
+        <p>
+            默认情况下，会根据目标浏览器范围和最终捆绑包中的实际使用情况生成一个 polyfills 块（通过@babel
+            /preset-env 的 useBuiltIns: 'usage'检测）。
+            设置为字符串数组以显式控制要包含的 polyfills。有关详细信息，请参见 Polyfill 指定符。
+        </p>
+        <p>
+            <code>legacyPolyfills</code>
+            和
+            <code>modernPolyfills</code>
+            的 Polyfill 指定符字符串可以是以下任意一种：
+        </p>
+        <ul>
+            <li>
+                <code>core-js 3的子导入路径</code>
+                - 例如，es/map 将导入 core-js/es/map
+                <a href="https://unpkg.com/browse/core-js@3.35.1/" target="_blank">连接</a>
+            </li>
+            <li>
+                <code>单独的core-js 3模块</code>
+                - 例如，es.array.iterator 将导入 core-js/modules/es.array.iterator.js
+                <a href="https://unpkg.com/browse/core-js@3.35.1/modules/" target="_blank">连接</a>
+            </li>
+        </ul>
+        <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);
+
+module.exports = {
+    plugins: [
+        legacyPlugin({
+            targets: [&quot;chrome 80&quot;, &quot;ie &gt;= 10&quot;],
+            legacyPolyfills: [&quot;es.promise.finally&quot;, &quot;es/map&quot;, &quot;es/set&quot;],
+            modernPolyfills: [&quot;es.promise.finally&quot;]
+        })
+    ]
+};
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

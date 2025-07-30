@@ -1,0 +1,12 @@
+<template>
+    <button @click="handleClick">I'm the button in the child component</button>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    handleClick() {
+        this.$trigger("click", "These are the parameters passed from the child component");
+    }
+}
+</script>

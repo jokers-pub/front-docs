@@ -1,0 +1,21 @@
+<template>
+    <ul>
+        @for(let item of props.list) {
+            <li>
+                @if($sections.default) {
+                    @RenderSection("default", item)
+                }
+                else {
+                    @item
+                }
+            </li>
+        }
+    </ul>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component<{
+    list: string[];
+}> {}
+</script>

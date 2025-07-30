@@ -1,0 +1,31 @@
+<template>
+    <h1>
+        You've clicked me @(model.count)
+        times.
+    </h1>
+    <button @click="handleClick">Number of clicks:@model.count</button>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        count: 0
+    };
+
+    handleClick() {
+        this.model.count++;
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+h1 {
+    color: #666;
+    font-size: 18px;
+}
+
+button {
+    font-weight: bold;
+}
+</style>

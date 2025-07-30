@@ -1,0 +1,207 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>初始化路由</h2>
+        <p>
+            该章主要介绍，如何去初始化
+            <code>Joker Router</code>
+            ，并介绍初始化时可配置的相关参数。
+        </p>
+        <h3>初始化</h3>
+        <p>
+            <code>Joker Router</code>
+            提供
+            <strong>Router</strong>
+            类，用于初始化路由。
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/rourter&quot;;
+
+new Router({
+    history: new WebHashHistory(),
+    base: &quot;&quot;,
+    scrollBehavior: (to, from, savePosition) =&gt; {
+        //路由跳转后滚动条自定义操作方法
+    },
+    loggerLeve:&quot;warn&quot;
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+</code></pre>
+        <h3>history [历史记录模式]</h3>
+        <p>
+            <code>histroy</code>
+            属性允许我们自定义路由历史模式，目前支持
+            <code>HTML history</code>
+            和
+            <code>Hash history</code>
+            两种模式，默认我们将采用
+            <code>Hash</code>
+            模式去管理我们的路由历史。
+        </p>
+        <pre><code class="language-ts">import { WebHistory, WebHashHistory } from &quot;@joker.front/rourter&quot;;
+
+new Router({
+    history: new WebHashHistory(),
+
+    //或者
+    history: new WebHistory()
+});
+</code></pre>
+        <p>
+            <code>HTML history</code>
+            和
+            <code>Hash history</code>
+            历史模式详细内容可通过
+            <a href="/router/history-mode" target="_blank">历史记录模式</a>
+            去了解。
+        </p>
+        <h3>base [路由根]</h3>
+        <p>
+            通过该属性我们可以为所有的路由配置增加一个根节点，默认
+            <code>base</code>
+            为空。
+        </p>
+        <p>
+            例如我们定义一个
+            <code>/index</code>
+            的路由地址：
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [{ path: &quot;/index&quot;, component: MyPage }]
+});
+</code></pre>
+        <p>
+            当我们不配置 base 属性时，我们可以通过访问
+            <code>#/index</code>
+            来访问该路由页面。
+        </p>
+        <pre><code class="language-ts">new Router({
+    base:&quot;demo&quot;
+    routes: [{ path: &quot;/index&quot;, component: MyPage }]
+});
+</code></pre>
+        <p>
+            当我们配置
+            <code>base</code>
+            属性为
+            <strong>demo</strong>
+            后，我们即可访问
+            <code>#/demo/index</code>
+            来访问该路由。
+        </p>
+        <p>
+            <code>base</code>
+            配置后会对所有注册路由生效，都会再其起始位置添加路由文根。
+        </p>
+        <h3>scrollBehavior [滚动行为]</h3>
+        <p>
+            <code>scrollBehavior</code>
+            属性允许我们在路由跳转后去处理滚动条行为，该属性为方法类型，并提供
+            <code>来源</code>
+            、
+            <code>去向</code>
+            、
+            <code>目标路由之前存储的滚动条位置</code>
+            。
+        </p>
+        <p>我们可以通过该方法来自定义滚动条的行为：</p>
+        <pre><code class="language-ts">new Router({
+    scrollBehavior() {
+        window.scrollTo(0, 0);
+    }
+});
+</code></pre>
+        <p>
+            详细参数类型及使用方式，可通过后面的
+            <a href="/router/scroll" target="_blank">滚动行为</a>
+            去学习了解。
+        </p>
+        <h3>loggerLeve [日志级别]</h3>
+        <p>
+            <code>loggerLeve</code>
+            属性允许我们配置 Joker Router 的路由输出级别。
+        </p>
+        <pre><code class="language-ts">new Router({
+    loggerLeve: &quot;info&quot;
+});
+</code></pre>
+        <p>
+            通过配置不同的级别可实现：
+            <code>调试</code>
+            、
+            <code>生产静默</code>
+            等需求。默认日志等级为
+            <code>warn</code>
+            ，只有出现警告、或者错误时才会输出。
+        </p>
+        <p>配置级别权重如下：</p>
+        <p>
+            <code>silent &lt; error &lt; warn &lt; info</code>
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>可选值</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>silent</td>
+                    <td>静默，不做任何日志输出</td>
+                </tr>
+                <tr>
+                    <td>error</td>
+                    <td>只输出错误日志</td>
+                </tr>
+                <tr>
+                    <td>warn</td>
+                    <td>输出错误及警告日志</td>
+                </tr>
+                <tr>
+                    <td>info</td>
+                    <td>输出所有日志，一般用于 Joker Router 的内部调试</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>routes [路由注册配置]</h3>
+        <p>
+            <code>routers</code>
+            应该是你在使用 Joker Router 时最重要的一个属性，它负责注册你当前项目所有已知的(静态)路由信息。
+        </p>
+        <p>通过该属性你也可以很清晰的查看该项目的所有路由页面地址及配置信息。</p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+</code></pre>
+        <p>
+            <code>routers</code>
+            的配置规则非常丰富，你可以在后面的
+            <a href="/router/registry" target="_blank">注册路由</a>
+            章节详细的去了解学习。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

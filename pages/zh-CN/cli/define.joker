@@ -1,0 +1,100 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>变量与模式</h2>
+        <p>
+            该章节主要阐述了 Joker CLI 为开发人员提供了便捷的环境变量操作功能，使得开发者在项目代码中能够灵活地利用这些环境变量执行各种操作。
+        </p>
+        <h3>环境变量</h3>
+        <p>
+            Joker CLI 通过
+            <code>import.meta.define</code>
+            对象提供了环境变量的访问。
+        </p>
+        <ol>
+            <li>
+                我们可以在 Joker CLI 的
+                <a href="/cli/setting-plugin" target="_blank">配置文件</a>
+                中配置 define 变量。我们可以根据不同的环境来配置不同的配置文件。
+            </li>
+        </ol>
+        <pre><code class="language-js">module.exports = {
+    define: {
+        appName: &quot;Joker （正式版本）&quot;,
+        version: &quot;1.0.0&quot;
+    }
+};
+</code></pre>
+        <ol start="2">
+            <li>
+                我们可以在开发项目中通过
+                <code>import.meta.define</code>
+                变量来获取我们定义的一些环境变量。
+            </li>
+        </ol>
+        <pre><code class="language-ts">console.log(import.meta.define.appName); // Joker （正式版本）
+
+console.log(import.meta.define.version); // 1.0.0
+
+console.log(import.meta.define.date); // undefined
+</code></pre>
+        <h3>模式</h3>
+        <p>
+            我们在启动 Joker 命令时可以通过
+            <code>--mode</code>
+            去指定我们当前的运行模式，我们一般会配置为：
+            <code>development</code>
+            ,
+            <code>production</code>
+            。当然你也可以自定义运行模式。
+        </p>
+        <p>
+            我们可以在开发代码中通过
+            <code>process.env.NODE_ENV</code>
+            来获取当前的运行模式。
+        </p>
+        <pre><code class="language-ts">console.log(process.env.NODE_ENV);
+</code></pre>
+        <h3>HTML 环境变量</h3>
+        <p>
+            Joker ClI 还支持在 HTML 文件中替换环境变量。
+            <code>import.meta.define</code>
+            中的任何属性都可以通过特殊的
+            <strong>%变量%</strong>
+            语法在 HTML 文件中使用：
+        </p>
+        <pre><code class="language-html">&lt;h1&gt;欢迎使用 %appName%&lt;/h1&gt;
+&lt;p&gt;当前版本为 %version%&lt;/p&gt;
+</code></pre>
+        <p>
+            如果环境变量在
+            <code>import.meta.define</code>
+            中不存在，比如不存在的 %date%，则会将被忽略而不被替换，这与 JS 中的
+            <code>import.meta.define.dete</code>
+            不同，JS 中会被替换为
+            <strong>undefined</strong>
+            。
+        </p>
+        <blockquote>
+            <p>HTML 变量只针对 html 文件中的变量转换，对于 Joker 中 template 模板不会进行转换。</p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

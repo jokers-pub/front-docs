@@ -1,0 +1,26 @@
+<template>
+    <p>
+        I'm a child component.@props.name
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { Message } from "@joker.front/ui";
+
+export default class extends Component<{
+    name: string;
+}> {
+    mounted() {
+        Message({
+            message: `From DEMO: 【Component ${this.props.name}】has been initialized and mounted.`,
+            type: "success"
+        });
+    }
+    beforeDestroy() {
+        Message({
+            message: `From DEMO: 【Component ${this.props.name}】has been destroyed.`,
+            type: "warning"
+        });
+    }
+}
+</script>

@@ -1,0 +1,221 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Quick Start</h2>
+        <p>
+            Joker CLI currently has the functions of development and production build. Users can execute simple commands to quickly utilize its various capabilities.
+        </p>
+        <p>
+            We support quickly executing Joker commands through command - line options. We also support more configurations through the
+            <code>joker.config.js</code>
+            configuration file. You can refer to the [Configuration File](/cli/setting - public) chapter for details.
+        </p>
+        <h3>Installation and Usage</h3>
+        <ol>
+            <li>
+                First, install Joker CLI in the project using a package management tool such as
+                <code>npm</code>
+                or
+                <code>pnpm</code>
+                .
+            </li>
+        </ol>
+        <pre><code class="language-bash">pnpm add @joker.front/cli
+</code></pre>
+        <ol start="2">
+            <li>
+                After the installation is complete, we can configure our commands in
+                <code>package.json</code>
+                :
+            </li>
+        </ol>
+        <pre><code class="language-json">{
+    &quot;scripts&quot;: {
+        &quot;dev&quot;: &quot;joker&quot;,
+        &quot;build&quot;: &quot;joker build --config=build.config.js&quot;
+    }
+}
+</code></pre>
+        <ol start="3">
+            <li>
+                We can start our development service by running
+                <code>npm run dev</code>
+                in the project.
+            </li>
+        </ol>
+        <h3>server [Command]</h3>
+        <p>
+            The
+            <code>server</code>
+            command is our development service. We can directly execute the
+            <code>joker</code>
+            command to start the server development service.
+        </p>
+        <pre><code class="language-bash">joker [root]
+</code></pre>
+        <p>Options</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>--config &lt;file&gt;</code>
+                    </td>
+                    <td>
+                        Use the specified configuration file
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--base &lt;path&gt;</code>
+                    </td>
+                    <td>
+                        Public base path
+                        <code>(default: /)(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--log &lt;leve&gt;</code>
+                    </td>
+                    <td>
+                        Log output level
+                        <code>[silent / error / warn / info / debug]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--mode &lt;mode&gt;</code>
+                    </td>
+                    <td>
+                        Set the environment mode
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--host [host]</code>
+                    </td>
+                    <td>
+                        Specify the host name
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--port &lt;port&gt;</code>
+                    </td>
+                    <td>
+                        Specify the port
+                        <code>(number)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--open [path]</code>
+                    </td>
+                    <td>
+                        Whether to open the browser by default. You can specify a custom address
+                        <code>(default: true)(boolean / string)</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>build [Build]</h3>
+        <pre><code class="language-bash">joker build [root]
+</code></pre>
+        <p>Options</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>--config &lt;file&gt;</code>
+                    </td>
+                    <td>
+                        Use the specified configuration file
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--base &lt;path&gt;</code>
+                    </td>
+                    <td>
+                        Public base path
+                        <code>(default: /)(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--log &lt;leve&gt;</code>
+                    </td>
+                    <td>
+                        Log output level
+                        <code>[silent / error / warn / info / debug]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--mode &lt;mode&gt;</code>
+                    </td>
+                    <td>
+                        Set the environment mode
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--outDir &lt;dir&gt;</code>
+                    </td>
+                    <td>
+                        Output directory
+                        <code>(default: dist)(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--sourcemap</code>
+                    </td>
+                    <td>
+                        Output source map files after building
+                        <code>(default: false)(boolean / &quot;inline&quot; / &quot;hidden&quot;)</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>create [Create a Joker Project]</h3>
+        <pre><code class="language-bash">joker create [name]
+</code></pre>
+        <p>We can use this command to quickly create a Joker development project.</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

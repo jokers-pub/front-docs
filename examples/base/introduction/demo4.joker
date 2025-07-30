@@ -1,0 +1,49 @@
+<template>
+    <div>
+        <button @click="handleClick">Click me to increase the count: @model.count</button>
+        @if(model.count % 2 === 0) {
+            <span class="tip">Display this text when count is an even number</span>
+        }
+    </div>
+    <p class="tip">
+        The following is to loop through a list. The number of times is: @model.count
+    </p>
+    <ul>
+        @for(let i = 0; i < model.count; i++) {
+            <li>
+                I'm the @(i + 1)
+                th row.
+            </li>
+        }
+    </ul>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        count: 0
+    };
+
+    handleClick() {
+        this.model.count++;
+
+        //简单的逻辑展示脚本对值的变更
+        if (this.model.count > 10) {
+            this.model.count = 0;
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+span.tip {
+    margin-left: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+p.tip {
+    font-weight: bold;
+}
+</style>

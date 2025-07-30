@@ -1,0 +1,21 @@
+<template>
+    <p>You can enter text in the input box below to understand the example of state preservation.</p>
+    <input type="text" />
+    <p>
+        Current time: @model.time
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        time: ""
+    };
+    created() {
+        setInterval(() => {
+            this.model.time = new Date().toTimeString();
+        }, 1000);
+    }
+}
+</script>

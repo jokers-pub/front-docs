@@ -1,0 +1,658 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>VNode 虚拟节点</h2>
+        <p>该章节主要介绍虚拟节点，它在 Core 中是非常重要的，我们在实际的逻辑开发中会经常使用它。</p>
+        <blockquote>
+            <p>
+                在阅读此章节前，请先了解
+                <a href="/base/ast" target="_blank">AST</a>
+                、以及
+                <a href="/base/render" target="_blank">渲染</a>
+                相关内容。
+            </p>
+        </blockquote>
+        <h3>概述</h3>
+        <p>
+            虚拟节点是根据抽象语法树（AST）编译生成的，它集合了当前组件对象，并承载了组件间的关联关系以及节点的数据存储功能。它不仅映射了组件的语法结构，还实现了数据的封装和管理，为整个系统的运行提供了高效和灵活的数据支持。
+        </p>
+        <p>
+            <img src="/base/render.png" alt="VNode" />
+        </p>
+        <p>
+            它与 AST 不同，
+            <code>AST.Node[]</code>
+            代表的是开发态的模版结构化数据，而
+            <code>VNode.Node</code>
+            代表实际待渲染的结构化数据。
+        </p>
+        <p>
+            例如
+            <strong>for</strong>
+            循环:
+        </p>
+        <pre><code class="language-xml">@for(let item in 10){
+    @item
+}
+</code></pre>
+        <p>
+            上述代码在 AST 层面只包含了两个节点：一个
+            <code>for循环</code>
+            指令，以及它的一个子集。这是因为 AST 只是作为待编译的抽象语法，而非实际渲染结果。
+            当上述代码在页面中被渲染后，它将被编译为：
+        </p>
+        <pre><code>├── for 循环
+│   ├── 文本节点 1
+│   ├── ...
+│   └── 文本节点 10
+</code></pre>
+        <p>
+            值的注意的是，VNode.Node[]是一个全量的结构化数据，无论该节点是否要被渲染，都会以节点的方式存在于虚拟结构树中。
+            <strong>虚拟节点数据都是由 Core 核心来生成的，不建议对其进行修改。</strong>
+        </p>
+        <p>
+            VNode.Node 作为虚拟节点的基础类型，它衍生出很多具有功能意义的虚拟节点，包括：
+            <code>VNode.Text</code>
+            、
+            <code>VNode.Element</code>
+            等等。
+        </p>
+        <p>VNode.Node 作为基础类型它本身具有以下属性：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数名称</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>static</td>
+                    <td>是否是静态节点，用于区分动态指令及组件，方便快速更新和渲染</td>
+                    <td>boolean</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>output</td>
+                    <td>
+                        输出，对应
+                        <a href="/base/render" target="_blank">Render</a>
+                        渲染，不同平台的产出物不同，在 HTML 中，输出的即
+                        <code>DOM Node</code>
+                    </td>
+                    <td>object</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>子集</td>
+                    <td>VNode.Node[]</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>parent</td>
+                    <td>父级</td>
+                    <td>VNode.Node/undefined</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>sleep</td>
+                    <td>当前节点是否睡眠</td>
+                    <td>boolean</td>
+                    <td>false</td>
+                </tr>
+                <tr>
+                    <td>prev</td>
+                    <td>前一个节点</td>
+                    <td>VNode.Node/undefined</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>next</td>
+                    <td>后一个节点</td>
+                    <td>VNode.Node/undefined</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>每个节点除了预设的属性之外，还提供了一系列便于开发人员使用的 API 方法。</p>
+        <h4>closest</h4>
+        <p>该函数可以实现从当前节点开始向上查找临近符合要求的父级元素。</p>
+        <pre><code class="language-ts">node.closest&lt;VNode.Element&gt;((node) =&gt; {
+    return node instanceof VNode.Element;
+}, true);
+</code></pre>
+        <ul>
+            <li>
+                第一个参数为查询逻辑方法，在查找时会逐级将父级传入到该函数做判断，当返回
+                <strong>true</strong>
+                时，表示该节点为目标节点。
+            </li>
+            <li>
+                第二个参数为（breakWhenVRoot），用于限制查找范围，当遇到 root 节点时不再向上查找，默认为
+                <strong>false</strong>
+            </li>
+        </ul>
+        <h4>find</h4>
+        <p>通过该方法可以实现查找符合的子集元素，该方法返回全部符合的子集（VNode.Node[]）。</p>
+        <pre><code class="language-ts">node.find((node) =&gt; {
+    return node instanceof VNode.Element;
+});
+</code></pre>
+        <h4>contains</h4>
+        <p>
+            通过该方法可判断当前组件内是否包含指定的节点，该方法返回
+            <strong>boolean</strong>
+            。
+        </p>
+        <pre><code class="language-ts">node.contains((node) =&gt; {
+    return node instanceof VNode.Element;
+});
+</code></pre>
+        <blockquote>
+            <p>
+                VNode.Node 作为实体类在渲染时通过初始化（new）创建而来，我们可以使用
+                <code>instanceof</code>
+                来判断节点的类型。
+            </p>
+        </blockquote>
+        <h3>VNode.Root</h3>
+        <p>
+            <code>VNode.Root</code>
+            代表一个组件的根节点，它是该组件所有节点的顶级父节点。每个组件的首个节点必定是
+            <code>VNode.Root</code>
+            类型的实例。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>childrens</td>
+                    <td>子集</td>
+                    <td>VNode.Node[]</td>
+                </tr>
+                <tr>
+                    <td>component</td>
+                    <td>组件实例</td>
+                    <td>IComponent</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.Text</h3>
+        <p>
+            <code>VNode.Text</code>
+            表示一个文本节点。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>text</td>
+                    <td>文本内容</td>
+                    <td>string</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.Html</h3>
+        <p>
+            <code>VNode.Html</code>
+            作为 HTML 节点，内容区块会采用 HTML 去渲染。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>html</td>
+                    <td>HTML 内容</td>
+                    <td>string</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.Comment</h3>
+        <p>
+            <code>VNode.Comment</code>
+            作为注释节点，在渲染时会输出注释内容。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>text</td>
+                    <td>注释内容</td>
+                    <td>string</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.Element</h3>
+        <p>
+            <code>VNode.Element</code>
+            为通用标签节点。非 Component 组件，都将按照
+            <code>VNode.Element</code>
+            节点输出。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>attributes</td>
+                    <td>标签属性</td>
+                    <td>Record&lt;string, any&gt;</td>
+                </tr>
+                <tr>
+                    <td>events</td>
+                    <td>节点事件</td>
+                    <td>
+                        Array&lt;[string,{modifiers?: string[]; callBack: EventCallBack}]&gt;
+                        <code>EventCallBack</code>
+                        详见
+                        <strong>VNode.Event</strong>
+                        小结
+                    </td>
+                </tr>
+                <tr>
+                    <td>tagName</td>
+                    <td>标签名称</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>childrens</td>
+                    <td>子集</td>
+                    <td>VNode.Node[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.Component</h3>
+        <p>
+            <code>VNode.Component</code>
+            为组件节点，用于提供组件数据处理及提供组件的装载容器。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>组件名称</td>
+                    <td>string/undefined(可能是动态组件)</td>
+                </tr>
+                <tr>
+                    <td>component</td>
+                    <td>组件实例对象</td>
+                    <td>Component</td>
+                </tr>
+                <tr>
+                    <td>events</td>
+                    <td>组件事件</td>
+                    <td>
+                        Array&lt;[string,{modifiers?: string[]; callBack: EventCallBack}]&gt;
+                        <code>EventCallBack</code>
+                        详见
+                        <strong>VNode.Event</strong>
+                        小结
+                    </td>
+                </tr>
+                <tr>
+                    <td>propValues</td>
+                    <td>组件参数</td>
+                    <td>Record&lt;string, any&gt;</td>
+                </tr>
+                <tr>
+                    <td>keepalive</td>
+                    <td>
+                        该组件是否要求保持状态，对应
+                        <a href="/base/template-property" target="_blank">模版内置属性</a>
+                        中的
+                        <strong>keep-alve</strong>
+                        属性
+                    </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>firstElement</td>
+                    <td>组件内第一个 VNode.Element 节点</td>
+                    <td>VNode.Element/undefined</td>
+                </tr>
+                <tr>
+                    <td>childrens</td>
+                    <td>子集</td>
+                    <td>VNode.Node[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>我们通常会在组件开发过程借助该类型实现复杂的需求，例如：</p>
+        <pre><code class="language-ts">class extends Component{
+    get parentComponent(){
+        this.$rootVNode.closest((n)=&gt;{
+            return n instanceof VNode.Component &amp;&amp; n.component.name='my-component-id';
+        })?.component;
+    }
+
+    test(){
+        //调用父组件API
+        this.parentComponent?.testFunction();
+    }
+}
+</code></pre>
+        <blockquote>
+            <p>
+                <code>VNode.Component</code>
+                的
+                <strong>output</strong>
+                属性在不同 Render 平台下输出的内容是不一样的，例如在 HTML-Render 中，该节点被渲染为：
+                <code>document.createTextNode(&quot;&quot;)</code>
+                一个空字符节点，用于记录节点位置。
+            </p>
+        </blockquote>
+        <h3>VNode.Condition</h3>
+        <p>
+            <code>VNode.Condition</code>
+            表示一个条件节点，它用作实现 template 模版中的
+            <code>if</code>
+            /
+            <code>elseif</code>
+            /
+            <code>else</code>
+            指令。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cmdName</td>
+                    <td>指令类别</td>
+                    <td>
+                        <code>if</code>
+                        /
+                        <code>elseif</code>
+                        /
+                        <code>else</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>result</td>
+                    <td>
+                        节点条件计算结果（非有效，为了避免无效计算，当存在
+                        <strong>if-else</strong>
+                        多级条件判断时，前置条件若为 true，则后续条件则不主动刷新值，直到前置判断为 false 时才会被计算。）
+                    </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>isShow</td>
+                    <td>
+                        子集是否被渲染，该值可代表真实
+                        <strong>渲染结果</strong>
+                        ，而非
+                        <strong>计算结果</strong>
+                    </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>childrens</td>
+                    <td>子集</td>
+                    <td>VNode.Node[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.List / VNode.ListItem</h3>
+        <p>
+            <code>VNode.List</code>
+            为列表渲染节点，用于处理列表循环数据，并提供列表项渲染容器。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>childrens</td>
+                    <td>子集</td>
+                    <td>VNode.ListItem</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <code>VNode.ListItem</code>
+            为列表
+            <strong>项</strong>
+            渲染节点，用于提供内容节点的渲染容器。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ob</td>
+                    <td>
+                        当前项的渲染数据对象，包括循环指令产配置的
+                        <code>indexKey</code>
+                        和
+                        <code>itemKey</code>
+                    </td>
+                    <td>Component</td>
+                </tr>
+                <tr>
+                    <td>childrens</td>
+                    <td>子集</td>
+                    <td>VNode.Node[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.RenderSection</h3>
+        <p>
+            <code>VNode.RenderSection</code>
+            为区块渲染节点，用于渲染当前组件中的
+            <strong>待渲染模版</strong>
+            。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>id</td>
+                    <td>区块名称</td>
+                    <td>string（默认：unknown）</td>
+                </tr>
+                <tr>
+                    <td>params</td>
+                    <td>区块参数</td>
+                    <td>any[]</td>
+                </tr>
+                <tr>
+                    <td>section</td>
+                    <td>区块渲染对象</td>
+                    <td>SectionType</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            其中
+            <code>SectionType</code>
+            类型包括：
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>asts</td>
+                    <td>
+                        AST 树，可查看
+                        <a href="/base/ast" target="_blank">AST</a>
+                        进行了解
+                    </td>
+                    <td>AST.Node[]</td>
+                </tr>
+                <tr>
+                    <td>ob</td>
+                    <td>渲染该模板时所需的数据对象（ob）</td>
+                    <td>Object</td>
+                </tr>
+                <tr>
+                    <td>parser</td>
+                    <td>渲染该模板时所在的 parser 解析对象</td>
+                    <td>ParserTemplate</td>
+                </tr>
+                <tr>
+                    <td>params</td>
+                    <td>
+                        参数，可参考
+                        <a href="/base/template-section" target="_blank">区块渲染</a>
+                        中的区块参数章节，该属性
+                        <strong>不代表参数值</strong>
+                        ，而是
+                        <strong>参数名称</strong>
+                    </td>
+                    <td>string[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>VNode.Event</h3>
+        <p>
+            VNode.Event 作为 Joker 前端中事件处理对象，无论是通过 JS 主动响应的事件还是原生事件触发，都会将该类型作为第一个参数传递到事件处理函数中。
+        </p>
+        <p>
+            其中该对象中具有一个
+            <code>data</code>
+            属性，代表事件传递的参数，可通过泛型来指定值类型，方便后续操作，默认为 undefined。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名称</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>eventName</td>
+                    <td>事件名称</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>event</td>
+                    <td>原生事件对象，取决于运行平台</td>
+                    <td>any</td>
+                </tr>
+                <tr>
+                    <td>target</td>
+                    <td>响应该事件的虚拟节点</td>
+                    <td>VNode.Node/undefined</td>
+                </tr>
+                <tr>
+                    <td>data</td>
+                    <td>事件参数</td>
+                    <td>&lt;T&gt;:any</td>
+                </tr>
+                <tr>
+                    <td>preventDefault</td>
+                    <td>阻止默认事件</td>
+                    <td>function</td>
+                </tr>
+                <tr>
+                    <td>stopPropagation</td>
+                    <td>阻止事件传播</td>
+                    <td>function</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            关于事件处理函数类型（EventCallBack），所有事件的处理函数的
+            <strong>首个参数一定是 VNode.Event</strong>
+            。
+        </p>
+        <pre><code class="language-ts">export type EventCallBack&lt;T = any&gt; = (e: VNode.Event&lt;T&gt;) =&gt; void;
+</code></pre>
+        <blockquote>
+            <p>
+                关于事件处理可通过查看
+                <a href="/base/component-api" target="_blank">组件 API</a>
+                中的$on 和
+                <a href="/base/template-event" target="_blank">模板组件注册</a>
+                进行学习。
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

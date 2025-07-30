@@ -1,0 +1,301 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>事件注册</h2>
+        <p>该章节主要介绍下，如何在 template 模板中为标签/组件注册交互事件。</p>
+        <h3>监听事件</h3>
+        <p>
+            我们可以使用
+            <code>
+                @("@事件名称")
+            </code>
+            指令来监听 DOM/组件 事件，并在事件触发时执行对应的 JavaScript。
+        </p>
+        <pre><code class="language-html">&lt;button @click=&quot;handleClick&quot;&gt;按钮&lt;/button&gt;
+</code></pre>
+        <p>
+            上面的代码示例表示我们为 button 按钮注册一个
+            <code>click</code>
+            事件，事件的处理函数为
+            <strong>handleClick</strong>
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Click me!&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    handleClick() {
+        MessageBox.alert(&quot;You clicked a button.&quot;);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>执行事件传参</h3>
+        <p>事件参数分为两种：</p>
+        <ul>
+            <li>
+                一种为事件对象参数，该参数是由
+                <a href="/base/component-api" target="_blank">$trigger</a>
+                进行传递，该参数会随着事件传递在组件内流转。
+            </li>
+            <li>一种是执行事件方法参数，该参数作为本次事件的参数，只会在当前组件、本次事件中生效。</li>
+        </ul>
+        <p>我们来看一下，如何进行执行事件传参：</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick('参数')&quot;&gt;按钮&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    export default class extends Component {
+        handleClick(e: VNode.Event, param: string) {
+            //TODO: param
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick('I am the parameter passed by the execution event')&quot;&gt;Click me!&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    handleClick(e: VNode.Event, param: string) {
+        MessageBox.alert(param);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>VNode.Event 介绍</h3>
+        <p>
+            VNode.Event 作为 Joker 前端中事件处理对象，无论是通过 JS 主动响应的事件还是原生事件触发，都会将该类型作为第一个参数传递到事件处理函数中。
+        </p>
+        <p>
+            其中该对象中具有一个
+            <code>data</code>
+            属性，代表事件传递的参数，可通过泛型来指定值类型，方便后续操作，默认为 undefined。
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名称</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>eventName</td>
+                    <td>事件名称</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>event</td>
+                    <td>原生事件对象，取决于运行平台</td>
+                    <td>any</td>
+                </tr>
+                <tr>
+                    <td>target</td>
+                    <td>响应该事件的虚拟节点</td>
+                    <td>VNode.Node/undefined</td>
+                </tr>
+                <tr>
+                    <td>data</td>
+                    <td>事件参数</td>
+                    <td>&lt;T&gt;:any</td>
+                </tr>
+                <tr>
+                    <td>preventDefault</td>
+                    <td>阻止默认事件</td>
+                    <td>function</td>
+                </tr>
+                <tr>
+                    <td>stopPropagation</td>
+                    <td>阻止事件传播</td>
+                    <td>function</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>事件修饰符</h3>
+        <p>我们提供了丰富的事件修饰符，旨在帮助开发人员更高效地处理逻辑，无需深入涉及 DOM 事件的复杂细节。</p>
+        <p>结合 Joker 的 VSCODE 工具，可以在事件后自动提示可选的修饰符，目前提供的修饰符有：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>修饰符</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>stop</td>
+                    <td>防止事件冒泡，等同于 JavaScript 中的 event.stopPropagation()</td>
+                </tr>
+                <tr>
+                    <td>prevent</td>
+                    <td>
+                        防止执行预设的行为（如果事件可取消，则取消该事件，而不停止事件的进一步传播），等同于 JavaScript 中的 event.preventDefault()
+                    </td>
+                </tr>
+                <tr>
+                    <td>self</td>
+                    <td>
+                        只会触发自己范围内的事件，不包含子元素，只当在 event.target 是当前元素自身时触发处理函数，即事件不是从内部元素触发的
+                    </td>
+                </tr>
+                <tr>
+                    <td>once</td>
+                    <td>只会触发一次，执行完后立即移除事件</td>
+                </tr>
+                <tr>
+                    <td>passive</td>
+                    <td>是一个用于标记事件处理程序的参数，用于告诉浏览器该事件处理程序不会调用</td>
+                </tr>
+                <tr>
+                    <td>outside</td>
+                    <td>
+                        当点击自身以外的区块时，才会触发该事件，该事件是通过全局事件监听实现，建议使用 outside 时，配合 if 进行使用，保证元素会即时销毁，元素销毁时会解除全局事件监听。
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                关于 outside 修饰符，outside 的监测逻辑是 输出的实际 DOM 中事件触发对象不在该节点内部（含包含）
+                <code>并且</code>
+                <strong>VNode.Node</strong>
+                结构中也不是包含关系，详细场景可参考
+                <a href="/base/template-property" target="_blank">组件内置属性</a>
+                中的
+                <strong>append-to</strong>
+                属性。
+            </p>
+        </blockquote>
+        <p>当事件类型为键盘事件时，会提供以下修饰符：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>修饰符</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>enter</td>
+                    <td>回车键</td>
+                </tr>
+                <tr>
+                    <td>tab</td>
+                    <td>制表键</td>
+                </tr>
+                <tr>
+                    <td>delete</td>
+                    <td>含 delete 和 backspace 键</td>
+                </tr>
+                <tr>
+                    <td>esc</td>
+                    <td>返回键</td>
+                </tr>
+                <tr>
+                    <td>space</td>
+                    <td>空格键</td>
+                </tr>
+                <tr>
+                    <td>up</td>
+                    <td>向上键</td>
+                </tr>
+                <tr>
+                    <td>down</td>
+                    <td>向下键</td>
+                </tr>
+                <tr>
+                    <td>left</td>
+                    <td>向左键</td>
+                </tr>
+                <tr>
+                    <td>right</td>
+                    <td>向右键</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>当事件类型为鼠标事件时，我们提供以下修饰符：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>修饰符</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>left</td>
+                    <td>鼠标左键</td>
+                </tr>
+                <tr>
+                    <td>right</td>
+                    <td>鼠标右键</td>
+                </tr>
+                <tr>
+                    <td>middle</td>
+                    <td>鼠标中间滚轮</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>以下是系统修饰符，当键盘/鼠标类型事件时提供：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>修饰符</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ctrl</td>
+                    <td>ctrl 键</td>
+                </tr>
+                <tr>
+                    <td>alt</td>
+                    <td>alt 键</td>
+                </tr>
+                <tr>
+                    <td>shift</td>
+                    <td>shift 键</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>值得注意的是，这些修饰符是可以被组合使用的，我们为一个事件添加多个修饰符，以满足不同的场景需要，例如：</p>
+        <pre><code class="language-html">&lt;button @click.ctrl.prevent.stop=&quot;handleClick&quot;&gt;按钮&lt;/button&gt;
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-event/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-event/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

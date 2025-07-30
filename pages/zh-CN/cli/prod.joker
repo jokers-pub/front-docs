@@ -1,0 +1,202 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>构建生产版本</h2>
+        <p>
+            在部署应用到生产环境时，您可以运行
+            <code>joker build</code>
+            命令。这个命令会默认以
+            <code>&lt;root&gt;/index.html</code>
+            作为构建的起点，并创建一个适合静态部署的应用程序包。
+        </p>
+        <h3>浏览器兼容性</h3>
+        <p>
+            部署到生产环境的构建版本假设目标浏览器能够兼容最新的 JavaScript 语言特性。Joker CLI 默认支持那些能够原生解析
+            <a href="https://caniuse.com/es6-module" target="_blank">ESM 脚本标签</a>
+            、
+            <a href="https://caniuse.com/es6-module-dynamic-import" target="_blank">执行 ESM 动态导入</a>
+            以及支持
+            <a href="https://caniuse.com/mdn-javascript_operators_import_meta" target="_blank">import.meta</a>
+            的浏览器：
+        </p>
+        <ul>
+            <li>Chrome &gt;=87</li>
+            <li>Firefox &gt;=78</li>
+            <li>Safari &gt;=14</li>
+            <li>Edge &gt;=88</li>
+        </ul>
+        <p>
+            您可以使用
+            <a href="/cli/setting-build" target="_blank">build.target</a>
+            配置项来指定构建的目标浏览器版本，最低支持到 ES2015 标准。
+        </p>
+        <p>
+            需要注意的是，Joker CLI 在默认情况下仅处理语法转换，不包含任何 polyfill。如果您需要为老旧浏览器提供支持，可以访问
+            <a href="https://polyfill.io/" target="_blank">Polyfill.io</a>
+            ，这是一个可以根据用户浏览器的 User-Agent 自动生成 polyfill 包的服务。
+        </p>
+        <p>
+            对于需要兼容传统浏览器的场景，可以通过安装并使用插件
+            <code>
+                @("@joker.front/cli-plugin-legacy")
+            </code>
+            来支持。这个插件会自动生成适合老旧浏览器的版本和必要的 polyfill，以确保在这些浏览器上正确运行。这些兼容性版本的 chunk 只有在目标浏览器不支持原生 ESM 时才会被按需加载。
+        </p>
+        <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);
+
+module.exports = {
+    plugins: [
+        legacyPlugin({
+            targets: [&quot;chrome 80&quot;, &quot;ie &gt;= 10&quot;]
+        })
+    ]
+};
+</code></pre>
+        <h3>自定义构建</h3>
+        <p>
+            构建过程可以通过多种 构建配置选项 来自定义构建。具体来说，你可以通过
+            <a href="/cli/setting-build" target="_blank">build.rollupOptions</a>
+            直接调整底层的
+            <a href="https://rollupjs.org/configuration-options/" target="_blank">Rollup</a>
+            选项：
+        </p>
+        <pre><code class="language-js">module.exports = {
+    rollupOptions: {
+        // https://rollupjs.org/configuration-options/
+    }
+};
+</code></pre>
+        <h3>公共基础路径</h3>
+        <p>
+            当你需要将项目部署到具有嵌套结构的公共路径下时，可以通过设置
+            <a href="/cli/setting-public" target="_blank">base</a>
+            配置项来指定基础路径。这样，所有资源的路径都会根据这个配置进行相应的重写。此外，你也可以通过命令行参数来设置这个选项，例如使用
+            <code>joker build --base=/my/public/path/</code>
+            。
+        </p>
+        <p>
+            在构建过程中，JavaScript 文件中引入的资源 URL、CSS 文件中使用的
+            <code>url()</code>
+            引用以及 HTML 文件中引用的资源都会被自动调整，以适应新的基础路径配置。这种自动化的路径转换确保了资源能够在部署后正确地被访问，无论它们被放置在项目的哪个目录下。
+        </p>
+        <h3>生产目录</h3>
+        <p>
+            为了定制构建后产物的存储位置，你可以通过设置
+            <a href="/cli/setting-build" target="_blank">build.outDir</a>
+            属性来指定输出目录。此外，你也可以通过 CLI 命令行参数来指定
+            <code>outDir</code>
+            。
+        </p>
+        <pre><code class="language-bash">joker build --outDir=./my-dist
+</code></pre>
+        <p>
+            默认情况下，如果不特别指定，
+            <code>build.outDir</code>
+            会被设置为
+            <code>dist</code>
+            目录。
+        </p>
+        <h3>产物分块策略</h3>
+        <p>
+            您可以利用
+            <a href="/cli/setting-build" target="_blank">build.rollupOptions.output.manualChunks</a>
+            配置项来自定义代码分割策略。具体细节请参考
+            <a href="https://rollupjs.org/configuration-options/#output-manualchunks" target="_blank">Rollup</a>
+            文档以了解如何设置。
+        </p>
+        <p>Joker CLI 默认提供了一套基础的拆分逻辑以及产物路径优化功能：</p>
+        <ul>
+            <li>
+                <code>node_module</code>
+                会合并成为
+                <strong>vendor</strong>
+                。
+            </li>
+            <li>
+                针对
+                <code>import()</code>
+                引用我们将按照引用路径去生成产物，而非全部输出到 dist 根目录。
+            </li>
+        </ul>
+        <p>
+            当然你可以可以在 Joker CLI 提供的拆分规则之上扩展自己的逻辑，例如：我们想把
+            <code>dayjs</code>
+            不合并到
+            <strong>vendor</strong>
+            ，将它作为单独的包处理：
+        </p>
+        <pre><code class="language-js">module.exports = {
+    rollupOptions: {
+        output: {
+            manualChunks: (id, api) =&gt; {
+                if (id.includes(&quot;node_modules/dayjs&quot;)) {
+                    //自定义
+                    return &quot;dayjs&quot;;
+                }
+            }
+        }
+    }
+};
+</code></pre>
+        <blockquote>
+            <p>
+                当
+                <code>manualChunks</code>
+                属性定义为
+                <strong>function</strong>
+                时，并不会覆盖 Joker CLI 提供的默认规则，我们将先按照传入的自定义规则执行，若该方法未返回值，则按照 Joker CLI 提供的规则执行，我们不建议将
+                <code>manualChunks</code>
+                属性设置为
+                <strong>对象</strong>
+                ，因为 Joker CLI 无法安全的进行融合转换，建议使用 Function 去配置该属性，这样可以保留 Joker 提供的 import()异步文件路径输出以及 vendor 包拆分等逻辑。
+            </p>
+        </blockquote>
+        <h3>构建库 [lib 库模式]</h3>
+        <p>
+            在开发面向浏览器的库时，创建一个测试/演示页面通常是至关重要的工作，而 Joker CLI 能够让你通过使用
+            <code>index.html</code>
+            文件，享受到流畅的开发体验。
+        </p>
+        <p>
+            在准备发布构建你的库时，应配置
+            <a href="/cli/setting-build" target="_blank">build.lib</a>
+            选项，以确保将那些不需要打包进库的依赖项外部化，这样做可以优化库的大小和性能。
+        </p>
+        <pre><code class="language-js">module.exports = {
+    lib: {
+        entry: resolve(__dirname, &quot;lib/main.js&quot;),
+        name: &quot;MyLib&quot;,
+        fileName: &quot;my-lib&quot;
+    },
+    rollupOptions: {
+        // 确保外部化处理那些你不想打包进库的依赖
+        external: [&quot;echarts&quot;],
+        output: {
+            // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
+            globals: {
+                echarts: &quot;echarts&quot; // 为 echarts 设置全局变量名称
+            }
+        }
+    }
+};
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,306 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>简介</h2>
+        <h3>什么是 Joker？</h3>
+        <p>
+            Joker 是一个框架平台，旨在为所有开发场景提供支持。其中，Joker.front 是 Joker 平台下的前端开发框架，它提供标准化的前端开发标准，使用面向对象、组件化的编程模型，帮助你高效地开发用户界面。无论是简单还是复杂的界面，Joker.front 都可以轻松应对。
+        </p>
+        <p>
+            Joker 是一个基于 TypeScript 构建的全能开发平台。无论是应对简单的界面开发需求，还是处理复杂的用户界面，都能展现出卓越的性能和稳定性。它涵盖了以下重要特性：
+        </p>
+        <ul>
+            <li>
+                <strong>强大的可扩展性</strong>
+                ：Joker 提供基于组件的框架，平台设计之初就考虑到了扩展性，因此可以轻松地集成到现有的项目或系统中，支持可伸缩的 Web 应用构建，可以根据项目需求进行定制化开发。
+            </li>
+            <li>
+                <strong>丰富的组件库</strong>
+                ：Joker.front 提供了一套丰富的前端组件库，包括路由、脚手架等经过精心设计和优化的功能和 UI 组件可以帮助开发者快速构建出美观且高性能的用户界面。
+            </li>
+            <li>
+                <strong>完善的开发工具</strong>
+                ：为了进一步提升开发效率，Joker 还提供了一系列配套的开发工具，包括调试工具、构建工具等，这经过深思熟虑后设计出来工具旨在让开发过程变得更加顺畅，助力开发者可以准确快速的开发、构建、测试和更新代码。
+            </li>
+        </ul>
+        <p>下面是一个基本的示例：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Number of clicks:@model.count&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        count: 0
+    };
+
+    handleClick() {
+        this.model.count++;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>上面的示例展示了 Joker 的两个核心功能：</p>
+        <ul>
+            <li>
+                <p>
+                    <strong>Class API</strong>
+                    ：Joker 基于 Typescript 作为脚本开发标准，采用标准的 Class API 作为开发规范，更符合面向对象开发要求。
+                </p>
+            </li>
+            <li>
+                <p>
+                    <strong>响应性</strong>
+                    ：Joker 会自动跟踪 JavaScript 状态并在其发生变化时响应式地更新 DOM，其中响应更新是即时的，不存在虚拟 DOM 的差异对比。
+                </p>
+            </li>
+        </ul>
+        <p>
+            你可能已经有了些疑问——先别急，我们会在后续的文档中详细介绍每一个细节。现在，请继续看下去，以确保你对 Joker 作为一个框架所提供的功能有一个全面的了解。
+        </p>
+        <div class="tip">
+            <p>
+                文档的后续内容将假设你对 HTML、CSS 和 JavaScript、Typescript 已经有基本的了解。如果你对前端开发还不熟悉，建议先从基础知识开始学习，然后再回到这里深入了解 Joker。你可以通过这篇
+                <a
+                    href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/A_re-introduction_to_JavaScript"
+                    target="_blank">
+                    JavaScript 概述
+                </a>
+                来检验你的 Javascript 知识水平。如果你之前有其他框架的经验，会更有帮助，但并不是必需的。
+            </p>
+            <p>
+                为了更好地理解和使用 Joker，你也需要熟悉 Typescript，可以通过
+                <a href="https://www.typescriptlang.org/" target="_blank">Typescript 官网</a>
+                进行学习。
+            </p>
+        </div>
+        <h2>极致性能</h2>
+        <p>
+            Joker 采用了先进的渲染逻辑，能够实现响应式数据与 DOM 节点之间的点对点精准更新。平台具备智能的关系收集机制，在响应式数据发生变更时，可迅速定位到对应的 DOM 节点，从而避免了对虚拟节点的重绘以及二叉树对比等复杂操作，极大地提升了实时渲染的性能 。
+        </p>
+        <p>
+            <img src="/base/render.png" alt="VNode" />
+        </p>
+        <p>
+            <img src="/base/ast-element.png" alt="AST-Element" />
+        </p>
+        <h2>Joker 应用：知识要点</h2>
+        <h3>单文件组件</h3>
+        <p>
+            在大多数启用了构建工具的 Joker 项目中，我们可以通过一种类似 HTML 格式的文件来书写 joker 组件，这种文件被称为
+            <strong>单文件组件</strong>
+            (或者简称为
+            <code>*.joker</code>
+            文件，英文 Single-File Components，缩写为
+            <strong>SFC</strong>
+            )。正如其名，Joker 的单文件组件会将一个组件的逻辑 (JavaScript)，模板 (HTML) 和样式 (CSS) 封装在同一个文件中，这使得开发过程更加高效和聚焦。
+        </p>
+        <blockquote>
+            <p>
+                为了更好地使用
+                <code>.joker</code>
+                单文件组件，我们需要配合 IDE 的插件来进行操作。目前，我们已经支持市场最流行的开发工具——VSCODE ，可以通过在 VSCODE 扩展商店中搜索
+                <strong>Joker Front Tools</strong>
+                来进行安装，或者通过
+                <a
+                    href="https://marketplace.visualstudio.com/items?itemName=JokerZohar.joker-front-tools"
+                    target="_blank">
+                    去下载
+                </a>
+                下载到本地进行安装。
+            </p>
+        </blockquote>
+        <p>使用单文件组件，我们可以快速地开发和聚焦于一个页面或组件，无需在不同的文件之间切换，从而提高开发效率：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;h1&gt;
+        You've clicked me @(model.count)
+        times.
+    &lt;/h1&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Number of clicks:@model.count&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        count: 0
+    };
+
+    handleClick() {
+        this.model.count++;
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+h1 {
+    color: #666;
+    font-size: 18px;
+}
+
+button {
+    font-weight: bold;
+}
+&lt;/style&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>在 Joker 体系下，一切皆组件，无论是功能性组件还是一个页面，都是以组件方式存在使用的。</p>
+        <h3>模板</h3>
+        <p>
+            每个 Joker 组件都有一个 HTML 模板，用于定义该组件的渲染方式。你可以选择将模板内联在
+            <code>.joker</code>
+            文件中，或者通过文件路径来引用外部模板。
+        </p>
+        <p>
+            为了扩展 HTML 的功能，Joker 引入了一些特殊的语法元素。其中，
+            <code>@</code>
+            动态指令允许你在组件中插入动态值。当组件的状态更改时，Joker 会自动更新已渲染的 DOM。此功能的应用之一是插入动态文本，确保界面与组件状态保持同步。如下例子所示。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;
+        @message
+    &lt;/p&gt;
+    &lt;p&gt;
+        You can render dynamic values anywhere.
+        &lt;span&gt;@tip&lt;/span&gt;
+        .
+    &lt;/p&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    message = &quot;I'm a string of text.&quot;;
+    tip = Date.now().toLocaleString();
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>除了上述的动态指令，Joker 还提供了许多命令，帮助开发人员快速构建动态模板。以下是一个简单的示例：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;div&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Click me to increase the count: @model.count&lt;/button&gt;
+        @if(model.count % 2 === 0) {
+            &lt;span class=&quot;tip&quot;&gt;Display this text when count is an even number&lt;/span&gt;
+        }
+    &lt;/div&gt;
+    &lt;p class=&quot;tip&quot;&gt;
+        The following is to loop through a list. The number of times is: @model.count
+    &lt;/p&gt;
+    &lt;ul&gt;
+        @for(let i = 0; i &lt; model.count; i++) {
+            &lt;li&gt;
+                I'm the @(i + 1)
+                th row.
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        count: 0
+    };
+
+    handleClick() {
+        this.model.count++;
+
+        //简单的逻辑展示脚本对值的变更
+        if (this.model.count &gt; 10) {
+            this.model.count = 0;
+        }
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+span.tip {
+    margin-left: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+p.tip {
+    font-weight: bold;
+}
+&lt;/style&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>如果你对上面语法不太了解，无需担心，在接下来我们还会更深入的去学习 Joker 的语法。</p>
+        <h2>自带库</h2>
+        <p>
+            在“Joker 应用：知识要点”部分，我们简要介绍了构建 Joker 应用时所需的关键架构元素。然而，当你的应用不断扩展并且想要添加更多功能（如站点导航或用户输入）时，Joker 的真正优势才会显现出来。届时，你可以利用 Joker 平台的强大功能，轻松引入 Joker 提供的众多自带库之一，从而为你的应用添加所需的功能。这将大大简化开发过程，提高开发效率，并使你的应用更加丰富。
+        </p>
+        <p>你可以使用的一些库包括：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>库</th>
+                    <th>介绍</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a href="/cli/introduction" target="_blank">@("@joker.front/cli")</a>
+                    </td>
+                    <td>Joker 脚手架，用于运行和构建项目，采用 esbuild 及动态编译机制，具有出色的性能</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="/router/introduction" target="_blank">@("@joker.front/router")</a>
+                    </td>
+                    <td>Joker 路由库，用于管理页面路由，并提供页面跳转、传值、keepalive 等功能</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="http://ui.jokers.pub" target="_blank">@("@joker.front/ui")</a>
+                    </td>
+                    <td>Joker 官方提供的 PC 端组件库，完善的交互组件，可满足各种场景的业务开发</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            这些库在扩展应用能力的同时，还能让你将更多精力集中在开发独特的功能上，以使你的应用脱颖而出。当你需要向应用添加新功能或解决特定问题时，可以灵活地引入这些库。这些库与 Joker 框架无缝集成，确保与应用的同步更新。
+        </p>
+        <p>只有在你确实需要它们来丰富应用功能或解决特定问题时，才需要引入这些库。</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/introduction/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/introduction/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/introduction/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/introduction/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

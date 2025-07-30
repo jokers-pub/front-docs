@@ -1,0 +1,334 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>生产构建(build)配置</h2>
+        <p>
+            该章节主要介绍配置文件中
+            <code>build</code>
+            属性的配置说明，该属性类型为
+            <code>BuildOptions</code>
+            。
+        </p>
+        <pre><code class="language-js">module.exports = {
+    build: {
+        //...
+    }
+};
+</code></pre>
+        <h3>write</h3>
+        <ul>
+            <li>
+                类型：
+                <code>boolean</code>
+            </li>
+            <li>
+                默认：
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            是否输出文件，默认为
+            <code>true</code>
+            ，当我们只是作为调试或者测试场景时，可以设置为
+            <code>false</code>
+            。
+        </p>
+        <h3>target</h3>
+        <ul>
+            <li>
+                类型：
+                <code>string | string[]</code>
+            </li>
+            <li>
+                默认：
+                <code>
+                    [&quot;es2020&quot;, &quot;edge88&quot;, &quot;firefox78&quot;, &quot;chrome87&quot;, &quot;safari13&quot;]
+                </code>
+            </li>
+        </ul>
+        <p>
+            指定您希望最终构建的浏览器兼容目标版本。
+            请注意：如果您的代码包含 esbuild 无法安全编译的特性，构建过程将会失败。您可以通过查阅
+            <a href="https://esbuild.github.io/content-types/#javascript" target="_blank">esbuild</a>
+            文档 来了解更多详细信息。
+        </p>
+        <h3>rollupOptions</h3>
+        <ul>
+            <li>
+                类型：
+                <code>RollupOptions</code>
+            </li>
+            <li>
+                默认：
+                <code>
+                    {}
+                </code>
+            </li>
+        </ul>
+        <p>
+            您可以自定义底层的 Rollup 打包配置，这些配置将与从 Rollup 配置文件中导出的选项相同，并且会与 Joker CLI 内部的 Rollup 选项进行合并。欲了解更多关于 Rollup 选项的信息，请查阅
+            <a href="https://rollupjs.org/configuration-options/" target="_blank">Rollup 选项文档</a>
+            。
+        </p>
+        <h3>outDir</h3>
+        <ul>
+            <li>
+                类型：
+                <code>string</code>
+            </li>
+            <li>
+                默认：
+                <code>dist</code>
+            </li>
+        </ul>
+        <p>指定输出文件的路径，该路径应相对于项目的主目录。</p>
+        <h3>sourcemap</h3>
+        <ul>
+            <li>
+                类型：
+                <code>boolean</code>
+            </li>
+            <li>
+                默认：
+                <code>false</code>
+            </li>
+        </ul>
+        <p>
+            决定是否在构建完成后生成源映射文件。如果设置为
+            <code>true</code>
+            ，将生成一个单独的源映射文件。 Joker CLI 只支持创建一个独立的 source map 文件的方式来生成 sourmap，不支持
+            <code>inline</code>
+            、
+            <code>hidden</code>
+            等场景。
+        </p>
+        <h3>assetsDir</h3>
+        <ul>
+            <li>
+                类型：
+                <code>string</code>
+            </li>
+            <li>
+                默认：
+                <code>assets</code>
+            </li>
+        </ul>
+        <p>
+            指定生成静态资源的存放路径（相对于 build.outDir）。在
+            <code>库模式</code>
+            下不能使用。
+        </p>
+        <p>
+            若你不想让 Joker CLI 创建资源文件夹，你可以配置为
+            <code>''</code>
+            空字符。
+        </p>
+        <h3>assetsInlineLimit</h3>
+        <ul>
+            <li>
+                类型：
+                <code>number</code>
+            </li>
+            <li>
+                默认：
+                <code>4096</code>
+                （4Kib）
+            </li>
+        </ul>
+        <p>
+            资源导入或引用的阈值以下，将被内联为 base64 编码，以减少不必要的 HTTP 请求。若将此值设为
+            <code>0</code>
+            ，将关闭此功能。
+        </p>
+        <blockquote>
+            <p>
+                当设置了
+                <code>build.lib</code>
+                属性时，
+                <code>build.assetsInlineLimit</code>
+                将无效。
+            </p>
+        </blockquote>
+        <h3>minify</h3>
+        <ul>
+            <li>
+                类型：
+                <code>boolean | &quot;esbuild&quot; | &quot;terser&quot;</code>
+            </li>
+            <li>
+                默认：
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            当选项设置为
+            <code>true</code>
+            时，表示压缩过程将使用
+            <code>esbuild</code>
+            工具。将此选项设置为
+            <code>false</code>
+            可禁用压缩混淆功能，或者用于指定其他混淆器。默认情况下，使用 Esbuild 作为混淆器，它比 Terser 快 20-40 倍，且压缩率相差仅 1%-2%。
+        </p>
+        <p>
+            请注意，在
+            <code>lib</code>
+            模式下，如果使用
+            <code>esbuild</code>
+            作为混淆器，
+            <code>build.minify</code>
+            选项将不会缩减空格，因为这样做会移除
+            <code>pure</code>
+            标记，从而影响摇树优化（tree-shaking）。
+        </p>
+        <p>
+            若选择
+            <code>terser</code>
+            作为混淆器，则必须先安装 Terser 工具。
+        </p>
+        <pre><code class="language-bash">pnpm add terser
+</code></pre>
+        <h3>lib</h3>
+        <ul>
+            <li>
+                类型：
+                <code>LibraryOptions | false</code>
+            </li>
+            <li>
+                默认：
+                <code>false</code>
+            </li>
+        </ul>
+        <p>
+            可通过配置该属性来开启
+            <code>库模式</code>
+            。
+        </p>
+        <p>
+            其中
+            <code>LibraryOptions</code>
+            类型为：
+        </p>
+        <pre><code class="language-ts">export interface LibraryOptions {
+    /**
+     * 入口文件
+     */
+    entry: string;
+    /**
+     * 别名
+     */
+    name?: string;
+    /**
+     * 输出类型
+     * @default [es,umd]
+     */
+    formats?: LibraryFormatType[];
+
+    /**
+     * 输出文件名称，不配置则按原文件输出
+     */
+    fileName?: string | ((format: ModuleFormat) =&gt; string);
+}
+
+export type LibraryFormatType = &quot;es&quot; | &quot;cjs&quot; | &quot;umd&quot; | &quot;iife&quot;;
+</code></pre>
+        <h3>chunkSizeWarningLimit</h3>
+        <ul>
+            <li>
+                类型：
+                <code>number</code>
+            </li>
+            <li>
+                默认：
+                <code>500</code>
+            </li>
+        </ul>
+        <p>
+            设置一个阈值，以千字节（kB）为单位，用于触发警告提示，该阈值用于比较未压缩的代码块（chunk）的大小。由于 JavaScript 代码的大小与其执行时间相关联，因此这个阈值有助于识别可能需要优化的代码块。
+        </p>
+        <h3>cssTraget</h3>
+        <ul>
+            <li>
+                类型：
+                <code>string | string[]</code>
+            </li>
+            <li>
+                默认：
+                <code>
+                    [&quot;es2020&quot;, &quot;edge88&quot;, &quot;firefox78&quot;, &quot;chrome87&quot;, &quot;safari13&quot;]
+                </code>
+            </li>
+        </ul>
+        <p>此设置允许用户为 CSS 压缩指定一个独特的浏览器目标，这个目标与 JavaScript 转写目标不同。</p>
+        <p>
+            此设置应主要针对非主流或特定版本的浏览器使用。例如，当你需要确保代码兼容安卓微信中的 webview 时，这种 webview 支持大部分现代 JavaScript 功能，但不支持 CSS 中的 RGBA 十六进制颜色值。在这种情况下，将
+            <code>build.cssTarget</code>
+            设置为
+            <code>chrome61</code>
+            可以防止 Joker CLI 将 RGBA 颜色值转换为 CSS 的#RGBA 十六进制形式，从而确保兼容性。
+        </p>
+        <h3>copyPublicDir</h3>
+        <ul>
+            <li>
+                类型：
+                <code>boolean</code>
+            </li>
+            <li>
+                默认：
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            默认在构建后会将
+            <code>publicDir</code>
+            文件夹复制到
+            <code>outDir</code>
+            目录，若不需要复制，可配置为
+            <strong>false</strong>
+            。
+        </p>
+        <h3>publicBaseDir</h3>
+        <ul>
+            <li>
+                类型：
+                <code>string</code>
+            </li>
+            <li>
+                默认：
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            构建时可通过配置该属性来控制输出后的静态公共资源的路径，若不配置则使用
+            <code>config.base</code>
+            来统一设置根地址。
+        </p>
+        <h3>worker worker 编译扩展信息</h3>
+        <ul>
+            <li>
+                类型
+                <code>
+                    {rollupOptions?: RollupOptions; plugins?: (input: string) =&gt; Promise&lt;RollupPlugin&gt;}
+                </code>
+            </li>
+        </ul>
+        <p>通过该属性可实现对 worker 编译时的自定义扩展。</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

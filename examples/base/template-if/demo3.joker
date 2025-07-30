@@ -1,0 +1,30 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle the value ( value=@model.value )</button>
+    </DemoRow>
+    @if(model.value === 1) {
+        <p>I'm paragraph one.</p>
+    }
+    else if(model.value === 2) {
+        <p>I'm paragraph two.</p>
+    }
+    else {
+        <p>I'm paragraph three.</p>
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+</script>

@@ -1,0 +1,354 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>参数传递</h2>
+        <p>在路由跳转过程中，我们有很多中参数传递的方式，本章节主要介绍下这些传参的方式和使用场景。</p>
+        <h3>地址参数传递</h3>
+        <p>
+            地址参数传递根据
+            <code>History 模式不同</code>
+            参数的传递种类也不同，他们都包含以下几种传值方式：
+        </p>
+        <ul>
+            <li>
+                <code>URL Query</code>
+                ： 例如：example.html?param=1&amp;name=zohar。
+            </li>
+            <li>
+                <code>path地址变量匹配</code>
+                ：根据
+                <strong>path</strong>
+                的变量配置，在运行时解析成参数存放在当前路由信息中。
+            </li>
+            <li>
+                <code>Router props</code>
+                ：可以在注册路由时配置组件参数，在路由加载时传到到页面实例中。
+            </li>
+            <li>
+                <code>跳转传值(name模式)</code>
+                ：在通过
+                <strong>push</strong>
+                /
+                <strong>replace</strong>
+                等方法跳转时可通过 name 跳转模式，传递
+                <code>params</code>
+                。
+            </li>
+        </ul>
+        <blockquote>
+            <p>
+                其中在
+                <code>HTML History</code>
+                模式下，由于路由匹配不再是
+                <strong>hash</strong>
+                ，所以我们可以在该模式下使用
+                <code>Hash</code>
+                传递参数。
+            </p>
+        </blockquote>
+        <p>接下来我们分别介绍下这几种传值方式的使用，以及使用场景。</p>
+        <h3>URL Query</h3>
+        <p>
+            <code>URL Query</code>
+            模式是我们可以使用
+            <strong>?</strong>
+            来定义页面参数。但是该种模式可能会造成页面的刷新，我们一般将这种模式用于多页面或者分享页面等场景下使用。
+        </p>
+        <h4>参数传递</h4>
+        <p>使用链接模式</p>
+        <pre><code class="language-html">&lt;a href=&quot;/index.html?user=zohar&amp;age=30&quot;&gt;DEMO&lt;/a&gt;
+</code></pre>
+        <p>使用方法跳转</p>
+        <pre><code class="language-ts">push({
+    path: &quot;user/info&quot;,
+    query: {
+        user: &quot;zohar&quot;,
+        age: 30
+    }
+});
+</code></pre>
+        <h4>获取参数</h4>
+        <p>
+            我们可以通过 JS 中的
+            <code>window.location.search</code>
+            属性来获取当前路由的 Query 参数，当然我们也可以通过
+            <code>router.route.value</code>
+            来获取参数，其中
+            <code>router.route</code>
+            可在后面
+            <a href="/router/route" target="_blank">路由信息</a>
+            章节详细介绍。
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+//获取query参数
+router.route.value.query;
+</code></pre>
+        <h3>地址变量匹配 [path]</h3>
+        <p>
+            在了解地址变量匹配前，请先学习
+            <a href="/router/registry" target="_blank">注册路由</a>
+            中的
+            <code>path</code>
+            属性规则，本小结主要介绍如何使用
+            <strong>path</strong>
+            规则来传递参数。
+        </p>
+        <h4>参数传递</h4>
+        <p>例如我们配置一个携带动态参数的 path：</p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:userName/:userAge&quot;
+        }
+    ]
+});
+</code></pre>
+        <h4>获取参数</h4>
+        <p>
+            当我们访问
+            <code>#/user/zohar/30</code>
+            该路由时，可以通过通过
+            <code>router.route.value</code>
+            来获取参数，其中
+            <code>router.route</code>
+            可在后面
+            <a href="/router/route" target="_blank">路由信息</a>
+            章节详细介绍。
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+//获取query参数
+router.route.value.params;
+
+/**
+ * =====&gt;输出
+ * {
+ *     userName:'zohar',
+ *     userAge:'30'
+ * }
+ */
+</code></pre>
+        <p>
+            值得注意的是，由于我们是在地址中(string)去解析参数，所以所有参数的类型都应该是
+            <code>string</code>
+            。
+        </p>
+        <h3>Router props [组件传参]</h3>
+        <p>
+            <code>Router props</code>
+            组件传参，该种方式和其他的方式不同，我们会将参数以
+            <code>props</code>
+            传递到要加载的组件中。
+        </p>
+        <h4>参数传递</h4>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/info&quot;,
+            component: userComponent,
+            props: {
+                userName: &quot;zohar&quot;,
+                userAge: 30
+            }
+        }
+    ]
+});
+</code></pre>
+        <h4>获取参数</h4>
+        <p>
+            我们可以在该路由渲染的组件
+            <strong>userComponent</strong>
+            通过 props 来获取。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;ul&gt;
+        &lt;li&gt;姓名:@props.userName&lt;/li&gt;
+        &lt;li&gt;年龄:@props.userAge&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export class extends Component&lt;{userName:string,userAge:number}&gt;{
+        //...
+    }
+&lt;/script&gt;
+</code></pre>
+        <blockquote>
+            <p>
+                这种传递方式不会在
+                <strong>URL</strong>
+                中展现，允许我们将其作为内部逻辑参数进行处理。例如，在下面的场景中，我们有两个路由指向同一个页面视图组件。在这种情况下，我们可以利用
+                <code>props</code>
+                来为这两个路由提供不同的参数，从而在相同的视图组件中实现不同的逻辑处理。
+            </p>
+        </blockquote>
+        <h3>跳转传值(name 模式)</h3>
+        <p>
+            该模式是使用 router 中的 name 模式进行的参数传递，原理和
+            <code>path</code>
+            动态参数基本一致。
+        </p>
+        <h4>传递参数</h4>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            name: &quot;userInfo&quot;,
+            path: &quot;/user/:userName/:userAge&quot;
+            //...
+        }
+    ]
+});
+</code></pre>
+        <p>当我们使用 push 模式跳转时：</p>
+        <pre><code class="language-ts">push({
+    name: &quot;userInfo&quot;,
+    params: {
+        userName: &quot;zohar&quot;,
+        userAge: 30
+    }
+});
+</code></pre>
+        <h4>获取参数</h4>
+        <p>
+            当我们访问
+            <code>#/user/zohar/30</code>
+            该路由时，可以通过
+            <code>router.route.value</code>
+            来获取参数，其中
+            <code>router.route</code>
+            可在后面
+            <a href="/router/route" target="_blank">路由信息</a>
+            章节详细介绍。
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+//获取query参数
+router.route.value.params;
+
+/**
+ * =====&gt;输出
+ * {
+ *     userName:'zohar',
+ *     userAge:'30'
+ * }
+ */
+</code></pre>
+        <p>
+            这里需要注意的是，当我们的一个路由项的
+            <code>path</code>
+            具备动态参数配置，并且也配置了
+            <code>name</code>
+            属性，那 Joker Router 在底层逻辑中会尝试将传递的参数根据
+            <code>path</code>
+            配置
+            <strong>反译</strong>
+            成
+            <code>string</code>
+            字符串，作为新的路由展示在浏览器地址中。
+        </p>
+        <p>若参数不匹配或者没有动态参数时，将按照尝试转换后的 path 进行跳转。</p>
+        <p>例如：</p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            name: &quot;userInfo&quot;,
+            path: &quot;/user/:userName/:userAge?&quot;
+            //...
+        },
+        {
+            name: &quot;userInfo2&quot;,
+            path: &quot;/user&quot;
+            //...
+        }
+    ]
+});
+
+push({
+    name: &quot;userInfo&quot;,
+    params: {
+        userName: &quot;zohar&quot;,
+        userAge: 30
+    }
+});
+// 跳转后URL会更改为 ==&gt; #/user/zohar/30
+
+push({
+    name: &quot;userInfo&quot;,
+    params: {
+        userName: &quot;zohar&quot;
+    }
+});
+// 跳转后URL会更改为 ==&gt; #/user/zohar
+
+push({
+    name: &quot;userInfo2&quot;,
+    params: {
+        userName: &quot;zohar&quot;,
+        userAge: 30
+    }
+});
+// 跳转后URL仍然为 ==&gt; #/user ，参数作为隐式传递
+</code></pre>
+        <h3>meta [路由数据元]</h3>
+        <p>
+            我们可以通过在路由项中设置它的
+            <code>meta</code>
+            来配置一些静态值。
+        </p>
+        <h4>传递参数</h4>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/userList&quot;,
+            meta: {
+                env: &quot;dev&quot;
+            }
+        }
+    ]
+});
+</code></pre>
+        <h4>获取参数</h4>
+        <p>
+            可以通过
+            <code>router.route.value</code>
+            来获取参数，其中
+            <code>router.route</code>
+            可在后面
+            <a href="/router/route" target="_blank">路由信息</a>
+            章节详细介绍。
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+//获取query参数
+router.route.value.meta;
+
+/**
+ * =====&gt;输出
+ * {
+ *     env:'dev'
+ * }
+ */
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

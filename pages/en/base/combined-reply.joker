@@ -1,0 +1,207 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Combined Reply</h2>
+        <p>This chapter mainly introduces what a combined reply is and its use cases.</p>
+        <p>
+            Before reading this chapter, please first understand
+            <a href="/base/render" target="_blank">Template Rendering</a>
+            .
+        </p>
+        <h3>Why Use Combined Reply</h3>
+        <p>
+            The instant rendering mechanism of Joker Core ensures the synchronous update between the interface and the data state. Any data change will be immediately reflected in the associated template. This mechanism is very effective when dealing with events such as user interactions because users expect to see real - time feedback. However, in some cases, such as frequent data updates inside a method, this immediacy may lead to performance issues because each data change will trigger a rendering update.
+        </p>
+        <p>
+            To solve this problem, we introduced the combined response mechanism. This approach allows all data updates to be completed within a certain logical processing unit (such as a method), and then these changes are collected uniformly and optimized, such as deduplication and merging of updates. In this way, the rendering operation is only actually executed when a real rendering update is needed, thus avoiding multiple rendering updates caused by frequent small - scale data changes during the intermediate process and significantly improving performance. In short, this method achieves efficient page rendering with the minimum performance cost by centrally handling updates at the appropriate time point.
+        </p>
+        <h3>How to Use</h3>
+        <p>Its usage is very simple:</p>
+        <pre><code class="language-ts">import { combinedReply } from &quot;@joker.front/core&quot;;
+
+combinedReply(() =&gt; {
+    // Write your code here
+});
+</code></pre>
+        <p>Let's use the change count method to look at an example without using the combined reply:</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;Click the button, and the value will be changed 5 times.&lt;/p&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change Value ( @model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () =&gt; this.model.value,
+            () =&gt; {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        this.model.value++;
+        this.model.value++;
+        this.model.value++;
+        this.model.value++;
+        this.model.value++;
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>Next, let's see the effect after using the combined reply:</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;Click the button, and the value will be changed 5 times.&lt;/p&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change Value ( @model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, combinedReply } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () =&gt; this.model.value,
+            () =&gt; {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        combinedReply(() =&gt; {
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+        });
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            As can be seen from the above example, although the page is finally successfully updated to the latest data, without using the combined reply, it actually updated the DOM nodes 5 times in the background.
+        </p>
+        <p>
+            Next, let's look at another example, which mainly demonstrates the final result of the combined reply. After the final processing is completed, the data subscriptions are summarized and optimized, and if there is no value change, it will be ignored.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;Click the button, and the value will be changed 5 times.&lt;/p&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change Value ( @model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, combinedReply } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    changeCount = 0;
+
+    created() {
+        this.$watch(
+            () =&gt; this.model.value,
+            () =&gt; {
+                this.changeCount++;
+            }
+        );
+    }
+
+    handleClick() {
+        combinedReply(() =&gt; {
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value++;
+            this.model.value = 0;
+        });
+
+        MessageBox.alert(`It is detected that there have been ${this.changeCount} changes`);
+        //重置计数器
+        this.changeCount = 0;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            From the above example, we can find that although the
+            <code>value</code>
+            is changed frequently, since the final value is still
+            <strong>0</strong>
+            , no change broadcast of data subscription will be made.
+        </p>
+        <blockquote>
+            <p>
+                <strong>Note:</strong>
+                Since we do not execute the
+                <code>Render</code>
+                operation during the execution of the combined reply, we cannot immediately obtain the latest DOM in the code.
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/combined-reply/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/combined-reply/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/combined-reply/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,58 @@
+<template>
+    <div ref="container"></div>
+    <DemoRow>
+        @if(model.isMount === false) {
+            <button @click="handleMountClick">Load the child component</button>
+        }
+        else {
+            <p>
+                You can enter text in the input box of the child component to experience the effect of maintaining the data state after destruction.
+            </p>
+            <button @click="handleDestroyClick">Destroy the child component</button>
+            <button @click="handleDestroyClick(true)">Force destroy the child component</button>
+        }
+    </DemoRow>
+</template>
+
+<script>
+import { Component, VNode } from "@joker.front/core";
+import MyComponent from "./children.joker";
+
+export default class extends Component {
+    model = {
+        isMount: false
+    };
+    components = {
+        MyComponent
+    };
+
+    //组件实例
+    myComponent?: Component;
+
+    handleMountClick() {
+        //“??”代表如果有值则使用原始值，没有则初始化新的组件实例
+        this.myComponent ??= new MyComponent(undefined, undefined, true);
+
+        this.myComponent.$mount(this.$getRef("container")?.output);
+
+        this.model.isMount = true;
+    }
+
+    handleDestroyClick(e: VNode.Event, force?: boolean) {
+        //force 代表是否强制销毁
+        this.myComponent?.$destroy(force);
+
+        this.model.isMount = false;
+
+        if (force) {
+            //清除缓存实例
+            this.myComponent = undefined;
+        }
+    }
+}
+</script>
+<style scoped>
+button {
+    margin-right: 10px;
+}
+</style>

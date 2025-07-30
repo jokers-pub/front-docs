@@ -1,0 +1,92 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>入门</h2>
+        <p>接下来我们将通过该章节来了解下我们在项目中去使用 Joker Router。</p>
+        <blockquote>
+            <p>
+                接下来的例子是一个简单的一级路由的案例，嵌套路由、路由状态保持等场景可在后续教程中详细介绍，本章节只作为入门指引。
+            </p>
+        </blockquote>
+        <h3>创建入口文件/布局文件</h3>
+        <p>
+            我们在
+            <code>项目的主入口</code>
+            文件
+            <strong>(App.joker)</strong>
+            中的
+            <code>template</code>
+            区块配置
+            <code>router-view</code>
+            组件，该组件代表接下来我们的动态组件的渲染位置。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;h1&gt;欢迎使用Joker Router&lt;/h1&gt;
+    &lt;div&gt;
+        &lt;p&gt;下面是我们的组件渲染区块：&lt;/p&gt;
+        &lt;router-view&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+        <h3>创建一个组件(区块页面)</h3>
+        <p>
+            <strong>什么是区块页面</strong>
+            一个页面中可以由多个不同的部分组成，例如：
+            <code>头部</code>
+            、
+            <code>菜单</code>
+            、
+            <code>内容区块</code>
+            等等，每个区块都可以是一个局部页面，并在路由变化时按需去更新新的页面组件。
+        </p>
+        <p>
+            <img src="/router/layout.png" alt="Layout" />
+        </p>
+        <p>
+            如何创建页面，可参考
+            <a href="/base/component" target="_blank">组件概述</a>
+        </p>
+        <h3>初始化路由并注册路由</h3>
+        <pre><code class="language-js">import { Router } from &quot;@joker.front/rourter&quot;;
+
+//主入口文件/主布局文件
+import App from &quot;./app.joker&quot;;
+
+//我的区块页面
+import MyPage from &quot;./my-page.joker&quot;;
+
+new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+
+//初始化主入口
+new App().$mount(document.getElementById(&quot;app&quot;));
+</code></pre>
+        <p>
+            Joker Router 依赖于 Joker Core，它提供了
+            <code>&lt;router-view&gt;</code>
+            路由组件。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

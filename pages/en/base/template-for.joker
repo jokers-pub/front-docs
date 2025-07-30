@@ -1,0 +1,386 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>List Rendering</h2>
+        <p>
+            This chapter will introduce how to implement loop logic in
+            <code>template</code>
+            .
+        </p>
+        <h3>for(let.. of..)</h3>
+        <p>
+            Using
+            <code>for..of</code>
+            can quickly iterate over all items/values in an array/object. Its usage is the same as that in
+            <code>javascript</code>
+            .
+        </p>
+        <pre><code class="language-xml">&lt;template&gt;
+    @for(let item of list){
+        &lt;p&gt;@item&lt;/p&gt;
+    }
+    @for(let item of obj){
+        &lt;p&gt;@item&lt;/p&gt;
+    }
+&lt;/template&gt;
+</code></pre>
+        <pre><code class="language-html">&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export default class extends Component {
+        list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;,...];
+
+        obj = {
+            userName: &quot;Zhang San&quot;,
+            age: 12
+        };
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through a list:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item of list) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through an object:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item of obj) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+
+    obj = {
+        userName: &quot;Zhang San&quot;,
+        age: 12
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            From the above example, we can see that we defined an
+            <strong>item</strong>
+            property using
+            <code>let</code>
+            in the
+            <code>for</code>
+            loop, and this property only takes effect within the
+            <code>for</code>
+            code block. Let's take a look at the scope of the value definition through the following example:
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;I'm a loop.&lt;/p&gt;
+    &lt;ul&gt;
+        @for(let item of list) {
+            &lt;li&gt;
+                @item
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+    &lt;p&gt;
+        I'm the value outside the for loop: @('&quot;' + item + '&quot;')
+        .
+    &lt;/p&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>for(let.. in..)</h3>
+        <p>
+            The
+            <code>for..in</code>
+            directive is also a loop command. Different from
+            <code>for..of</code>
+            , the value it loops through is the
+            <strong>index</strong>
+            of the object/array.
+        </p>
+        <p>
+            Let's look at the output of
+            <strong>for...in</strong>
+            with the same example:
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through a list:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in list) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through an object:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in obj) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+
+    obj = {
+        userName: &quot;Zhang San&quot;,
+        age: 12
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            As can be seen from the above example, the
+            <strong>item</strong>
+            defined by
+            <code>let</code>
+            represents the index of each item during the loop. Of course, we can also use expressions in the
+            <code>for</code>
+            code block to complete the output of values:
+        </p>
+        <pre><code class="language-xml">@for(let item in list){
+    &lt;p&gt;@list[item]&lt;/p&gt;
+}
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through a list:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in list) {
+                &lt;li&gt;
+                    @list[item]
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through an object:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in obj) {
+                &lt;li&gt;
+                    @item
+                    :
+                    &lt;span&gt;@obj[item]&lt;/span&gt;
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+
+    obj = {
+        userName: &quot;Zhang San&quot;,
+        age: 12
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>In addition to the above usage, we also provide a full-parameter loop syntax:</p>
+        <pre><code class="language-xml">@for(let (index,item) in list){
+    &lt;p&gt;@list[index] ===  @item&lt;/p&gt;
+}
+</code></pre>
+        <p>
+            When the value of
+            <code>let</code>
+            follows the
+            <code>()</code>
+            rule, we will use the first parameter as the index key
+            <code>index</code>
+            and the second parameter as the item key
+            <code>item</code>
+            . This usage can only be used in the
+            <code>for in</code>
+            directive.
+        </p>
+        <h3>for(..;..;..)</h3>
+        <p>
+            In addition to the above two commonly used loop directives, we also provide a custom expression loop, allowing us to use custom expressions to achieve more complex loops.
+        </p>
+        <p>For example:</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;Loop with i + 2&lt;/p&gt;
+    &lt;ul&gt;
+        @for(let i = 0; i &lt; list.length; i = i + 2) {
+            &lt;li&gt;
+                @i
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+    &lt;p&gt;Output in reverse order &amp; i - 2&lt;/p&gt;
+    &lt;ul&gt;
+        @for(let i = list.length - 1; i &gt;= 0; i = i - 2) {
+            &lt;li&gt;
+                @i
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                We do not recommend modifying values that are not defined in the
+                <code>for</code>
+                loop within the expression.
+            </p>
+        </blockquote>
+        <h3>In-depth Principles</h3>
+        <p>
+            In this section, we mainly introduce the data response mechanism and node update mechanism of the loop list.
+        </p>
+        <p>
+            Since
+            <code>Joker</code>
+            's data response processing associates the VNode with the actual output node, changes in data will immediately trigger corresponding node change operations. When we modify a certain item, only one DOM node change operation will be executed in the end, and nodes without changes will not perform update operations.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo6)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;add&quot;&gt;Add&lt;/button&gt;
+        &lt;button @click=&quot;remove&quot;&gt;Remove&lt;/button&gt;
+        &lt;button @click=&quot;update&quot;&gt;Update&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    &lt;ul&gt;
+        @for(let item of model.list) {
+            &lt;li&gt;
+                Name: @item.userName
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { Message } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        list: [] as any[]
+    };
+    add() {
+        this.model.list.push({
+            userName: &quot;User Name&quot; + new Date().getTime()
+        });
+    }
+
+    remove() {
+        this.model.list.pop();
+    }
+
+    update() {
+        if (this.model.list.length &gt; 1) {
+            this.model.list[0].userName = &quot;Zhang San&quot;;
+        } else {
+            Message(&quot;There must be at least one piece of data to test property changes.&quot;);
+        }
+    }
+}
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            When the list/object to be looped changes
+            <code>(in length)</code>
+            , we will perform a loop from the beginning. The
+            <strong>values</strong>
+            of the loop will be compared with the rendered values. If they are the same, no
+            <strong>Render</strong>
+            rendering will be performed. If there are changes, the rendered nodes will be destroyed and new nodes will be inserted. After the loop ends, the
+            <strong>extra nodes (when the current rendering length is less than the original length)</strong>
+            will be destroyed. It should be noted that the
+            <strong>value comparison</strong>
+            we mentioned earlier refers to the
+            <strong>value of the expression</strong>
+            rather than the virtual DOM comparison, and its response speed is extremely fast.
+        </p>
+        <p>
+            When changing the value of a property in the list/object
+            <strong>(not a length change)</strong>
+            , it will not trigger the list loop, and the rendering node of the
+            <strong>list item</strong>
+            will be directly updated.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo6 from "../../../examples/base/template-for/demo6.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/template-for/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/template-for/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/template-for/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-for/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-for/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo6,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,148 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Route State Preservation [keepalive]</h2>
+        <p>This chapter mainly introduces what route state preservation is and how to use it.</p>
+        <h3>What is Route State Preservation</h3>
+        <p>
+            When developing single-page applications (SPAs), we often encounter situations where users switch from a list page to a detail page. When returning to the list page, we hope to maintain the list's query conditions, pagination status, and other interactive features, avoiding re-rendering the entire list page. At this time, we need to preserve the route state of a certain page so that it is not completely destroyed when navigating away.
+        </p>
+        <h3>How to Use</h3>
+        <p>
+            We can configure the
+            <code>keepalve</code>
+            item of the route entry when registering the route. Setting this property to
+            <code>true</code>
+            /
+            <code>'once'</code>
+            can achieve route state preservation. Different configuration types have different meanings (
+            <strong>default is undefined</strong>
+            ):
+        </p>
+        <ul>
+            <li>
+                <p>
+                    <code>true</code>
+                    : The component remains alive all the time. It can be destroyed and refreshed by using the
+                    <strong>refresh</strong>
+                    property when
+                    <a href="/router/change" target="_blank">navigating</a>
+                    .
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>'once'</code>
+                    : It means the component only lives once. The component will only be rendered from the cache once. The second time it is rendered, it will be executed as a new component. This is generally suitable for route nodes with
+                    <code>high-frequency access + low-frequency updates</code>
+                    .
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>false/undefined</code>
+                    : It means no state preservation is done.
+                </p>
+            </li>
+        </ul>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/product/index&quot;,
+            component: IndexComponent,
+            keepalive: true
+        }
+    ]
+});
+</code></pre>
+        <h3>How to Clear the State</h3>
+        <p>
+            When we need to refresh a page with preserved state, we can use
+            <strong>refresh:true</strong>
+            in the
+            <code>push</code>
+            method to refresh the cache state of the target route.
+        </p>
+        <pre><code class="language-ts">push({
+    path: &quot;#product/list&quot;,
+    refresh: true
+});
+</code></pre>
+        <blockquote>
+            <p>
+                Of course, instead of clearing the cache, you can use the two
+                <a href="/base/component-lifecycle" target="_blank">lifecycle functions</a>
+                <code>sleeped</code>
+                and
+                <code>wakeup</code>
+                to achieve data refresh operations within the component. Using
+                <code>refresh</code>
+                can destroy and recreate the cached component instance.
+            </p>
+        </blockquote>
+        <h3>
+            Scenarios for Using
+            <code>once</code>
+        </h3>
+        <p>
+            First, when we configure
+            <code>keepalive</code>
+            to be
+            <strong>once</strong>
+            , the page will only be cached once. We can use
+            <code>once</code>
+            to achieve efficient and simple state-preservation functions in the following scenarios:
+        </p>
+        <ol>
+            <li>
+                If the page is a high-frequency access / low-frequency update page, we can use
+                <code>once</code>
+                to reduce the number of page renderings.
+            </li>
+            <li>
+                If the next-level route can only return to the current page, that is, the current page chain is single, then we can use
+                <code>once</code>
+                to achieve state preservation.
+            </li>
+        </ol>
+        <p>
+            In the single-chain mode, when using
+            <code>once</code>
+            , we can avoid using
+            <code>refresh</code>
+            during navigation because when we access the page in sequence again, the page no longer has a cached state.
+        </p>
+        <p>Of course, you can also explore and discover more application scenarios based on this caching strategy.</p>
+        <p>
+            Some students may wonder why we can't actively clear the cache according to the route-navigation direction. In fact, when the browser handles navigation, it doesn't allow us to obtain the user's interaction history, so we can't determine whether the current navigation is the user going back or going to a new page.
+        </p>
+        <p>
+            Although we can set a global variable in the
+            <code>window</code>
+            object to record each route change, and then judge whether the target address exists in the history record during the next navigation to determine whether it is a backward or forward navigation. However, this method is not advisable because the same address may be both a backward navigation and a new business node. Different pages may navigate to the same address, but the business logic they represent is different. Therefore, we do not recommend managing the route-navigation direction by customizing the history record.
+        </p>
+        <p>
+            Therefore, when dealing with complex route-navigation scenarios, we recommend using the
+            <code>refresh</code>
+            property to decide whether to clear the cache state. This method is more flexible and controllable.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

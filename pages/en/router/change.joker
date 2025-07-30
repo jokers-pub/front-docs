@@ -1,0 +1,341 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Route Navigation</h2>
+        <p>This section mainly introduces how to perform route navigation and how to pass route parameters.</p>
+        <h3>Native Navigation</h3>
+        <p>
+            We can directly achieve route navigation by leveraging the
+            <strong>href</strong>
+            attribute of the
+            <code>a</code>
+            tag. Taking the
+            <code>Hash</code>
+            mode as an example:
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;a href=&quot;#/router/init&quot; target=&quot;_blank&quot;&gt;Normal navigation&lt;/a&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>RouteLocationRaw [Type]</h3>
+        <p>
+            In addition to the native link-based navigation, we also provide navigation methods such as
+            <code>push</code>
+            and
+            <code>replace</code>
+            . When navigating via JavaScript methods, a parameter of type
+            <code>RouteLocationRaw</code>
+            must be passed as the target information for navigation. Let's first introduce the property specifications of this type.
+        </p>
+        <pre><code class="language-ts">type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNameRaw;
+</code></pre>
+        <p>
+            Next, we'll use the
+            <code>push</code>
+            method as an example to introduce the usage types of this parameter.
+        </p>
+        <ol>
+            <li>string</li>
+        </ol>
+        <p>
+            We can directly set it to a string-based address. In the
+            <code>hash</code>
+            mode, the
+            <code>#</code>
+            can be omitted.
+        </p>
+        <pre><code class="language-ts">push(&quot;router/init&quot;);
+</code></pre>
+        <ol start="2">
+            <li>RouteLocationPathRaw [path Mode]</li>
+        </ol>
+        <p>
+            Navigate in the
+            <code>path</code>
+            mode and support various functional configurations.
+        </p>
+        <pre><code class="language-ts">push({
+    path: &quot;router/init&quot;,
+    query: {
+        role: &quot;manager&quot;
+    },
+    refresh: true
+    //...
+});
+</code></pre>
+        <p>The complete properties of this type:</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>path</td>
+                    <td>Navigation address</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>replace</td>
+                    <td>Whether not to record this route in history</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>force</td>
+                    <td>Force navigation, generally used for forced refreshing of the same address</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>refresh</td>
+                    <td>
+                        Refresh the cache. When the page has
+                        <code>keepalive</code>
+                        , the cache can be refreshed via this property
+                    </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>state</td>
+                    <td>Route state data</td>
+                    <td>HistoryState</td>
+                </tr>
+                <tr>
+                    <td>hash</td>
+                    <td>
+                        Use
+                        <code>hash</code>
+                        for parameter configuration in the
+                        <code>HTML History</code>
+                        mode
+                    </td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>query</td>
+                    <td>URL Query parameter passing</td>
+                    <td>object</td>
+                </tr>
+            </tbody>
+        </table>
+        <ol start="3">
+            <li>RouteLocationNameRaw [name Mode]</li>
+        </ol>
+        <p>
+            Navigate in the
+            <code>name</code>
+            mode and support various functional configurations. For knowledge related to
+            <code>name</code>
+            , please refer to the
+            <code>name</code>
+            property in
+            <a href="/router/registry" target="_blank">Register Routes</a>
+            .
+        </p>
+        <pre><code class="language-ts">push({
+    name: &quot;userlist&quot;,
+    query: {
+        role: &quot;manager&quot;
+    },
+    refresh: true
+    //...
+});
+</code></pre>
+        <p>The complete properties of this type:</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>Target route name [named route]</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>params</td>
+                    <td>Route parameters</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td>replace</td>
+                    <td>Whether not to record this route in history</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>force</td>
+                    <td>Force navigation, generally used for forced refreshing of the same address</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>refresh</td>
+                    <td>
+                        Refresh the cache. When the page has
+                        <code>keepalive</code>
+                        , the cache can be refreshed via this property
+                    </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>state</td>
+                    <td>Route state data</td>
+                    <td>HistoryState</td>
+                </tr>
+                <tr>
+                    <td>hash</td>
+                    <td>
+                        Use
+                        <code>hash</code>
+                        for parameter configuration in the
+                        <code>HTML History</code>
+                        mode
+                    </td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>query</td>
+                    <td>URL Query parameter passing</td>
+                    <td>object</td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                It's worth noting that only in the
+                <code>name</code>
+                mode is it
+                <strong>allowed</strong>
+                to pass
+                <code>params</code>
+                . In the
+                <code>path</code>
+                mode,
+                <code>params</code>
+                will be used to parse dynamic parameters based on the current
+                <strong>path</strong>
+                .
+            </p>
+        </blockquote>
+        <h3>push</h3>
+        <p>
+            Navigate to an address. Internally, it calls
+            <code>history.pushState</code>
+            to effectively change the URL.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;a href=&quot;javascript:void(0)&quot; @click=&quot;handleClick&quot;&gt;Normal navigation&lt;/a&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { router } from &quot;@joker.front/router&quot;;
+
+export default class extends Component {
+    handleClick() {
+        router.push(&quot;/router/init&quot;);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            The
+            <code>push</code>
+            method supports one parameter of type
+            <code>RouteLocationRaw</code>
+            .
+        </p>
+        <h3>replace</h3>
+        <p>
+            Similar to the
+            <code>push</code>
+            method, it uses
+            <code>history.replaceState</code>
+            to change the browser's URL, but it doesn't create a new entry in the history list. Instead, it replaces the current entry. This means that when the user clicks the back button, they won't return to the previous state but directly to the initial state.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;a href=&quot;javascript:void(0)&quot; @click=&quot;handleClick&quot;&gt;Normal navigation&lt;/a&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { router } from &quot;@joker.front/router&quot;;
+
+export default class extends Component {
+    handleClick() {
+        router.replace(&quot;/router/init&quot;);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            The
+            <code>replace</code>
+            method ignores the history of the current address. It supports one parameter of type
+            <code>RouteLocationRaw</code>
+            .
+        </p>
+        <h3>go</h3>
+        <p>A navigation method that supports forward and backward navigation.</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+router.go(1);
+
+router.go(-1);
+</code></pre>
+        <p>
+            It supports an integer-type parameter. A positive number means navigating backward, and a negative number means navigating forward.
+        </p>
+        <h3>back</h3>
+        <p>Navigate back to the previous level.</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+router.back();
+</code></pre>
+        <h3>forward</h3>
+        <p>Navigate forward, which only takes effect when there is navigation history to return to.</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+router.forward();
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo3 from "../../../examples/router/change/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/router/change/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/router/change/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,19 @@
+<template>
+    <MyComponent ref="children" />
+    <button @click="handleClick">Destroy the child component</button>
+</template>
+<script>
+import { Component, VNode } from "@joker.front/core";
+import MyComponent from "./children.joker";
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+
+    handleClick() {
+        //选中组件并销毁它
+        this.$getRef("children")?.component.$destroy();
+    }
+}
+</script>

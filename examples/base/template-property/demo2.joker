@@ -1,0 +1,39 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle</button>
+        <button @click="handleGetRefClick">Get ref</button>
+    </DemoRow>
+    <p>
+        You can first hide the input box and then click "Get ref" to understand the destruction mechanism of the component in the sleep state.
+    </p>
+    @if(model.isShow) {
+        <template keep-alive>
+            <input ref="input" type="text" placeholder="Enter content to observe the state" />
+        </template>
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+
+    handleGetRefClick() {
+        MessageBox.alert("Retrieved: " + this.$getRefs("input")?.length + " virtual nodes");
+    }
+}
+</script>
+
+
+<style scoped>
+button {
+    margin-right: 10px;
+}
+</style>

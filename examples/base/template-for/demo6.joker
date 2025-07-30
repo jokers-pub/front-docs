@@ -1,0 +1,47 @@
+<template>
+    <DemoRow>
+        <button @click="add">Add</button>
+        <button @click="remove">Remove</button>
+        <button @click="update">Update</button>
+    </DemoRow>
+    <ul>
+        @for(let item of model.list) {
+            <li>
+                Name: @item.userName
+            </li>
+        }
+    </ul>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { Message } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        list: [] as any[]
+    };
+    add() {
+        this.model.list.push({
+            userName: "User Name" + new Date().getTime()
+        });
+    }
+
+    remove() {
+        this.model.list.pop();
+    }
+
+    update() {
+        if (this.model.list.length > 1) {
+            this.model.list[0].userName = "Zhang San";
+        } else {
+            Message("There must be at least one piece of data to test property changes.");
+        }
+    }
+}
+</script>
+
+<style scoped>
+button {
+    margin-right: 10px;
+}
+</style>

@@ -1,0 +1,156 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>嵌套路由</h2>
+        <p>本章主要介绍什么是嵌套路由，以及我们可以用嵌套路由实现什么需求。</p>
+        <h3>什么是嵌套路由</h3>
+        <p>
+            在复杂的项目中，我们可能会对我们的项目做层级设计规划，对相同区块做深层的封装，这时就需要我们通过嵌套路由来规划动态视图容器。
+        </p>
+        <p>
+            <img src="/router/nested-router.png" alt="nested-router" />
+        </p>
+        <p>
+            通过上面的示例图，橙色虚线部分即代表我们的动态视图容器(
+            <a href="/router/router-view" target="_blank">router-view</a>
+            )，它可以被嵌套使用，我们可以将最外层容器作为一个组件容器使用，也可以再去加载一个布局文件（layout）使用嵌套路由实现复杂的场景。
+        </p>
+        <h3>如何使用</h3>
+        <p>嵌套路由需要我们合理的去规划和管理我们的页面布局，接下来我们通过一个简单的示例步骤来进行学习。</p>
+        <p>我们的目标是实现下面这种布局结构（CSS 部分不做展示，只演示标签结构）。</p>
+        <p>
+            <img src="/router/nested-router.png" alt="nested-router" />
+        </p>
+        <ol>
+            <li>首先在主布局文件中（App.joker）中创建视图容器。</li>
+        </ol>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;top&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;router-view&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+        <ol start="2">
+            <li>
+                接下来我们创建二级布局文件，我们再创建一个
+                <code>layout.joker</code>
+                文件，用于管理我们的二级页面布局。
+            </li>
+        </ol>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;aside&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;content&quot;&gt;
+        &lt;router-view&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+        <ol start="3">
+            <li>接下来需要进行相应的路由配置</li>
+        </ol>
+        <pre><code class="language-ts">//主入口布局
+import App from &quot;./app.joker&quot;;
+
+//我们的二级布局文件
+import ChildrenLayout from &quot;./layout.joker&quot;;
+
+new Router({
+    routes: [
+        {
+            path: &quot;/base&quot;,
+            component: ChildrenLayout,
+            childrens: [
+                { path: &quot;page1&quot;, component: () =&gt; import(&quot;./page1.joker&quot;) },
+                { path: &quot;page2&quot;, component: () =&gt; import(&quot;./page2.joker&quot;) }
+            ]
+        }
+    ]
+});
+
+//初始化主入口布局
+new App().$mount(document.getElementById(&quot;app&quot;));
+</code></pre>
+        <p>
+            值的注意的是，当我们在
+            <code>/base/page1</code>
+            和
+            <code>/base/page2</code>
+            中切换时，只会渲染更新第二层级的视图容器，
+            <strong>外围组件</strong>
+            不会做重绘刷新。直到第一级视图容器变更时才会销毁掉一级路由下的其他组件。
+        </p>
+        <p>当然 router-view，嵌套路由不仅仅可以支持 2 级，你可以更深入的去规划你的路由嵌套层数。</p>
+        <h3>事件补充 [updated]</h3>
+        <p>
+            阅读该小结前，请先了解下
+            <a href="/router/router-view" target="_blank">视图容器</a>
+            中的 updated 事件，本小结为该事件的补充说明。
+        </p>
+        <p>
+            我们结合路由嵌套再来看一下
+            <code>updated</code>
+            事件的参数：
+        </p>
+        <ul>
+            <li>
+                <code>deep</code>
+                ：视图容器层级，用于表示当前的视图容器层级，对应我们路由嵌套的层级。
+            </li>
+            <li>
+                <code>isLeaf</code>
+                ：是否是叶子节点
+            </li>
+        </ul>
+        <p>我们可以使用这两个属性来实现一些复杂的判断，例如：</p>
+        <p>
+            由于我们不知道当前视图容器下是否还有嵌入其他视图容器，但是我们想在当前视图渲染完成后隐藏 loading，这里就需要判断
+            <code>isLeaf</code>
+            ，当叶子节点时才处理隐藏 loading，否则交由下层处理。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;container&quot;&gt;
+        &lt;TopBar&gt;&lt;/TopBar&gt;
+        &lt;div class=&quot;middle&quot;&gt;
+            &lt;router-view @updated=&quot;routerViewUpdated&quot;&gt;&lt;/router-view&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component, VNode } from &quot;@joker.front/core&quot;;
+    import TopBar from &quot;./common/components/topbar.joker&quot;;
+    import { hideLoading } from &quot;./common/loading&quot;;
+
+    export default class extends Component {
+        components = {
+            TopBar
+        };
+
+        routerViewUpdated(e: VNode.Event&lt;{ isLeaf: boolean }&gt;) {
+            //叶子节点时才做隐藏，否则交由下层处理loading
+            if (e.data.isLeaf) {
+                hideLoading();
+            }
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

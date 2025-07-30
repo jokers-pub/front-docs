@@ -1,0 +1,25 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Change the value of the model.</button>
+    </DemoRow>
+    <p>
+        @getName("Zhang San")
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    getName(preName: string) {
+        return preName + this.model.value;
+    }
+
+    handleClick() {
+        this.model.value++;
+    }
+}
+</script>

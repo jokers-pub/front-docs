@@ -1,0 +1,15 @@
+<template>
+    <MyComponent message="I'm the parameter." />
+    <MyAsyncComponent message="I'm the parameter." />
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import MyComponent from "./children.joker";
+
+export default class extends Component {
+    components = {
+        MyComponent,
+        MyAsyncComponent: () => import("./async-children.joker")
+    };
+}
+</script>

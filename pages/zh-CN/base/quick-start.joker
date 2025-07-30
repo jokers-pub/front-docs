@@ -1,0 +1,203 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>快速上手</h2>
+        <p>
+            本指南讲解了如何使用 Joker CLI 工具搭建你的 Joker 开发环境。包括：前提条件、安装 CLI、创建初始工作区和入门应用，以及在本地运行这个应用来验证你的搭建成果。
+        </p>
+        <p>
+            <strong>我们提供了两种开发模式：</strong>
+        </p>
+        <ol>
+            <li>
+                官网可视化开发平台 (
+                <a href="https://viscode.jokers.pub" target="_blank">可视化平台</a>
+                )
+                <strong>推荐</strong>
+            </li>
+            <li>本地代码开发</li>
+        </ol>
+        <p>下面是本地开发模式的指导教程：</p>
+        <h3>前提条件</h3>
+        <p>要想使用 Joker 框架，你需要熟悉以下技术：</p>
+        <ul>
+            <li>
+                <p>
+                    <a
+                        href="https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript"
+                        target="_blank">
+                        JavaScript
+                    </a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML" target="_blank">
+                        HTML
+                    </a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="https://developer.mozilla.org/docs/Learn/CSS/First_steps" target="_blank">CSS</a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="https://www.typescriptlang.org/" target="_blank">Typescript</a>
+                </p>
+            </li>
+        </ul>
+        <p>
+            TypeScript 是 JavaScript 的超集，通过类型推断功能，可以添加类型注释来增强代码的静态验证。类型定义有助于明确软件组件之间的接口，并帮助理解现有 JavaScript 库的行为。
+        </p>
+        <p>要想在你的本地系统中安装 Joker，需要如下步骤：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>需求</th>
+                    <th>介绍</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Node.js</td>
+                    <td>
+                        Joker 需要 Node.js 的
+                        <a href="https://nodejs.org/en" target="_blank">活跃 LTS 版或维护期 LTS 版</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>npm 包管理器</td>
+                    <td>
+                        Joker、Joker CLI 以及 Joker 应用都依赖于 npm 包来实现各种特性和功能。要下载并安装 npm 包，你需要一个 npm 包管理器。本指南使用 npm 客户端命令行界面，它通常与 Node.js 一起默认安装。要检查你是否安装了 npm 客户端，请在终端窗口中运行 npm -v
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            对于包管理，我们建议使用
+            <a href="https://pnpm.js.org/" target="_blank">pnpm</a>
+            ，来进行当前项目的包管理，安装也非常简单：
+        </p>
+        <pre><code>npm i -g pnpm
+</code></pre>
+        <h3>安装 Joker CLI</h3>
+        <p>如果你是一个经验丰富的开发人员，项目框架必须至少依赖以下两个包：</p>
+        <pre><code>//CLI 脚手架
+pnpm add @joker.front/cli
+
+//Core 核心
+pnpm add @joker.front/core
+</code></pre>
+        <p>安装以上两个包后即完成了框架的搭建工作。</p>
+        <p>如果你是新手，我们建议按照以下流程操作，以便快速去学习如何使用：</p>
+        <p>你可以使用 Joker CLI 来创建项目，生成应用和库代码，以及执行各种持续开发任务，比如测试、打包和部署。</p>
+        <p>要安装 Joker CLI，请打开终端/控制台窗口，并运行如下命令：</p>
+        <pre><code>pnpm i -g @joker.front/cli
+</code></pre>
+        <blockquote>
+            <p>
+                在 Windows 客户端计算机上，默认禁用 PowerShell 脚本的执行。要允许执行 npm 全局二进制文件所需的 PowerShell 脚本，你必须设置以下内容
+                <a
+                    href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4"
+                    target="_blank">
+                    执行策略
+                </a>
+            </p>
+        </blockquote>
+        <p>
+            <strong>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</strong>
+        </p>
+        <h3>创建工作区和初始应用</h3>
+        <p>你要在 Joker 工作区的上下文中开发应用。</p>
+        <p>要创建一个新的工作区和初始入门应用：</p>
+        <ol>
+            <li>
+                运行 CLI 命令
+                <strong>joker create</strong>
+                并提供 my-app 名称作为参数，如下所示：
+            </li>
+        </ol>
+        <pre><code>joker create my-app
+</code></pre>
+        <ol start="2">
+            <li>在 my-app 工作目录下，安装依赖</li>
+        </ol>
+        <pre><code>cd my-app
+
+pnpm i
+</code></pre>
+        <p>CLI 会创建一个新的工作区和一个简单的欢迎应用，你可以随时运行它。</p>
+        <h3>运行应用</h3>
+        <p>Joker CLI 中包含一个服务器命令 以及 构建命令，服务器命令可以方便你在本地构建和提供应用。</p>
+        <p>
+            我们默认提供了
+            <code>dev</code>
+            和
+            <code>build</code>
+            两个命令，分别代表开发环境和代码构建。
+        </p>
+        <ol>
+            <li>导航到 workspace 文件夹，比如 my-app。</li>
+        </ol>
+        <pre><code>cd my-app
+</code></pre>
+        <ol start="2">
+            <li>运行下列命令：</li>
+        </ol>
+        <pre><code>npm run dev
+</code></pre>
+        <p>成功运行后，会开到一个简单的示例页面。</p>
+        <h3>安装 VSCODE 及插件</h3>
+        <p>
+            点击
+            <a href="https://code.visualstudio.com/" target="_blank">这里</a>
+            去官网下载 VSCODE，并进行安装。
+        </p>
+        <p>
+            在 VSCODE 应用市场内查找
+            <code>Joker Front Tools</code>
+            扩展。
+        </p>
+        <p>
+            <img src="/base/vscode-extend-install.png" alt="安装VSCODE插件" />
+        </p>
+        <p>
+            请务必安装
+            <code>Joker Front Tools</code>
+            扩展，该扩展可以提供：
+        </p>
+        <ul>
+            <li>SFC Joker 单文件组件的高亮</li>
+            <li>Joker 代码格式化</li>
+            <li>Joker 代码提示</li>
+            <li>Joker 代码检查</li>
+        </ul>
+        <p>除此之外，还提供很多基础的开发辅助能力，该扩展会大大提高开发效率。</p>
+        <h3>下一步</h3>
+        <p>关于 Joker 单页应用程序架构和设计原理的基本概念和术语的详尽介绍，参阅 Joker 的基本概念部分。</p>
+        <p>
+            过一遍开发教程，这是一个完整的动手练习题，它将教你使用 Joker CLI 进行应用开发的过程，并逐步介绍重要的子系统。
+        </p>
+        <p>要了解关于使用 Joker CLI 的更多信息，请参阅 CLI 概述。</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

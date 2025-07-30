@@ -1,0 +1,81 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Introduction</h2>
+        <p>
+            Joker CLI is a front-end building tool for the Joker front-end platform, aiming to enhance the front-end development experience.
+        </p>
+        <ul>
+            <li>
+                <strong>ESM (Modularization) Support</strong>
+                : Joker CLI supports the ESM (EcmaScript Modules) mode. This means it can leverage the latest JavaScript module standard and provide on-demand compilation functionality. This mode not only improves loading efficiency but also ensures that only the code actually needed by the user is compiled and parsed, thus significantly enhancing the application's response speed and performance.
+            </li>
+            <li>
+                <strong>Asynchronous Static Scanning of Front-end Entry Dependencies</strong>
+                : It uses an asynchronous approach to perform static scanning of front-end entry dependencies. This can be executed without blocking the main thread, enabling the pre-compilation of third-party dependencies into directly runnable files. This feature is particularly prominent during cold start, greatly reducing the application startup time and optimizing the user experience.
+            </li>
+            <li>
+                <strong>Hot Update Function</strong>
+                : The support for hot updates means that developers can see the effects of code changes in real-time while the application is running, without the need to reload the page or restart the application. This is crucial for improving development efficiency and iteration speed.
+            </li>
+            <li>
+                <strong>Compliance with Rollup Plugin Specifications</strong>
+                : Using the Rollup plugin specifications means that Joker CLI can seamlessly integrate with the widely used Rollup plugin ecosystem, providing developers with great flexibility and extensibility.
+            </li>
+            <li>
+                <strong>Production Build Support</strong>
+                : Joker CLI supports production-environment builds, which means it can generate optimized code for the production environment, helping developers create high-performance and optimized applications.
+            </li>
+        </ul>
+        <h3>On-demand Compilation</h3>
+        <p>
+            Joker CLI uses
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank">
+                Native ESM
+            </a>
+            (Native ES Modules) to serve server-side source code. This strategy delegates part of the packaging tasks to the browser itself. Specifically, Joker CLI only performs necessary conversions when the browser requests the source code and supplies the source code on-demand. This approach enables on-demand dynamic import of code, meaning that code segments are only processed and executed when they are actually used, that is, when they appear on the user's current screen. This not only improves development efficiency but also optimizes resource loading and reduces unnecessary performance overhead.
+        </p>
+        <h3>Efficient Hot Update</h3>
+        <p>
+            Many build tools' development servers store the build content in memory. When a file changes, only a part of the module graph needs to be updated. Nevertheless, these tools usually still need to rebuild the entire application and trigger a page reload, which is time-consuming and can lead to the loss of application state. To solve this problem, build tools have introduced the dynamic module hot replacement (HMR) feature, which allows modules to &quot;hot replace&quot; themselves without affecting other parts of the page, significantly enhancing the development experience. However, in practical use, even with HMR enabled, as the application size grows, the hot update speed will slow down significantly.
+            Joker CLI takes a different approach. It implements HMR based on native ESM. When a developer edits a file, Joker CLI only needs to invalidate the edited module and its directly related modules. Usually, this means only updating a single module. This precise update mechanism ensures that HMR remains fast and efficient regardless of the application's size, thus providing a smooth development experience.
+        </p>
+        <h3>Dependency Pre-building</h3>
+        <p>
+            During the project initialization phase, Joker CLI conducts a thorough project scan, identifies and analyzes potential entry points, and then carefully sorts out the project's dependency relationships. When detecting dependencies on third-party libraries, Joker CLI adopts an efficient asynchronous pre-compilation strategy. This means that when these dependencies are first identified, Joker CLI will pre-compile them into efficient modules. In subsequent running processes, these pre-compiled results can be directly utilized, avoiding repeated compilation steps. This approach not only eliminates the need for compatibility conversions for old module systems such as CommonJS and UMD but also significantly improves the runtime loading speed and overall performance, thus providing developers with a faster and more efficient front-end development environment.
+        </p>
+        <h3>Browser Support</h3>
+        <p>
+            During the development process, Joker CLI takes esnext as the target for its code conversion, based on the assumption that modern browsers support the latest JavaScript and CSS features. This approach not only avoids unnecessary syntax downgrading but also ensures that the code generated by Joker CLI is as close as possible to the original source code, thus maintaining code integrity and performance.
+            For production-environment builds, Joker CLI is by default targeted at modern browsers that support native ES modules, native ESM dynamic imports, and import.meta. For scenarios that require compatibility with older browsers, Joker CLI provides the official
+            <code>
+                @("@joker.front/cli-plugin-legacy")
+            </code>
+            plugin to support these old environments. For more detailed information on building the production environment, please refer to the relevant documentation.
+        </p>
+        <h3>Joker File Compilation</h3>
+        <p>
+            Joker CLI is deeply integrated with a compilation plugin for Joker files, specifically designed to parse and transform
+            <code>Joker SFC</code>
+            (Joker Single-File Component) files. This integration not only ensures an efficient and accurate compilation process but also provides advanced functions such as module hot replacement (HMR), enabling developers to preview changes immediately during code iteration, greatly enhancing the development efficiency and experience.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

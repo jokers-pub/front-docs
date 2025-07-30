@@ -1,0 +1,202 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>数据订阅 Watcher</h2>
+        <p>
+            本章节主要介绍如何对数据变更进行订阅。在阅读本章节前，建议先学习
+            <a href="/base/observer" target="_blank">数据代理</a>
+            。
+        </p>
+        <h3>什么是数据订阅</h3>
+        <p>
+            数据订阅是一种的数据管理机制，允许我们对特定数据集进行实时的监控和动态的响应。通过订阅，我们能够主动注册对数据的变更通知，这样，每当数据发生变化时，Core 底层将自动向我们发送通知。这种机制不仅告知我们数据已变更，而且还能详细传达数据变更的具体内容，包括数据值的变化。
+        </p>
+        <p>通过这种方式，我们可以及时地对数据变化做出响应，无论是模板实时渲染、实时分析还是决策支持，都能从中获益。</p>
+        <pre><code class="language-ts">import { observer, Watcher } from &quot;@joker.front/core&quot;;
+
+//定义数据代理
+let ob = observer({
+    userName: &quot;张三&quot;
+});
+
+//数据订阅
+let watcher = new Watcher(ob, &quot;userName&quot;, (newValue, oldValue) =&gt; {
+    console.log(&quot;数据发生变更&quot;);
+});
+
+//更改值，会触发订阅的监听函数
+ob.username = &quot;李四&quot;;
+</code></pre>
+        <p>
+            我们可以可以通过自定义
+            <code>Watcher</code>
+            来实现对代理数据的订阅，如果使用
+            <code>Watcher</code>
+            自定义监听时，请确保它在不需要时被销毁掉，以免造成不必要的数据订阅资源浪费。
+        </p>
+        <p>
+            在组件中，你可以使用
+            <a href="/base/component-api" target="_blank">组件</a>
+            中的
+            <code>$watch</code>
+            函数去实现数据订阅。使用这种方式你讲不需要考虑数据订阅的销毁，它会在组件销毁时被清理，当然你也可以在销毁前，主动去调用
+            <code>destroy()</code>
+            销毁某个数据订阅规则。
+        </p>
+        <h3>Watcher</h3>
+        <p>
+            <code>Watcher</code>
+            作为 Core 内的数据订阅类，它不仅提供了组件内部的响应式数据的关系订阅，也可以让开发人员在组件外部自定义数据订阅规则。
+        </p>
+        <p>
+            接下来让我们看一下
+            <code>Watcher</code>
+            的几种调用方式(重载)：
+        </p>
+        <h4>第一种</h4>
+        <pre><code class="language-ts">new Watcher(
+    数据代理对象/表达式函数 ,
+    要访问的属性名[可用&quot;，&quot;分割] ,
+    变更通知函数 ,
+    是否强制执行通知（当数据值变更但值相同也进行通知，默认为false）
+)
+
+//例如
+new Wathcer(ob,'userInfo.userName',(nv)=&gt;{},false)
+new Wathcer(()=&gt;ob,'userInfo.userName',(nv)=&gt;{},false)
+</code></pre>
+        <h4>第二种（建议使用）</h4>
+        <pre><code class="language-ts">new Watcher(数据访问表达式函数, 变更通知函数);
+
+//例如：
+new Watcher(
+    () =&gt; ob.userInfo.userName,
+    (nv) =&gt; {}
+);
+
+//若想订阅多个值变更
+new Watcher(
+    () =&gt; [ob.userInfo.userName, ob.userInfo.age],
+    (nv) =&gt; {}
+);
+</code></pre>
+        <p>接下来使用一个例子看一下运行效果：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;
+            This example is used to demonstrate the use of Watcher. It is recommended to use the $watch method to create data subscriptions in components.
+        &lt;/p&gt;
+    &lt;/DemoRow&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Change the value ( @userInfo.userName )&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, Watcher, observer } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    userInfo = observer({
+        userName: &quot;Zhang San&quot;
+    });
+
+    created() {
+        new Watcher(
+            () =&gt; this.userInfo.userName,
+            (nv: string) =&gt; {
+                MessageBox.alert(&quot;The value has changed: &quot; + nv);
+            }
+        );
+    }
+
+    handleClick() {
+        this.userInfo.userName = this.userInfo.userName === &quot;Zhang San&quot; ? &quot;Li Si&quot; : &quot;Zhang San&quot;;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                值的注意的是，当
+                <code>forceCallBack是否强制执行通知</code>
+                为
+                <strong>false</strong>
+                时（默认即为 false），若表达式返回的是数组/对象，只要对象中的每一项相等，无论指针（引用类型）是否一致，都
+                <strong>不算变更</strong>
+                ，这样可以有效减少不必要的数据订阅通知。
+            </p>
+        </blockquote>
+        <h3>属性/方法</h3>
+        <p>
+            我们通过创建一个
+            <code>Wathcer</code>
+            ，我们会得到一个数据订阅对象（组件内的
+            <code>$watch</code>
+            函数也返回
+            <code>Wathcer</code>
+            类型结果），我们可以使用该订阅对象做更复杂的操作：
+        </p>
+        <h4>value</h4>
+        <p>
+            数据订阅为我们提供了
+            <code>value</code>
+            属性，可以使我们在创建数据订阅时，立即拿到当前的表达式的值，并且该值会在数据变更时同步更新：
+        </p>
+        <pre><code class="language-ts">let watcher = new Watcher(
+    () =&gt; ob.userName,
+    () =&gt; {}
+);
+
+//通过value 可以立即拿到当前的值
+watcher.value;
+</code></pre>
+        <h4>destroy()</h4>
+        <p>
+            通过调用
+            <code>destroy()</code>
+            方法可以销毁该数据订阅对象。
+        </p>
+        <pre><code class="language-ts">let watcher = new Watcher(
+    () =&gt; ob.userName,
+    () =&gt; {}
+);
+
+//销毁
+watcher.destroy();
+</code></pre>
+        <h4>isDestroy</h4>
+        <p>通过该属性可以查看当前数据订阅的状态，以确定是否被销毁。</p>
+        <pre><code class="language-ts">let watcher = new Watcher(
+    () =&gt; ob.userName,
+    () =&gt; {}
+);
+
+// watcher.isDestroy =&gt; false
+
+//销毁
+watcher.destroy();
+
+// watcher.isDestroy =&gt; true
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/watcher/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

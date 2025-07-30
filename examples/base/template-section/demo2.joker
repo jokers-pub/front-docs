@@ -1,0 +1,26 @@
+<template>
+    <DemoRow>
+        <p>This is an example without passing a section:</p>
+        <ListComponent list="@list"></ListComponent>
+    </DemoRow>
+    <DemoRow>
+        <p>This is an example of passing a section:</p>
+        <ListComponent list="@list">
+            @section("default", userName) {
+                <span>Name: <b>@userName</b></span>
+            }
+        </ListComponent>
+    </DemoRow>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import ListComponent from "./list-component.joker";
+
+export default class extends Component {
+    components = {
+        ListComponent
+    };
+
+    list = ["Zhang San", "Li Si", "Wang Wu"];
+}
+</script>

@@ -1,0 +1,129 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Dependency Pre-building</h2>
+        <p>
+            Joker CLI scans and identifies the dependencies in
+            <code>node_modules</code>
+            of the project when the project starts, and uses an asynchronous method to silently compile these packages in advance.
+        </p>
+        <h3>Purpose</h3>
+        <p>The reasons why Joker CLI adopts dependency pre-building are as follows:</p>
+        <ul>
+            <li>
+                <p>
+                    <strong>CommonJS or UMD</strong>
+                    : The development server of Joker CLI treats all code as native
+                    <strong>ES</strong>
+                    modules during runtime. This requires it to intelligently convert dependencies in
+                    <code>CommonJS</code>
+                    or
+                    <code>UMD</code>
+                    formats so that they can be used as
+                    <strong>ES</strong>
+                    modules. When converting
+                    <code>CommonJS</code>
+                    modules, Joker CLI uses a sophisticated import analysis technique to ensure that even in the case of dynamic exports, named imports can be seamlessly compatible, thus guaranteeing a smooth experience during development.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <strong>Performance</strong>
+                    : To improve the page loading speed, Joker CLI adopts an optimization strategy of integrating ESM dependencies containing a large number of internal modules into a single module. This approach can significantly reduce the number of module requests, thereby accelerating the page loading speed.
+                </p>
+                <p>
+                    Take
+                    <code>lodash-es</code>
+                    as an example. This library contains more than 600 independent modules. In the traditional ES module import method, if we import the
+                    <code>debounce</code>
+                    function, the browser will have to initiate more than 600 independent HTTP requests. Although the server may be able to handle these requests easily, a large number of network requests will cause network congestion on the browser side, which in turn affects the page loading speed.
+                    However, through the pre-building function of Joker CLI,
+                    <code>lodash-es</code>
+                    can be integrated into a single module. In this way, we only need to initiate one HTTP request to load the entire library, greatly reducing network latency and improving the user experience.
+                </p>
+            </li>
+        </ul>
+        <h3>Cache</h3>
+        <p>
+            Joker CLI stores the pre-compiled files in
+            <code>node_modules/.joker/deps</code>
+            . This file is divided into two directories,
+            <code>server</code>
+            and
+            <code>build_dist</code>
+            , according to the running command, corresponding to the development-state service cache and the build-time cache respectively.
+        </p>
+        <p>
+            <img src="/cli/dep_cache.png" alt="DEP_CACHE" />
+        </p>
+        <p>
+            The
+            <code>_manifest.json</code>
+            file is used to record the information and versions of all caches.
+        </p>
+        <pre><code class="language-json">{
+    &quot;hash&quot;: &quot;16dc7a8d&quot;,
+    &quot;browserHash&quot;: &quot;9e7cbf30&quot;,
+    &quot;resolved&quot;: {
+        &quot;@joker.front/core&quot;: {
+            &quot;src&quot;: &quot;../../../.pnpm/@joker.front+core@1.2.137/node_modules/@joker.front/core/dist/bundle.es.js&quot;,
+            &quot;file&quot;: &quot;../server/@joker__front_core.js&quot;,
+            &quot;fileHash&quot;: &quot;a2ebc2fa&quot;,
+            &quot;needRewriteImport&quot;: false
+        },
+        &quot;@joker.front/router&quot;: {
+            &quot;src&quot;: &quot;../../../.pnpm/@joker.front+router@1.0.21_@joker.front+core@1.2.137/node_modules/@joker.front/router/dist/bundle.es.js&quot;,
+            &quot;file&quot;: &quot;../server/@joker__front_router.js&quot;,
+            &quot;fileHash&quot;: &quot;1f59a9bd&quot;,
+            &quot;needRewriteImport&quot;: false
+        },
+        &quot;@joker.front/ui&quot;: {
+            &quot;src&quot;: &quot;../../../.pnpm/@joker.front+ui@1.0.13/node_modules/@joker.front/ui/dist/index.mjs&quot;,
+            &quot;file&quot;: &quot;../server/@joker__front_ui.js&quot;,
+            &quot;fileHash&quot;: &quot;7a1cab3e&quot;,
+            &quot;needRewriteImport&quot;: false
+        },
+        &quot;highlight.js/lib/common&quot;: {
+            &quot;src&quot;: &quot;../../../.pnpm/highlight.js@11.9.0/node_modules/highlight.js/es/common.js&quot;,
+            &quot;file&quot;: &quot;../server/highlight__js_lib_common.js&quot;,
+            &quot;fileHash&quot;: &quot;4a885f0e&quot;,
+            &quot;needRewriteImport&quot;: false
+        }
+    },
+    &quot;chunks&quot;: {
+        &quot;chunk-AAW4LQHI&quot;: {
+            &quot;file&quot;: &quot;../server/chunk-AAW4LQHI.js&quot;
+        },
+        &quot;chunk-DSTXS4JB&quot;: {
+            &quot;file&quot;: &quot;../server/chunk-DSTXS4JB.js&quot;
+        }
+    }
+}
+</code></pre>
+        <blockquote>
+            <p>
+                If for some reason you want to force Joker CLI to rebuild the dependencies, you can manually delete the
+                <code>node_modules/.joker</code>
+                cache directory.
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

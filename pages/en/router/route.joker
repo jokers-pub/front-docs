@@ -1,0 +1,177 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Route Information</h2>
+        <p>
+            This chapter mainly introduces how to obtain the current route information and what attributes are included in the route information.
+        </p>
+        <h3>How to Use</h3>
+        <p>
+            We can obtain the
+            <strong>route</strong>
+            object from the initialized instance of Joker Router or the
+            <code>router</code>
+            . This object represents our current route information.
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+// Get the route
+router.route;
+</code></pre>
+        <h3>How to Monitor Route Changes</h3>
+        <p>
+            It's worth noting that the
+            <code>router.route</code>
+            object is a
+            <code>ShallowObserver data shallow proxy hijacking</code>
+            object. If you're not familiar with this feature, you can learn about it in
+            <a href="/base/observer" target="_blank">Data Proxy</a>
+            .
+        </p>
+        <p>
+            Since this object is reactive data, we can determine the current route change by
+            <a href="/base/watcher" target="_blank">subscribing</a>
+            to the data change.
+        </p>
+        <pre><code class="language-ts">new Watcher(
+    () =&gt; router.route.value,
+    () =&gt; {
+        // The route has changed
+    }
+);
+</code></pre>
+        <h3>Attribute List</h3>
+        <p>
+            The following is the data list of
+            <code>route</code>
+            :
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Attribute Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>
+                        The
+                        <code>name</code>
+                        value of the named route
+                    </td>
+                    <td>string / symbol</td>
+                </tr>
+                <tr>
+                    <td>path</td>
+                    <td>
+                        The final accessed address (corresponding to the
+                        <code>path</code>
+                        in the router configuration. The difference is that this value does not contain dynamic parameters and is a decompiled string)
+                    </td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>fullPath</td>
+                    <td>The complete accessed address</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>query</td>
+                    <td>URL Query parameters</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td>hash</td>
+                    <td>The browser hash value</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>params</td>
+                    <td>Page parameters</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td>meta</td>
+                    <td>Route data metadata, used to store some static values of the current route entry</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td>redirectedFrom</td>
+                    <td>The source of the redirection</td>
+                    <td>RouteLocationBase/undefined</td>
+                </tr>
+                <tr>
+                    <td>matched</td>
+                    <td>The collection of route records matched by the current address</td>
+                    <td>RouteRecord[]</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>matched [Matched Route Collection]</h3>
+        <p>
+            To understand the concept of
+            <code>matched</code>
+            in-depth, we need to explore its principle carefully. Next, I'll explain the working mechanism of
+            <code>matched</code>
+            in detail through a specific example.
+        </p>
+        <p>When we have a nested route scenario, for example:</p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/base&quot;,
+            component: ChildrenLayout,
+            children: [
+                { path: &quot;page1&quot;, component: () =&gt; import(&quot;./page1.joker&quot;) },
+                { path: &quot;page2&quot;, component: () =&gt; import(&quot;./page2.joker&quot;) }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            When we access
+            <code>/base/page1</code>
+            , the
+            <code>matched</code>
+            of the current route will contain two records, which are:
+        </p>
+        <pre><code class="language-ts">[
+    {
+        path: &quot;/base&quot;
+        //...
+    },
+    {
+        path: &quot;page1&quot;
+        //...
+    }
+];
+</code></pre>
+        <p>
+            From this example, we can see that
+            <code>matched</code>
+            stores all the route entry records matched by the current route and records them in order according to the hierarchy.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

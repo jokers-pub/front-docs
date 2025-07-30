@@ -1,0 +1,398 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>路由事件/状态</h2>
+        <p>本章节主要探讨了在路由跳转过程中涉及的事件及其应用，利用这些事件可以实现多种复杂的功能和优化。</p>
+        <h3>isReady [路由初始化完毕]</h3>
+        <p>
+            在路由初始化时，
+            <code>Joker Core</code>
+            会根据当前的地址做视图初始化，并完成首次路由加载。
+        </p>
+        <p>
+            <code>isReady</code>
+            方法不仅指示了一个类实例化的完成，同时也代表了一次路由的加载成功或失败。只有当路由完成首次加载后，才能认为页面路由已经准备就绪。
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+
+let appRouter = new Router({
+    //...
+});
+
+appRouter.isReady().then(() =&gt; {
+    //TODO:
+});
+</code></pre>
+        <p>
+            <code>isReady</code>
+            函数返回一个
+            <strong>Promise</strong>
+            对象，允许我们通过
+            <code>then</code>
+            方法来监听页面路由的首次成功加载，并通过
+            <code>catch</code>
+            方法来处理首次路由加载失败的情况。
+        </p>
+        <h3>errorCallbacks [异常处理]</h3>
+        <p>您可以使用 errorCallbacks 集合在任意位置监听全局路由异常。</p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+
+let appRouter = new Router({
+    //...
+});
+
+appRouter.errorCallbacks.add((err, to, from) =&gt; {
+    //err: 错误数据
+    //to:目标地址
+    //from:来源地址
+});
+</code></pre>
+        <p>
+            其中
+            <code>err</code>
+            参数除了原生错误类型外，也可能是内部
+            <code>NavigationError</code>
+            错误类型，该类型包括以下属性：
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>type</td>
+                    <td>错误类型</td>
+                    <td>NavigationErrorTypes（在后面会介绍该枚举信息）</td>
+                </tr>
+                <tr>
+                    <td>from</td>
+                    <td>来源地址</td>
+                    <td>RouteLocation</td>
+                </tr>
+                <tr>
+                    <td>to</td>
+                    <td>目标地址 RouteLocation</td>
+                    <td>RouteLocationRaw</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            其中
+            <code>NavigationErrorTypes</code>
+            枚举包括：
+        </p>
+        <pre><code class="language-ts">export const enum NavigationErrorTypes {
+    /**重定向**/
+    REDIRECT,
+    /**终止 */
+    ABORTED,
+    /**取消 */
+    CANCELLED,
+    /**存在多个相同，无明确指向 */
+    SAME,
+    /** 未匹配到任何路由记录 */
+    MATCHER_NOT_FOUND = 4
+}
+</code></pre>
+        <p>
+            我们可以通过 Joker Router 中提供的
+            <code>isNavigationError</code>
+            函数来判断当前错误对象是否是
+            <code>NavigationError</code>
+            类型。
+        </p>
+        <pre><code class="language-ts">import { isNavigationError } from &quot;@joker.front/router&quot;;
+
+isNavigationError(err); //====&gt; true/false
+</code></pre>
+        <h3>beforeRouteCallbacks [跳转前]</h3>
+        <p>
+            我们可以在
+            <code>beforeRouteCallbacks</code>
+            中添加监听函数，以便在路由跳转前实现切面事件的监听。这样，我们可以在路由跳转之前执行一些自定义的操作，例如验证用户权限、记录日志等。这种方法可以让我们更加灵活地控制路由跳转的过程，并优化应用程序的性能和用户体验。
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+
+let appRouter = new Router({
+    //...
+});
+
+appRouter.beforeRouteCallbacks.add((to, from, next) =&gt; {
+    //to:目标地址
+    //from:来源地址
+    //next:执行下一步
+});
+</code></pre>
+        <p>
+            事件类型
+            <code>NavigationCallback</code>
+            请看本章结尾小结介绍。
+        </p>
+        <h3>afterRouteCallbacks [跳转后]</h3>
+        <p>
+            <code>afterRouteCallbacks</code>
+            作为跳转后的 HOOK，使用方式和
+            <code>beforeRouteCallbacks</code>
+            基本一致，不同的是它没有
+            <strong>next</strong>
+            /
+            <strong>return</strong>
+            控制流转的机制。
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+
+let appRouter = new Router({
+    //...
+});
+
+appRouter.beforeRouteCallbacks.add((to, from, err) =&gt; {
+    //to:目标地址
+    //from:来源地址
+    //err:错误信息，可参考errorCallbacks中的错误类型说明
+});
+</code></pre>
+        <blockquote>
+            <p>
+                需要指出的是，
+                <code>afterRouteCallbacks</code>
+                作为路由跳转的切面事件，它反映的是路由切换的状态，而非页面加载的完成状态。若想监听
+                <code>视图容器</code>
+                加载完成状态，可通过
+                <a href="/router/router-view" target="_blank">router-view</a>
+                中的
+                <strong>updated</strong>
+                事件去监听。
+            </p>
+        </blockquote>
+        <h3>beforeEnter / beforeLeave</h3>
+        <p>
+            <code>beforeEnter</code>
+            和
+            <code>beforeLeave</code>
+            是 Joker Router 中的两个生命周期钩子，它们特定于路由记录的配置属性。与全局事件监听不同，这些钩子允许我们在路由层面的具体路由项上进行切面事件的管理。通过为单个路由配置这些生命周期钩子，我们能够更精细地控制路由的进入和离开行为。
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeEnter: (to, from, next) =&gt; {
+                //TODO:
+            }
+        },
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeEnter: [
+                (to, from) =&gt; {
+                    //TODO：
+                },
+                (to, from) =&gt; {
+                    //TODO：
+                }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeLeave: (to, from, next) =&gt; {
+                //TODO:
+            }
+        },
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeLeave: [
+                (to, from) =&gt; {
+                    //TODO：
+                },
+                (to, from) =&gt; {
+                    //TODO：
+                }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            事件类型
+            <code>NavigationCallback</code>
+            请看本章结尾小结介绍。
+        </p>
+        <h3>NavigationCallback [事件处理类型]</h3>
+        <p>
+            <code>NavigationCallback</code>
+            作为事件处理类型，无论是全局事件还是路由项生命周期事件，都遵循该类型的规范。
+        </p>
+        <pre><code class="language-ts">export type NavigationCallback = (
+    to: RouteLocation,
+    from: RouteLocation,
+    next: NavigationNextCallback
+) =&gt; Awaitable&lt;NavigationCallbackReturn&gt;;
+
+export type NavigationCallbackReturn = Error | RouteLocationRaw | boolean | undefined | void;
+</code></pre>
+        <p>
+            该类返回
+            <code>Promise</code>
+            ，以实现异步处理效果。
+        </p>
+        <p>参数说明：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>to</td>
+                    <td>目标地址</td>
+                    <td>RouteLocation</td>
+                </tr>
+                <tr>
+                    <td>from</td>
+                    <td>来源地址</td>
+                    <td>RouteLocation</td>
+                </tr>
+                <tr>
+                    <td>next</td>
+                    <td>下一步操作，可选</td>
+                    <td>Function</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            由于我们可以向
+            <code>beforeRouteCallbacks</code>
+            注册多个切面事件，所以我们必须控制它的流转顺序和状态。我们可以通过方法返回值或者
+            <code>next</code>
+            函数来决定我们是否要向下一步流转，接下来我们一起详细的来了解下：
+        </p>
+        <ol>
+            <li>
+                第一种，通过方法返回值来决定流转，该种模式可以不执行第三个参数
+                <code>next</code>
+                。
+            </li>
+        </ol>
+        <pre><code class="language-ts">appRouter.beforeRouteCallbacks.add((to, from) =&gt; {
+    //return false;
+    //return new Error('自定义异常')
+    //return '重定向地址';
+    //return {path:'重定向地址'}
+    //return true/undefined/... 执行下一个HOOK
+});
+</code></pre>
+        <p>返回类型说明</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>类型</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>false</td>
+                    <td>
+                        终止本次跳转，并触发
+                        <code>NavigationErrorTypes.ABORTED</code>
+                        类型错误
+                    </td>
+                </tr>
+                <tr>
+                    <td>Error</td>
+                    <td>终止本次跳转，并触发 Error 事件</td>
+                </tr>
+                <tr>
+                    <td>string</td>
+                    <td>
+                        重定向到指定地址，并触发
+                        <code>NavigationErrorTypes.REDIRECT</code>
+                        类型错误
+                    </td>
+                </tr>
+                <tr>
+                    <td>object</td>
+                    <td>
+                        重定向到指定地址，类型符合
+                        <a href="/router/change" target="_blank">RouteLocationRaw</a>
+                        ，并触发
+                        <code>NavigationErrorTypes.REDIRECT</code>
+                        类型错误
+                    </td>
+                </tr>
+                <tr>
+                    <td>其他</td>
+                    <td>执行下一个 HOOK</td>
+                </tr>
+            </tbody>
+        </table>
+        <ol start="2">
+            <li>
+                第二种，通过执行
+                <code>next</code>
+                函数来决定是否流转。
+            </li>
+        </ol>
+        <pre><code class="language-ts">appRouter.beforeRouteCallbacks.add((to, from, next) =&gt; {
+    //next(false);
+    //next(new Error('自定义异常'))
+    //next('重定向地址');
+    //next({path:'重定向地址'})
+    //next(true/undefined/...) 执行下一个HOOK
+});
+</code></pre>
+        <p>
+            建议在
+            <code>next</code>
+            方法执行之后不再包含其他业务代码，以保证流程的清晰和专注。
+        </p>
+        <blockquote>
+            <p>
+                通过上面两种控制流转的方式，我们可以了解到
+                <code>beforeRouteCallbacks</code>
+                是多个处理 HOOK，我们会逐一按序执行，当所有 HOOK 顺序执行（没有终止/重定向）完毕后，才会开始执行本次路由跳转。
+            </p>
+        </blockquote>
+        <blockquote>
+            <p>
+                我们允许在方法中使用
+                <code>async/await</code>
+                语法来处理
+                <code>Promise</code>
+                ，以此实现异步业务逻辑。
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

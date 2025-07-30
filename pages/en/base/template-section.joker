@@ -1,0 +1,279 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Block Rendering</h2>
+        <p>This chapter mainly introduces another form of passing values between parent and child components.</p>
+        <h3>What is Block Rendering</h3>
+        <p>
+            In addition to using
+            <code>props</code>
+            to pass parameters between parent and child components, we also provide another form of value passing. We can pass a section of
+            <strong>content to be rendered (Render)</strong>
+            to the child component, and the child component decides when and where to render this template.
+        </p>
+        <pre><code class="language-html">&lt;my-component&gt; I'm a piece of content to be rendered &lt;/my-component&gt;
+</code></pre>
+        <p>
+            As we can see, we can specify the content of the template block to be rendered within the content block of the custom component tag.
+        </p>
+        <h3>How to Use</h3>
+        <p>
+            We can directly define the content of the
+            <code>block to be rendered</code>
+            within the component tag, or use the
+            <code>section</code>
+            directive to define it. When we have only one block to be rendered and no rendering parameters, this directive can be omitted.
+        </p>
+        <pre><code class="language-xml">&lt;my-component&gt;
+    &lt;p&gt;I'm a block template to be rendered&lt;/p&gt;
+&lt;/my-component&gt;
+
+👇👇👇 Equivalent to 👇👇👇
+&lt;my-component&gt;
+    @section(){
+        &lt;p&gt;I'm a block template to be rendered&lt;/p&gt;
+    }
+&lt;/my-component&gt;
+
+👇👇👇 Equivalent to 👇👇👇
+
+&lt;my-component&gt;
+    @section('default'){
+        &lt;p&gt;I'm a block template to be rendered&lt;/p&gt;
+    }
+&lt;/my-component&gt;
+</code></pre>
+        <p>
+            If we don't specify the block name, it defaults to
+            <strong>default</strong>
+            . Of course, we can also define multiple blocks to be rendered:
+        </p>
+        <pre><code class="language-xml">&lt;my-component&gt;
+    &lt;p&gt;I'm a default block template to be rendered&lt;/p&gt;
+
+    @section('top'){
+        &lt;p&gt;I'm a Top block template to be rendered&lt;/p&gt;
+    }
+
+    &lt;p&gt;I'm a default block template to be rendered (the second one)&lt;/p&gt;
+
+    @section('bottom'){
+        &lt;p&gt;I'm a Bottom block template to be rendered&lt;/p&gt;
+    }
+&lt;/my-component&gt;
+</code></pre>
+        <p>
+            We will combine the
+            <strong>named</strong>
+            rendering blocks together to form the rendering content under that name, and combine the unnamed rendering blocks into the
+            <code>default</code>
+            block.
+        </p>
+        <p>Next, let's take a look at the specific execution effect:</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent&gt;
+        &lt;p&gt;I'm the default rendering block (1)&lt;/p&gt;
+        @section(&quot;top&quot;) {
+            &lt;p&gt;I'm the top rendering block&lt;/p&gt;
+        }
+        &lt;p&gt;I'm the default rendering block (2)&lt;/p&gt;
+        @section(&quot;bottom&quot;) {
+            &lt;p&gt;I'm the bottom rendering block&lt;/p&gt;
+        }
+    &lt;/MyComponent&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            Combined with the above example, let's see how the child component renders these blocks. The following is the code of the child component:
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;p class=&quot;title&quot;&gt;Top block content:&lt;/p&gt;
+    @RenderSection(&quot;top&quot;)
+    &lt;p class=&quot;title&quot;&gt;Body content:&lt;/p&gt;
+    @RenderSection()
+    &lt;p class=&quot;title&quot;&gt;Bottom block content:&lt;/p&gt;
+    @RenderSection(&quot;bottom&quot;)
+&lt;/template&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+    p.title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>
+            As we can see from the above code, we can use the
+            <code>RenderSection</code>
+            API to render the block templates to be rendered. We can render different block templates by specifying the first parameter. If no block name is passed, the
+            <strong>default</strong>
+            block is rendered by default.
+        </p>
+        <h3>Block Operations</h3>
+        <p>
+            If you are developing a component, you may need to determine whether a block template to be rendered is passed in when calling this component. We can use
+            <code>$sections</code>
+            in
+            <a href="/base/component-property" target="_blank">Component Attributes</a>
+            to make this judgment. For example:
+        </p>
+        <pre><code class="language-xml">&lt;div&gt;
+    @if($sections.default){
+        &lt;p&gt;@RenderSection()&lt;/p&gt;
+    }
+    else{
+        &lt;p class=&quot;default&quot;&gt;Default information&lt;/p&gt;
+    }
+&lt;/div&gt;
+</code></pre>
+        <p>
+            With the above code, we can achieve that if a block template to be rendered is passed in, it will be rendered; otherwise, the default prompt message will be displayed.
+        </p>
+        <h3>Rendering Parameters</h3>
+        <p>
+            During the process of rendering templates, in some cases, key data needs to be passed, especially when using list components. We not only need to provide the rendering template for list items but also must provide corresponding data for each item in the loop to ensure the smooth progress of the rendering process.
+        </p>
+        <p>
+            Our parameter passing is very intuitive. We will introduce the syntax rules in two code snippets: passing parameters and receiving parameters. First, here is passing parameters:
+        </p>
+        <pre><code class="language-xml">&lt;p&gt;
+    @RenderSection('default','I'm parameter 1', myVariable,...)
+&lt;/p&gt;
+</code></pre>
+        <p>
+            It should be noted that if parameters need to be passed, they start from the second parameter. This means that we must specify the block name. Parameters can be static values or component properties.
+        </p>
+        <p>
+            Next, let's see how the parent component receives the parameters passed by the child component through block rendering:
+        </p>
+        <pre><code class="language-xml">&lt;my-component&gt;
+@section('default',v1,v2,v3){
+    &lt;p&gt;Parameter 1: @v1&lt;/p&gt;
+    &lt;p&gt;Parameter 2: @v2&lt;/p&gt;
+}
+&lt;/my-component&gt;
+</code></pre>
+        <p>
+            As we can see from the above code, similar to passing parameters, our parameters also start from the second parameter, and the number and order of parameters follow the rules when passing parameters.
+        </p>
+        <p>Next, let's look at a running example:</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;This is an example without passing a section:&lt;/p&gt;
+        &lt;ListComponent list=&quot;@list&quot;&gt;&lt;/ListComponent&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;This is an example of passing a section:&lt;/p&gt;
+        &lt;ListComponent list=&quot;@list&quot;&gt;
+            @section(&quot;default&quot;, userName) {
+                &lt;span&gt;Name: &lt;b&gt;@userName&lt;/b&gt;&lt;/span&gt;
+            }
+        &lt;/ListComponent&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import ListComponent from &quot;./list-component.joker&quot;;
+
+export default class extends Component {
+    components = {
+        ListComponent
+    };
+
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            The following is the example code of the
+            <code>list-component</code>
+            :
+        </p>
+        <pre><code class="language-xml">&lt;template&gt;
+    &lt;ul&gt;
+        @for(let item of props.list) {
+            &lt;li&gt;
+                @if($sections.default) {
+                    @RenderSection(&quot;default&quot;, item)
+                }
+                else {
+                    @item
+                }
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+&lt;/template&gt;
+</code></pre>
+        <h3>Cross-Component Passing (Advanced)</h3>
+        <p>
+            In the development of some complex components, the block template to be rendered passed in by the parent component does not necessarily need to be rendered by this component. It may be passed down further and rendered by a deeper-level component. Then we need
+            <code>cross-component passing</code>
+            of the block template.
+        </p>
+        <p>
+            First, let's understand the
+            <code>RenderSection</code>
+            API. Its first parameter can be a
+            <strong>string</strong>
+            or
+            <code>SectionType</code>
+            (you can refer to
+            <code>$sections</code>
+            in
+            <a href="/base/component-property" target="_blank">Component Attributes</a>
+            to learn about it). Since the block object can be passed, we can use this method to achieve cross-component block rendering:
+        </p>
+        <pre><code class="language-xml">&lt;template&gt;
+    @RenderSection(topSection,'I'm a parameter')
+&lt;/template&gt;
+</code></pre>
+        <pre><code class="language-ts">class extends Component{
+    get topSection(){
+        // Search upward and get the slot to be rendered
+        return this.$rootVNode.closest(...)?.component.$sections.top;
+
+        // Of course, it can also be passed as a parameter
+        return this.props.topSection;
+    }
+}
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-section/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-section/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

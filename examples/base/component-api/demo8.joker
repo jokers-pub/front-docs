@@ -1,0 +1,42 @@
+<template>
+    <button @click="handleClick('param1', 'param2')">按钮</button>
+    <MyComponent @click="handleMyComponentClick('param1', 'param2')">按钮</MyComponent>
+</template>
+<script>
+import { Component, VNode } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+import MyComponent from "./children1.joker";
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+    handleMyComponentClick(e: VNode.Event<string>, param1: string, param2: string) {
+        MessageBox.alert(
+            `<p>e.data:${e.data};</p>
+        <p>param1:${param1};</p>
+        <p>param2:${param2};</p>`,
+            {
+                useHtml: true
+            }
+        );
+    }
+
+    handleClick(e: VNode.Event, param1: string, param2: string) {
+        MessageBox.alert(
+            `<p>e.data:${e.data};</p>
+        <p>param1:${param1};</p>
+        <p>param2:${param2};</p>`,
+            {
+                useHtml: true
+            }
+        );
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+button {
+    margin-right: 10px;
+}
+</style>

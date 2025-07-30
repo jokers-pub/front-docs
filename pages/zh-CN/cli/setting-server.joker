@@ -1,0 +1,281 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>开发服务(server)配置</h2>
+        <p>
+            该章节主要介绍配置文件中
+            <code>server</code>
+            属性的配置说明，该属性类型为
+            <code>ServerOptions</code>
+            。
+        </p>
+        <pre><code class="language-js">module.exports = {
+    server: {
+        //...
+    }
+};
+</code></pre>
+        <h3>port</h3>
+        <ul>
+            <li>
+                类型：
+                <code>number</code>
+            </li>
+            <li>
+                默认：
+                <code>5858</code>
+            </li>
+        </ul>
+        <p>
+            指定开发服务器端口。当你指定一个端口给开发服务器时，请注意，如果这个端口已经被其他应用程序使用，
+            <code>Joker CLI</code>
+            将会
+            <strong>自动寻找</strong>
+            下一个可用的端口来启动服务。
+        </p>
+        <h3>host</h3>
+        <ul>
+            <li>
+                类型：
+                <code>string</code>
+            </li>
+            <li>
+                默认：
+                <code>localhost</code>
+            </li>
+        </ul>
+        <p>
+            指定服务器监听的 IP 地址。如果将此设置为 0.0.0.0 或者使用默认值，服务器将监听所有可用的网络接口，这意味着它将同时接收来自局域网和公网的连接。
+        </p>
+        <p>
+            您还可以通过命令行界面（CLI）使用
+            <code>--host</code>
+            选项来设置，其中使用
+            <code>--host 0.0.0.0</code>
+            将服务绑定到所有网络接口，而
+            <code>--host</code>
+            后不带参数则表示使用服务器的默认接口。
+        </p>
+        <h3>https</h3>
+        <ul>
+            <li>
+                类型：
+                <code>boolean | http.HttpsServerOptions</code>
+            </li>
+        </ul>
+        <p>
+            要启用 TLS 并启用 HTTP/2，请注意，如果同时使用了
+            <code>server.proxy</code>
+            选项，那么只会使用 TLS 协议。
+            您需要一个有效且可用的证书来配置服务器以使用 TLS。
+        </p>
+        <h3>cors</h3>
+        <ul>
+            <li>
+                类型：
+                <code>boolean | CorsOptions</code>
+            </li>
+        </ul>
+        <p>
+            您可以为开发服务器配置跨源资源共享（CORS）。默认情况下，CORS 功能被启用，并且允许所有来源。如果您需要自定义 CORS 的行为，可以传递一个
+            <a href="https://github.com/expressjs/cors#configuration-options" target="_blank">选项对象</a>
+            来进行调整。如果您不希望启用 CORS，可以将该选项设置为
+            <code>false</code>
+            。
+        </p>
+        <h3>headers</h3>
+        <ul>
+            <li>
+                类型：
+                <code>OutgoingHttpHeaders</code>
+            </li>
+        </ul>
+        <p>您可以指定服务器响应时应包含的 HTTP 头部信息。</p>
+        <h3>proxy</h3>
+        <ul>
+            <li>
+                类型：
+                <code>Record&lt;string, string | ProxyOptions&gt;</code>
+            </li>
+        </ul>
+        <p>
+            您可以为开发服务器设置自定义代理规则，通过提供一个
+            <code>
+                {key: options}
+            </code>
+            格式的对象来实现。任何以键名开始的请求路径都将被代理到相应的目标。如果键名以
+            <code>^</code>
+            开头，它将被视为正则表达式。您可以使用
+            <code>configure</code>
+            选项来访问代理实例。
+            请注意，如果您设置了非相对的基础路径
+            <code>base</code>
+            ，则必须在每个键名前加上这个
+            <code>base</code>
+            。
+            在特定场景下，您可能还需要配置底层的发展服务器，比如添加自定义中间件到内部的 connect 应用中。为了做到这一点，您需要编写自己的插件，并利用
+            <code>configureServer</code>
+            函数来应用更改。
+        </p>
+        <p>示例：</p>
+        <pre><code class="language-js">module.exports = {
+    server: {
+        proxy: {
+            // 字符串简写写法：http://localhost:5173/foo -&gt; http://localhost:4567/foo
+            &quot;/foo&quot;: &quot;http://localhost:4567&quot;,
+            // 带选项写法：http://localhost:5173/api/bar -&gt; http://jsonplaceholder.typicode.com/bar
+            &quot;/api&quot;: {
+                target: &quot;http://jsonplaceholder.typicode.com&quot;,
+                changeOrigin: true,
+                rewrite: (path) =&gt; path.replace(/^\/api/, &quot;&quot;)
+            },
+            // 正则表达式写法：http://localhost:5173/fallback/ -&gt; http://jsonplaceholder.typicode.com/
+            &quot;^/fallback/.*&quot;: {
+                target: &quot;http://jsonplaceholder.typicode.com&quot;,
+                changeOrigin: true,
+                rewrite: (path) =&gt; path.replace(/^\/fallback/, &quot;&quot;)
+            },
+            // 使用 proxy 实例
+            &quot;/api&quot;: {
+                target: &quot;http://jsonplaceholder.typicode.com&quot;,
+                changeOrigin: true,
+                configure: (proxy, options) =&gt; {
+                    // proxy 是 'http-proxy' 的实例
+                }
+            },
+            // 代理 websockets 或 socket.io 写法：ws://localhost:5173/socket.io -&gt; ws://localhost:5174/socket.io
+            &quot;/socket.io&quot;: {
+                target: &quot;ws://localhost:5174&quot;,
+                ws: true
+            }
+        }
+    }
+};
+</code></pre>
+        <h3>hmr</h3>
+        <ul>
+            <li>
+                类型：
+                <code>
+                    boolean |{port?: number; host?: string}
+                </code>
+            </li>
+            <li>
+                默认：
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            您可以禁用或自定义热模块替换（HMR）连接。如果您需要使用不同的 HTTP 服务器地址来处理 HMR 的 WebSocket 连接，您可以进行相应的配置。
+        </p>
+        <h4>hmr.port</h4>
+        <ul>
+            <li>
+                类型：
+                <code>number</code>
+            </li>
+            <li>
+                默认：
+                <code>25679</code>
+            </li>
+        </ul>
+        <p>
+            HMR 热更新 ws 协议端口，当你指定一个端口给开发服务器时，请注意，如果这个端口已经被其他应用程序使用，
+            <code>Joker CLI</code>
+            将会
+            <strong>自动寻找</strong>
+            下一个可用的端口来启动服务。
+        </p>
+        <h4>hmr.host</h4>
+        <ul>
+            <li>
+                类型：
+                <code>string</code>
+            </li>
+            <li>
+                默认：
+                <code>localhost</code>
+            </li>
+        </ul>
+        <p>
+            指定
+            <code>HMR服务器</code>
+            监听的 IP 地址
+        </p>
+        <h3>fs</h3>
+        <ul>
+            <li>
+                类型：
+                <code>FileSystemServeOptions</code>
+            </li>
+        </ul>
+        <p>
+            可以通过配置
+            <code>fs</code>
+            来指定 Joker CLI 的文件索引范围。
+        </p>
+        <pre><code class="language-js">{
+    strict: config.server?.fs?.strict ?? true,
+    allow: config.server?.fs?.allow ?? []
+}
+</code></pre>
+        <h4>fs.strict</h4>
+        <ul>
+            <li>
+                类型：
+                <code>boolean</code>
+            </li>
+            <li>
+                默认：
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            启用严格模式，任何超出
+            <code>root</code>
+            范围的文件引用，都会作为异常处理。
+        </p>
+        <h4>fs.allow</h4>
+        <ul>
+            <li>
+                类型：
+                <code>string[]</code>
+            </li>
+            <li>
+                默认：
+                <code>[]</code>
+            </li>
+        </ul>
+        <p>
+            您可以指定哪些文件可以通过
+            <code>
+                /@fs
+                /
+            </code>
+            路径进行服务。当
+            <code>server.fs.strict</code>
+            配置为
+            <code>true</code>
+            时，只有在此目录列表中的文件才被允许访问，任何不在列表中的尝试都将返回 403 禁止访问的错误。
+            您可以指定目录和文件，Joker CLI 会搜索这个根目录下可能存在的工作空间，并将其作为默认工作空间。一个有效的工作空间需要满足几个条件，如果不满足这些条件，Joker CLI 将默认使用项目根目录作为备选方案。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

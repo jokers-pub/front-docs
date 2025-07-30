@@ -1,0 +1,217 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>快速入门</h2>
+        <p>Joker CLI 目前具备开发与生产构建的功能，用户可执行简洁的命令来迅速利用其各项能力。</p>
+        <p>
+            我们支持通过命令选项的模式快速的执行 Joker 命令，我们也支持通过
+            <code>joker.config.js</code>
+            配置文件的形式来实现更多的配置，配置文件可参考
+            <a href="/cli/setting-public" target="_blank">配置文件</a>
+            章节了解。
+        </p>
+        <h3>安装使用</h3>
+        <ol>
+            <li>
+                首先在项目中通过
+                <code>npm</code>
+                /
+                <code>pnpm</code>
+                等包管理工具来安装 Joker CLI。
+            </li>
+        </ol>
+        <pre><code class="language-bash">pnpm add @joker.front/cli
+</code></pre>
+        <ol start="2">
+            <li>
+                安装完成后，我们可以在
+                <code>package.json</code>
+                中配置我们的命令：
+            </li>
+        </ol>
+        <pre><code class="language-json">{
+    &quot;scripts&quot;: {
+        &quot;dev&quot;: &quot;joker&quot;,
+        &quot;build&quot;: &quot;joker build --config=build.config.js&quot;
+    }
+}
+</code></pre>
+        <ol start="3">
+            <li>
+                我们可以在项目内使用
+                <code>npm run dev</code>
+                的方式来开启我们的开发服务。
+            </li>
+        </ol>
+        <h3>server [命令]</h3>
+        <p>
+            <code>server</code>
+            命令是我们的开发服务，我们可以直接执行
+            <code>joker</code>
+            命令来开启 server 开发服务。
+        </p>
+        <pre><code class="language-bash">joker [root]
+</code></pre>
+        <p>选项</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>选项</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>--config &lt;file&gt;</code>
+                    </td>
+                    <td>
+                        使用指定的配置文件
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--base &lt;path&gt;</code>
+                    </td>
+                    <td>
+                        公共基础路径
+                        <code>（默认为：/）(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--log &lt;leve&gt;</code>
+                    </td>
+                    <td>
+                        日志输出级别
+                        <code>[silent / error / warn / info / debug]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--mode &lt;mode&gt;</code>
+                    </td>
+                    <td>
+                        设置环境模式
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--host [host]</code>
+                    </td>
+                    <td>
+                        指定主机名称
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--port &lt;port&gt;</code>
+                    </td>
+                    <td>指定端口 (number)</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--open [path]</code>
+                    </td>
+                    <td>
+                        是否默认打开浏览器，可指定自定义地址
+                        <code>(默认为 true)(boolean / string)</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>build [构建]</h3>
+        <pre><code class="language-bash">joker build [root]
+</code></pre>
+        <p>选项</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>选项</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>--config &lt;file&gt;</code>
+                    </td>
+                    <td>
+                        使用指定的配置文件
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--base &lt;path&gt;</code>
+                    </td>
+                    <td>
+                        公共基础路径
+                        <code>（默认为：/）(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--log &lt;leve&gt;</code>
+                    </td>
+                    <td>
+                        日志输出级别
+                        <code>[silent / error / warn / info / debug]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--mode &lt;mode&gt;</code>
+                    </td>
+                    <td>
+                        设置环境模式
+                        <code>(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--outDir &lt;dir&gt;</code>
+                    </td>
+                    <td>
+                        输出目录
+                        <code>（默认为：dist）(string)</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>--sourcemap</code>
+                    </td>
+                    <td>
+                        构建后输出 source map 文件
+                        <code>（默认为：false）(boolean / &quot;inline&quot; / &quot;hidden&quot;)</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>create [创建 Joker 项目]</h3>
+        <pre><code class="language-bash">joker create [name]
+</code></pre>
+        <p>我们可以通过该命令来快速创建一个 Joker 开发项目。</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

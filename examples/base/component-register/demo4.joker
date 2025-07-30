@@ -1,0 +1,29 @@
+<template>
+    <DemoRow>
+        <ul>
+            <li>I'm the fixed column 1</li>
+            <li>I'm the fixed column 2</li>
+            <template ref="test">
+                <li>I'm the column 3</li>
+                <li>I'm the column 4</li>
+            </template>
+        </ul>
+    </DemoRow>
+    <button @click="handleClick">Get the number of non - fixed columns</button>
+</template>
+<script>
+import { VNode } from "@joker.front/core";
+import { Component } from "@joker.front/core";
+import { Message } from "@joker.front/ui";
+
+export default class extends Component {
+    handleClick() {
+        let count = this.$getRef("test")?.find((n) => n instanceof VNode.Element).length || 0;
+
+        Message("Got " + count + " non - fixed columns.");
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+</style>

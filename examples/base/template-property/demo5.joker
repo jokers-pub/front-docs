@@ -1,0 +1,50 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle</button>
+        <button @click="handleFindClick">Check if there is an element with ref='demo' in the current component</button>
+    </DemoRow>
+    @if(model.isShow) {
+        <div @click="hide" class="demo" ref="demo" append-to="body">I'm appended to the body</div>
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        isShow: false
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+
+    handleFindClick() {
+        MessageBox.alert(`Found ` + this.$getRefs("demo")?.length + " elements");
+    }
+
+    hide() {
+        this.model.isShow = false;
+    }
+}
+</script>
+
+<style scoped>
+.demo {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    color: #fff;
+    line-height: 2;
+    cursor: pointer;
+    text-align: center;
+    transform: translateX(-50%);
+    background: var(--jk-color-primary);
+}
+
+button {
+    margin-right: 10px;
+}
+</style>

@@ -1,0 +1,33 @@
+<template>
+    <DemoRow>
+        <ul>
+            @for(let i = 0; i < 5; i++) {
+                <li ref="li">
+                    I'm line @i
+                </li>
+            }
+        </ul>
+    </DemoRow>
+    <button @click="handleClick">Get with getRef</button>
+    <button @click="handleClick(true)">Get with getRefs</button>
+</template>
+<script>
+import { Component, VNode } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    handleClick(e: VNode.Event, isGetRefs?: boolean) {
+        if (isGetRefs) {
+            MessageBox.alert(`getRefs: ${this.$getRefs("li")?.length} nodes are retrieved.`);
+        } else {
+            MessageBox.alert(`getRef: The retrieved node content is: ${this.$getRef("li")?.output.innerHTML}`);
+        }
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+button {
+    margin-right: 10px;
+}
+</style>

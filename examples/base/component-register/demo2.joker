@@ -1,0 +1,24 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle the display state of the child component.</button>
+    </DemoRow>
+    @if(model.show) {
+        <MyAsyncComponent message="I'm a parameter." />
+    }
+</template>
+<script>
+import { Component, VNode } from "@joker.front/core";
+
+export default class extends Component {
+    components = {
+        MyAsyncComponent: () => import("./async-children-import.joker")
+    };
+    model = {
+        show: false
+    };
+
+    handleClick() {
+        this.model.show = !this.model.show;
+    }
+}
+</script>

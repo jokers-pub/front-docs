@@ -1,0 +1,911 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Route Registration</h2>
+        <p>This chapter mainly introduces how to register routes and understand the route configuration rules.</p>
+        <p>
+            Currently, there are two ways to register routes:
+            <code>configuring route rules during initialization</code>
+            and
+            <code>dynamic route registration</code>
+            .
+        </p>
+        <h3>Configuring Route Rules during Initialization</h3>
+        <p>
+            We can configure all the known route information of the entire project through
+            <code>routes</code>
+            when initializing the router.
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+
+// My block page
+new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+</code></pre>
+        <h3>Dynamic Route Registration</h3>
+        <p>
+            We provide a dynamic route registration method, which allows us to dynamically manage the registration of route matching rules based on differences such as environment variables and dynamic variables.
+        </p>
+        <pre><code class="language-ts">let appRouter = new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, name: &quot;parent&quot;, component: MyPage }
+    ]
+});
+
+appRouter.addRoute({ path: &quot;/index&quot;, component: MyPage });
+
+// Add child routes to a known route
+appRouter.addRoute({ path: &quot;/children&quot;, component: MyPage }, &quot;parent&quot;);
+</code></pre>
+        <p>This method supports passing two parameters:</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Parameter Name</th>
+                    <th>Description</th>
+                    <th>Parameter Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>route</td>
+                    <td>The route entry to be added</td>
+                    <td>
+                        <code>RouteRecordRaw</code>
+                        , the same type as the initialization route configuration entry
+                    </td>
+                </tr>
+                <tr>
+                    <td>parentRouteName</td>
+                    <td>
+                        The
+                        <code>name</code>
+                        of the parent route node. The parent route needs to be a
+                        <code>named route</code>
+                        . This parameter is
+                        <strong>optional</strong>
+                        . If not configured, it will be configured as a first-level route.
+                    </td>
+                    <td>
+                        <code>RouteRecordName (string/symbol)</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                It should be noted that dynamic route registration does not allow registering the home page address of a project. When Joker Router is
+                <strong>initialized</strong>
+                , it will load the current address/home page address by default. Therefore, when registering routes through this method,
+                <strong>it is necessary to ensure that the registration is completed before rendering the page</strong>
+                .
+            </p>
+        </blockquote>
+        <h3>Route Configuration Item [RouteRecordRaw]</h3>
+        <p>
+            The
+            <code>route configuration item</code>
+            is a data type that must be understood when registering routes in Joker Router. Whether it is initializing route registration or dynamic route registration, the route information needs to be configured according to the
+            <strong>RouteRecordRaw</strong>
+            type.
+        </p>
+        <p>
+            The following is the description of the relevant properties of
+            <code>RouteRecordRaw</code>
+            :
+        </p>
+        <h3>path [Matching Rule]</h3>
+        <p>
+            The
+            <code>path</code>
+            property is used to configure the route matching rule. The
+            <code>path</code>
+            provides a rich set of configuration rules. It can be a static route address, such as
+            <code>/home/index</code>
+            , or a dynamic route address, such as
+            <code>/user/:id</code>
+            . Let's take a detailed look at the route matching rules.
+        </p>
+        <p>
+            First, the
+            <code>path</code>
+            property is of the
+            <code>string</code>
+            type. We can set the route rules by configuring a fixed static address:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;
+        },
+        {
+            path: &quot;user/list&quot;
+        }
+    ]
+});
+</code></pre>
+        <p>In addition, we can also configure dynamic matching rules through expressions:</p>
+        <h4>Dynamic Parameters</h4>
+        <p>
+            We can use the
+            <code>:</code>
+            method to set our dynamic parameters. The key after
+            <strong>:</strong>
+            represents the name of our dynamic parameter.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:id&quot;
+        }
+    ]
+});
+
+/**
+ * /user/abc   =&gt; true
+ * /user/123   =&gt; true
+ * /user       =&gt; false
+ * /user/a/b   =&gt; false
+ */
+</code></pre>
+        <p>
+            After configuring according to the above rules, when we access addresses such as
+            <code>/user/abc</code>
+            or
+            <code>/user/123</code>
+            , they will be considered to match the current route rule.
+        </p>
+        <p>
+            After the actual page is loaded, we will pass the content after
+            <code>/user/</code>
+            as a parameter to the parameters in
+            <a href="/router/route" target="_blank">Route Information</a>
+            and name the parameter
+            <strong>id</strong>
+            .
+        </p>
+        <p>
+            When we access
+            <code>/user</code>
+            or
+            <code>/user/abc/xxx</code>
+            , this route rule
+            <strong>will not be matched</strong>
+            because the
+            <code>:</code>
+            dynamic rule is configured only once and cannot be repeated.
+        </p>
+        <h4>Regular Constraints</h4>
+        <p>
+            We allow adding a regular matching rule for the parameter after the
+            <code>:</code>
+            dynamic parameter. You can configure the regular rule for the parameter within
+            <code>()</code>
+            . For example:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:id(\\d+)&quot;
+        }
+    ]
+});
+
+/**
+ * /user/abc   =&gt;  false
+ * /user/123   =&gt;  true
+ */
+</code></pre>
+        <h4>Dynamic Concatenation</h4>
+        <p>
+            Dynamic parameters can be concatenated with static characters to achieve complex address matching rules. For example:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/:id([0-9]{2})hello&quot;
+        }
+    ]
+});
+
+/**
+ * /home/12hello   =&gt;  true
+ * /home/123hello  =&gt;  false
+ */
+</code></pre>
+        <p>
+            It should be noted that although the
+            <code>dynamic + static</code>
+            concatenation is used in the expression, we will correctly disassemble the parameter variables when converting the address parameters. For example, for
+            <code>/home/12hello</code>
+            , the disassembled parameter is
+            <strong>id = '12'</strong>
+            .
+        </p>
+        <h4>Optional Parameters</h4>
+        <p>
+            When we need to make a parameter optional, we can add
+            <code>?</code>
+            after the variable.
+            <strong>It means the parameter is optional, not a regular expression constraint rule</strong>
+            .
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:id?&quot;
+        }
+    ]
+});
+
+/**
+ * /user/abc   =&gt; true
+ * /user       =&gt; true
+ * /user/a/b   =&gt; false
+ */
+</code></pre>
+        <p>
+            When there are parameters, add
+            <strong>?</strong>
+            after
+            <code>()</code>
+            .
+        </p>
+        <pre><code class="language-ts">new Router({
+    routers: [
+        {
+            path: &quot;/user/:id(\\d{2})?&quot;
+        }
+    ]
+});
+
+/**
+ * /user/12   =&gt; true
+ * /user      =&gt; true
+ * /user/1    =&gt; false
+ * /user/123  =&gt; false
+ * /user/1/2  =&gt; false
+ */
+</code></pre>
+        <h4>Repeatable</h4>
+        <p>
+            We can add
+            <code>+</code>
+            /
+            <code>*</code>
+            after the dynamic parameter to indicate that the parameter can be repeated multiple times. Here,
+            <code>+</code>
+            means it must be repeated at least once, and
+            <code>*</code>
+            means it can be repeated and is optional.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:id(\\d+)+&quot;
+        }
+    ]
+});
+
+/**
+ * /user/1     =&gt; true
+ * /user/1a    =&gt; false
+ * /user/1/2/3 =&gt; true
+ * /user       =&gt; false
+ * /user/1/b   =&gt; false
+ */
+</code></pre>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:id*&quot;
+        }
+    ]
+});
+
+/**
+ * /user/abc   =&gt; true
+ * /user       =&gt; true
+ * /user/a/b   =&gt; true
+ */
+</code></pre>
+        <p>Here is an example of complex static character concatenation:</p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user:id+&quot;
+        }
+    ]
+});
+
+/**
+ * /userabc   =&gt; true  The parameter is abc
+ * /user       =&gt; false
+ */
+</code></pre>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/:id(\\d+)+user&quot;
+        }
+    ]
+});
+
+/**
+ * /123user   =&gt; true  The parameter is 123
+ * /123+user  =&gt; false '+' is a variable modifier
+ */
+</code></pre>
+        <h4>Repeatable and Optional [*]</h4>
+        <p>
+            When we configure the
+            <code>*</code>
+            modifier, it means the variable is optional and repeatable.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user/:id*&quot;
+        }
+    ]
+});
+
+/**
+ * /user/abc   =&gt; true
+ * /user       =&gt; true
+ * /user/a/b   =&gt; true
+ */
+</code></pre>
+        <h3>redirect [Redirection]</h3>
+        <p>
+            We can achieve route redirection by configuring the
+            <code>redirect</code>
+            property.
+        </p>
+        <pre><code class="language-js">new Router({
+    routes: [
+        {
+            path: &quot;/&quot;,
+            redirect: &quot;/home/index&quot;
+        }
+    ]
+});
+</code></pre>
+        <p>
+            The above code means that when there is no address, it will be redirected to
+            <code>/home/index</code>
+            .
+            When configuring
+            <strong>redirect</strong>
+            , in addition to supporting string-type values, it also supports method-based redirection and more configurable route configurations.
+        </p>
+        <p>More comprehensive configurations:</p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/&quot;,
+            redirect: {
+                name: &quot;Named Route&quot;,
+                params: { value: &quot;1&quot; }
+            }
+        },
+        {
+            path: &quot;/&quot;,
+            redirect: {
+                hash: &quot;/home/index&quot;,
+                query: { value: &quot;1&quot; }
+            }
+        },
+        {
+            path: &quot;/&quot;,
+            redirect: {
+                path: &quot;/home/index&quot;
+            }
+        }
+    ]
+});
+</code></pre>
+        <p>
+            Custom method. This method will receive the current route information and needs to return a new route. Please refer to the specification format provided in the
+            <strong>More comprehensive configurations</strong>
+            above for the return type:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/&quot;,
+            redirect: (to: RouteLocationBase) =&gt; {
+                return {
+                    name: &quot;Named Route&quot;,
+                    params: { value: &quot;1&quot; }
+                };
+            }
+        }
+    ]
+});
+</code></pre>
+        <h3>name [Named Route]</h3>
+        <p>
+            We can add a
+            <code>name</code>
+            property to a route configuration item to name it. After naming, the route can be quickly set through the
+            <strong>name</strong>
+            during operations such as navigation and route addition.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            name: &quot;home&quot;
+        }
+    ]
+});
+</code></pre>
+        <h3>alias [Route Matching Alias]</h3>
+        <p>
+            <code>alias</code>
+            can be used to supplement the matching address. It can also be understood as an alias for the
+            <code>path</code>
+            matching rule. It can be configured as a string or an array of strings. The values follow the
+            <code>path</code>
+            type specification.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            alias: &quot;/home&quot;
+        },
+        {
+            path: &quot;/user/list&quot;,
+            alias: [&quot;/user&quot;, &quot;/u/list&quot;, &quot;/user/all&quot;]
+        }
+    ]
+});
+</code></pre>
+        <h3>meta [Route Metadata]</h3>
+        <p>
+            <code>meta</code>
+            is a metadata property of the route, used to store custom data of the route. After configuring the metadata, we can obtain this data in route aspect events and route information for corresponding business operations.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            meta: {
+                param: &quot;v1&quot;
+            }
+        }
+    ]
+});
+</code></pre>
+        <p>How to use it:</p>
+        <pre><code class="language-ts">let appRouter = new Router({
+    //...
+});
+
+appRouter.beforeRouteCallbacks.add((to, from) =&gt; {
+    if (to.meta.param === &quot;v1&quot;) {
+        //TODO:
+    }
+});
+</code></pre>
+        <p>
+            Or obtain the value through the
+            <code>router</code>
+            information within the component. For details, please refer to
+            <a href="/router/route" target="_blank">Route Information</a>
+            .
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+if (router.route.value.meta.param === &quot;v1&quot;) {
+    //TODO:
+}
+</code></pre>
+        <h3>children [Child Routes]</h3>
+        <p>
+            By configuring
+            <code>children</code>
+            , we can configure the child route entries of the current route. This is what we usually call
+            <code>nested routes</code>
+            .
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user&quot;,
+            component: MyComponent,
+            children: [
+                { path: &quot;list&quot;, component: userListComponent },
+                { path: &quot;info&quot;, component: userInfoComponent }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            From the above example, we can see that we have created a
+            <code>/user</code>
+            route, and there are two child routes under this route. If their
+            <strong>path</strong>
+            properties do not start with
+            <code>/</code>
+            , the child route matching rules will be configured in a concatenated manner (
+            <strong>parent route path/child route path</strong>
+            ).
+        </p>
+        <ul>
+            <li>/user/list</li>
+            <li>/user/info</li>
+        </ul>
+        <p>
+            When the
+            <strong>path</strong>
+            rule of the child route starts with
+            <strong>/</strong>
+            , the parent route
+            <code>path</code>
+            configuration will be ignored. For example:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/user&quot;,
+            component: MyComponent,
+            children: [
+                { path: &quot;/user/list&quot;, component: userListComponent },
+                { path: &quot;/user/info&quot;, component: userInfoComponent }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            The above example will also be parsed into the two routes
+            <code>/user/list</code>
+            and
+            <code>/user/info</code>
+            in the end.
+        </p>
+        <p>
+            <a href="/router/nested-routes" target="_blank">Nested Routes</a>
+            will be introduced in detail in a separate chapter later.
+        </p>
+        <h3>component/components [Route Components]</h3>
+        <p>
+            We can use the
+            <code>component/components</code>
+            properties to configure the view components that the current route needs to load. The difference between them is as follows:
+        </p>
+        <ul>
+            <li>
+                <code>component</code>
+                : The current route only needs to load one component. It can also be understood that there is only one
+                <code>&lt;router-view&gt;</code>
+                tag in the layout file.
+            </li>
+            <li>
+                <code>components</code>
+                : The current route needs to load multiple components. There are multiple named containers
+                <code>&lt;router-view&gt;</code>
+                in the layout file.
+            </li>
+        </ul>
+        <p>
+            For
+            <code>&lt;router-view&gt;</code>
+            , you can learn about it by referring to
+            <a href="/router/router-view" target="_blank">Dynamic Container</a>
+            .
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent
+        },
+        {
+            path: &quot;/user/index&quot;,
+            components: {
+                top: userTopComponent,
+                bottom: userBottomComponent
+            }
+        }
+    ]
+});
+</code></pre>
+        <p>
+            Of course,
+            <code>component/components</code>
+            also support asynchronous lazy-loaded components:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: () =&gt; import(&quot;index.joker&quot;)
+        },
+        {
+            path: &quot;/user/index&quot;,
+            components: {
+                top: userTopComponent,
+                bottom: () =&gt; import(&quot;./user/bottom.joker&quot;)
+            }
+        }
+    ]
+});
+</code></pre>
+        <h3>props [Component Parameters]</h3>
+        <p>
+            The
+            <code>props</code>
+            property is generally used to configure parameters for the
+            <code>component/components</code>
+            components. The parameters configured in
+            <strong>props</strong>
+            will be passed as
+            <code>props</code>
+            when the component is initialized. You can learn about it in the
+            <code>props</code>
+            of
+            <a href="/base/component-property" target="_blank">Component Properties</a>
+            .
+        </p>
+        <p>
+            The configuration of the
+            <code>props</code>
+            property needs to follow different rules according to the difference between
+            <code>component/components</code>
+            . When we use a single
+            <code>component</code>
+            , our
+            <code>props</code>
+            is the type constraint of the
+            <code>props</code>
+            in the component:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            props: {
+                p1: &quot;v1&quot;
+            }
+        }
+    ]
+});
+</code></pre>
+        <p>
+            When we use
+            <code>components</code>
+            ,
+            <code>props</code>
+            should be distinguished by the
+            <strong>key</strong>
+            in
+            <code>components</code>
+            so that we can know which component the current
+            <code>props</code>
+            is to be passed to at runtime:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            components: {
+                top: topComponent,
+                bottom: bottomComponent
+            },
+            props: {
+                top: {
+                    p1: &quot;v1&quot;
+                }
+            }
+        }
+    ]
+});
+</code></pre>
+        <p>
+            In addition to specifying a static object,
+            <code>props</code>
+            can also be defined as a function type, and the value of
+            <code>props</code>
+            can be customized according to the address to be rendered during rendering. Both
+            <code>component/components</code>
+            support the
+            <code>props</code>
+            function in the same way:
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            props: (to) =&gt; {
+                //TODO: Use to for business judgment
+                return {
+                    message: &quot;I am a parameter&quot;
+                };
+            }
+        }
+    ]
+});
+</code></pre>
+        <h3>beforeEnter [Hook before Entering the Route]</h3>
+        <p>
+            <code>beforeEnter</code>
+            is a
+            <strong>hook</strong>
+            for the current route. When the route is successfully matched and is about to be rendered, this method will be executed.
+        </p>
+        <p>
+            Of course, we can also use the global events of
+            <code>Router</code>
+            to achieve customized business processing before entering the route. This
+            <strong>hook</strong>
+            provides simple hook capabilities at the route configuration item level.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeEnter: (to, from, next) =&gt; {
+                //TODO:
+            }
+        },
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeEnter: [
+                (to, from) =&gt; {
+                    //TODO:
+                },
+                (to, from) =&gt; {
+                    //TODO:
+                }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            For the
+            <code>hook</code>
+            function type, please refer to
+            <a href="/router/event" target="_blank">Component Events</a>
+            . They all follow the
+            <strong>NavigationCallback</strong>
+            type specification.
+        </p>
+        <h3>beforeLeave [Hook before Leaving the Route]</h3>
+        <p>
+            <code>beforeLeave</code>
+            is a
+            <strong>hook</strong>
+            for the current route. This method will be executed before leaving the route.
+        </p>
+        <p>
+            Of course, we can also use the global events of
+            <code>Router</code>
+            to achieve customized business processing before entering the route. This
+            <strong>hook</strong>
+            provides simple hook capabilities at the route configuration item level.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeLeave: (to, from, next) =&gt; {
+                //TODO:
+            }
+        },
+        {
+            path: &quot;/home/index&quot;,
+            component: IndexComponent,
+            beforeLeave: [
+                (to, from) =&gt; {
+                    //TODO：
+                },
+                (to, from) =&gt; {
+                    //TODO：
+                }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            About the
+            <code>hook</code>
+            function type, refer to
+            <a href="/router/event" target="_blank">Component Events</a>
+            . They all follow the
+            <strong>NavigationCallback</strong>
+            type specification.
+        </p>
+        <h3>keepalive [State Preservation]</h3>
+        <p>
+            When navigating away from the current route, it determines whether the loaded view component should preserve its state so that it can be restored to the preserved state when returning.
+        </p>
+        <p>
+            It is recommended to understand
+            <a href="/base/component-lifecycle" target="_blank">Component Lifecycle</a>
+            before dealing with state preservation.
+        </p>
+        <p>
+            The
+            <code>keepalive</code>
+            property in routes supports multiple configuration types, and different configuration types have different meanings (
+            <strong>the default value is undefined</strong>
+            ):
+        </p>
+        <ul>
+            <li>
+                <p>
+                    <code>true</code>
+                    : The component remains alive all the time. You can destroy and refresh the cache by using the
+                    <strong>refresh</strong>
+                    property when
+                    <a href="/router/change" target="_blank">navigating</a>
+                    .
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>'once'</code>
+                    : It means the component only lives once. The component will only be rendered from the cache once. The second time it is rendered, it will be executed as a new component. This is generally suitable for route nodes with
+                    <code>high-frequency access + low-frequency updates</code>
+                    .
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>false/undefined</code>
+                    : It means no state preservation is done.
+                </p>
+            </li>
+        </ul>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        {
+            path: &quot;/product/index&quot;,
+            component: IndexComponent,
+            keepalive: &quot;once&quot;
+        }
+    ]
+});
+</code></pre>
+        <p>
+            For more usage methods, you can learn from
+            <a href="/router/keepalive" target="_blank">State Preservation</a>
+            .
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

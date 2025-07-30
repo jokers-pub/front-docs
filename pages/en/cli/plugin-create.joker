@@ -1,0 +1,211 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Creating Plugins</h2>
+        <p>
+            Joker CLI plugins are built on top of the excellent Rollup plugin architecture and introduce unique configuration options specifically designed for Joker CLI. This means that once a Joker CLI plugin is written, it can work seamlessly in both development and production environments without additional configuration.
+        </p>
+        <p>
+            Before reading this section, please first learn about
+            <a href="https://rollupjs.org/plugin-development/#plugins-overview" target="_blank">Rollup plugins</a>
+            . This section mainly introduces some of the Joker CLI's own properties.
+        </p>
+        <h3>Naming</h3>
+        <p>
+            We recommend that all Joker CLI plugins be named with the prefix
+            <code>
+                @("@joker.front/cli-")
+            </code>
+            to ensure that developers can quickly identify the type of the library by its name when referencing it.
+        </p>
+        <h3>A Simple Example</h3>
+        <pre><code class="language-js">const fileRegex = /\.(my-file-ext)$/;
+
+export default function myPlugin() {
+    return {
+        name: &quot;transform-file&quot;,
+
+        transform(src, id) {
+            if (fileRegex.test(id)) {
+                return {
+                    code: compileFileToJS(src),
+                    map: null // Provide source map if possible
+                };
+            }
+        }
+    };
+}
+</code></pre>
+        <h3>enforce</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>&quot;pre&quot; | &quot;post&quot;</code>
+            </li>
+        </ul>
+        <p>This can be used to specify the execution order of the plugin.</p>
+        <ul>
+            <li>
+                <code>pre</code>
+                : Ensures that the plugin is executed before the core plugins of Joker CLI.
+            </li>
+            <li>
+                <code>default</code>
+                : The plugin will be executed in sequence after the core plugins of Joker CLI.
+            </li>
+            <li>
+                <code>post</code>
+                : The plugin will be executed after the completion of the Joker CLI build process.
+            </li>
+        </ul>
+        <h3>apply</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>&quot;build&quot; | &quot;server&quot;</code>
+            </li>
+        </ul>
+        <p>
+            This is used to specify in which environments the plugin takes effect. When not set by default, it means the plugin will be executed in all modes.
+        </p>
+        <h3>configureServer</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>(server: Server) =&gt; void | Promise&lt;void&gt;</code>
+            </li>
+        </ul>
+        <p>
+            This is a hook for configuring the development server. We can use this hook to implement the storage of the
+            <code>server</code>
+            object and other configurations.
+        </p>
+        <pre><code class="language-js">const myPlugin = () =&gt; ({
+    name: &quot;configure-server&quot;,
+    configureServer(server) {
+        // Return a post-hook that is called after the internal middleware is installed
+        return () =&gt; {
+            server.middlewares.use((req, res, next) =&gt; {
+                // Custom request handling...
+            });
+        };
+    }
+});
+
+const myPlugin = () =&gt; {
+    let server;
+    return {
+        name: &quot;configure-server&quot;,
+        configureServer(_server) {
+            server = _server;
+        },
+        transform(code, id) {
+            if (server) {
+                // Use server...
+            }
+        }
+    };
+};
+</code></pre>
+        <h3>configTransform</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>(config: ResolvedConfig) =&gt; Promise&lt;void&gt; | void</code>
+            </li>
+        </ul>
+        <p>
+            Through this hook, some configurations can be made to the
+            <code>config</code>
+            . We can set default values for a certain property within this method, or we can process the incoming
+            <code>config</code>
+            for the second time.
+        </p>
+        <h3>indexHtmlTransform</h3>
+        <p>
+            This property is used to extend the transformation of
+            <code>html</code>
+            . Its configuration rules are as follows:
+        </p>
+        <pre><code class="language-ts">export type IndexHtmlTransformHook = (
+    content: string,
+    option: IndexHtmlTransformOption
+) =&gt; IndexHtmlTransformResult | void | Promise&lt;IndexHtmlTransformResult | void&gt;;
+
+export type IndexHtmlTransform =
+    | IndexHtmlTransformHook
+    | {
+          enforce?: Plugin[&quot;enforce&quot;];
+          transform: IndexHtmlTransformHook;
+      };
+</code></pre>
+        <p>This feature allows for asynchronous operations and can return one of the following forms:</p>
+        <ul>
+            <li>The transformed HTML string.</li>
+            <li>
+                An array of property objects describing tags to be injected into the existing HTML, where each tag can also define its insertion position (by default, before the &lt;head&gt; tag).
+            </li>
+            <li>
+                An object containing
+                <code>
+                    {html, tags}
+                </code>
+                .
+            </li>
+        </ul>
+        <p>For example: Convert the title to a specified value</p>
+        <pre><code class="language-js">const htmlPlugin = () =&gt; {
+    return {
+        name: &quot;html-transform&quot;,
+        transformIndexHtml(html) {
+            return html.replace(/&lt;title&gt;(.*?)&lt;\/title&gt;/, `&lt;title&gt;Title replaced!&lt;/title&gt;`);
+        }
+    };
+};
+</code></pre>
+        <h3>hmrUpdate</h3>
+        <p>
+            This is the hook function for handling HMR (Hot Module Replacement) hot updates. This function only takes effect in the
+            <code>server</code>
+            mode.
+        </p>
+        <pre><code class="language-ts">    /**
+     * The context for hot-updated module Update.
+     * We can implement the update of properties such as modules through this hook.
+     * @param ctx
+     */
+    hmrUpdate?(ctx: HMRContext, server: Server): ModuleNode[] | void | Promise&lt;ModuleNode[] | void&gt;;
+</code></pre>
+        <p>We can configure this function to listen for and customize the handling of hot updates.</p>
+        <pre><code class="language-ts">    hmrUpdate(ctx, server) {
+        if (filter(ctx.file) === false) {
+            return;
+        }
+
+        return hotUpdate(config, ctx, server);
+    },
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

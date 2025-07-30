@@ -1,0 +1,22 @@
+<template>
+    <MyComponent>
+        <p>I'm the default rendering block (1)</p>
+        @section("top") {
+            <p>I'm the top rendering block</p>
+        }
+        <p>I'm the default rendering block (2)</p>
+        @section("bottom") {
+            <p>I'm the bottom rendering block</p>
+        }
+    </MyComponent>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import MyComponent from "./children.joker";
+
+export default class extends Component {
+    components = {
+        MyComponent
+    };
+}
+</script>

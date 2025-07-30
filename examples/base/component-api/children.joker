@@ -1,0 +1,6 @@
+<template>
+    <p>
+        I'm a child component
+        <input type="text" />
+    </p>
+</template>

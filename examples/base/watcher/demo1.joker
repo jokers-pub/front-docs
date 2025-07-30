@@ -1,0 +1,31 @@
+<template>
+    <DemoRow>
+        <p>
+            This example is used to demonstrate the use of Watcher. It is recommended to use the $watch method to create data subscriptions in components.
+        </p>
+    </DemoRow>
+    <button @click="handleClick">Change the value ( @userInfo.userName )</button>
+</template>
+<script>
+import { Component, Watcher, observer } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    userInfo = observer({
+        userName: "Zhang San"
+    });
+
+    created() {
+        new Watcher(
+            () => this.userInfo.userName,
+            (nv: string) => {
+                MessageBox.alert("The value has changed: " + nv);
+            }
+        );
+    }
+
+    handleClick() {
+        this.userInfo.userName = this.userInfo.userName === "Zhang San" ? "Li Si" : "Zhang San";
+    }
+}
+</script>

@@ -1,0 +1,139 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Introduction</h2>
+        <p>
+            Joker Router is the official router of
+            <code>Joker</code>
+            . It mainly provides route navigation for the H5 platform. With this plugin, you can quickly set up the routing for an
+            <code>SPA</code>
+            project.
+        </p>
+        <h3>Features</h3>
+        <p>Joker Router currently supports:</p>
+        <ul>
+            <li>Configuration of multi-level nested routes.</li>
+            <li>
+                A dynamic route-loading component
+                <code>&lt;router-view&gt;</code>
+                .
+            </li>
+            <li>
+                Route navigation functions, including
+                <code>replace</code>
+                ,
+                <code>push</code>
+                ,
+                <code>back</code>
+                , etc.
+            </li>
+            <li>
+                Route
+                <code>keep-alive</code>
+                state preservation.
+            </li>
+            <li>
+                Two routing modes:
+                <code>HASH</code>
+                and
+                <code>HTML history</code>
+                .
+            </li>
+        </ul>
+        <h3>Prerequisites</h3>
+        <p>
+            Before learning and using
+            <code>Joker Router</code>
+            , you need to understand the following basic concepts:
+        </p>
+        <ul>
+            <li>
+                <code>SPA (Single-Page Application)</code>
+                : It is an architecture for web applications where all interactions are completed on a single page without having to load a new page each time.
+            </li>
+            <li>
+                <a href="https://blog.csdn.net/weixin_47002682/article/details/129832436" target="_blank">Hash</a>
+            </li>
+            <li>
+                <a href="https://blog.csdn.net/weixin_47002682/article/details/129832436" target="_blank">
+                    HTML history
+                </a>
+            </li>
+        </ul>
+        <h3>How to Import</h3>
+        <p>Install Joker Router:</p>
+        <pre><code>pnpm i @joker.front/router
+</code></pre>
+        <p>Import Joker Router and initialize the configuration:</p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/rourter&quot;;
+
+new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/a&quot; },
+        {
+            path: &quot;/a&quot;,
+            component: a,
+            children: [
+                { path: &quot;a1&quot;, component: a1 },
+                { path: &quot;a2&quot;, component: a2 }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <p>
+            It should be noted that there is a possible typo in the import statement
+            <code>
+                import{Router}from &quot;@("@")joker.front/rourter&quot;;
+            </code>
+            , it might be
+            <code>
+                @("@")joker.front/router
+            </code>
+            instead. And the
+            <code>a</code>
+            ,
+            <code>a1</code>
+            ,
+            <code>a2</code>
+            here should be properly imported component references in a real-world scenario. For example:
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+import A from &quot;./components/A&quot;;
+import A1 from &quot;./components/A1&quot;;
+import A2 from &quot;./components/A2&quot;;
+
+new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/a&quot; },
+        {
+            path: &quot;/a&quot;,
+            component: A,
+            children: [
+                { path: &quot;a1&quot;, component: A1 },
+                { path: &quot;a2&quot;, component: A2 }
+            ]
+        }
+    ]
+});
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

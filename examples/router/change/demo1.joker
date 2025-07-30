@@ -1,0 +1,5 @@
+<template>
+    <DemoRow>
+        <a href="#/router/init" target="_blank">Normal navigation</a>
+    </DemoRow>
+</template>

@@ -1,0 +1,869 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Abstract Syntax Tree (AST)</h2>
+        <p>This chapter mainly introduces the Template Abstract Syntax Tree (AST) of Joker.</p>
+        <h3>Overview</h3>
+        <p>
+            The AST is the structured data of the
+            <code>template</code>
+            in Joker. Ultimately, it combines with the component instance to render virtual nodes and then renders these virtual nodes onto the corresponding platform.
+        </p>
+        <p>There are two sources for it:</p>
+        <ul>
+            <li>
+                Write within the
+                <code>&lt;template&gt;</code>
+                tag in a
+                <strong>Single-File Component (SFC)</strong>
+                . Refer to
+                <a href="/base/template" target="_blank">Template</a>
+                for writing rules, and then convert it to
+                <code>AST.Node[]</code>
+                via the
+                <strong>CLI</strong>
+                .
+            </li>
+            <li>
+                Use methods like
+                <code>createText</code>
+                and
+                <code>createCommand</code>
+                provided by the Core to output
+                <code>AST.Node[]</code>
+                using
+                <strong>JavaScript</strong>
+                syntax and set it to the
+                <code>template</code>
+                property of the component. Refer to the description of the
+                <code>template</code>
+                property in
+                <a href="/base/component-property" target="_blank">Component Properties</a>
+                .
+            </li>
+        </ul>
+        <p>
+            Both forms can output
+            <code>AST.Node[]</code>
+            .
+            <code>AST.Node</code>
+            is the basic class model of the AST, and it is divided into four types according to functionality:
+            <code>Text</code>
+            ,
+            <code>Element</code>
+            ,
+            <code>Comment</code>
+            , and
+            <code>Component</code>
+            . As the basic model class,
+            <code>AST.Node</code>
+            itself has the following properties:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>Node type</td>
+                    <td>
+                        <code>NodeType</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            You can determine the type of the current
+            <code>AST.Node</code>
+            by checking the
+            <code>type</code>
+            value:
+        </p>
+        <pre><code class="language-ts">// This enum can be obtained via AST.NodeType
+export enum NodeType {
+    TEXT, // Text
+    COMMENT, // Comment
+    ELEMENT, // Tag
+    COMMAND, // Directive
+    COMPONENT // Dynamic component
+}
+
+// For example:
+item.type === AST.NodeType.COMMENT;
+</code></pre>
+        <h3>AST.Text (Text Node)</h3>
+        <p>
+            <code>AST.Text</code>
+            is the syntax type for text nodes, used to represent
+            <strong>static content text</strong>
+            on a page.
+        </p>
+        <p>For example:</p>
+        <pre><code class="language-html">&lt;p&gt;I am the content&lt;/p&gt;
+</code></pre>
+        <p>
+            The content inside the
+            <code>p</code>
+            tag represents an
+            <code>AST.Text</code>
+            .
+        </p>
+        <p>
+            We can also create static text content using the
+            <code>createText</code>
+            method provided by the Core (this method takes only one parameter, which is the value of the static text content):
+        </p>
+        <pre><code class="language-ts">import { Component, createText } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    template = () =&gt; {
+        return [createText(&quot;I am the content&quot;)];
+    };
+}
+</code></pre>
+        <p>
+            This method returns an
+            <code>AST.Text</code>
+            object. Such an object contains a property named
+            <code>text</code>
+            for storing the static text content. As a leaf node in the AST (Abstract Syntax Tree), it does not contain any child nodes.
+        </p>
+        <h3>AST.Comment (Comment Node)</h3>
+        <p>
+            <code>AST.Comment</code>
+            is a comment node that can convert HTML comments in the
+            <code>template</code>
+            into
+            <code>AST.Node</code>
+            .
+        </p>
+        <pre><code class="language-html">&lt;!-- I am a comment --&gt;
+</code></pre>
+        <p>
+            You can also create a comment node using the
+            <code>createComment</code>
+            function.
+        </p>
+        <pre><code class="language-ts">import { Component, createComment } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    template = () =&gt; {
+        return [createComment(&quot;I am a comment&quot;)];
+    };
+}
+</code></pre>
+        <p>
+            This method returns an
+            <code>AST.Comment</code>
+            object. Such an object contains a property named
+            <code>text</code>
+            for storing the comment content. As a leaf node in the AST (Abstract Syntax Tree), it does not contain any child nodes.
+        </p>
+        <blockquote>
+            <p>
+                During the production build, to compress the output,
+                <code>AST.Comment</code>
+                is not converted by default to reduce the output size.
+            </p>
+        </blockquote>
+        <h3>AST.Element (Tag Node)</h3>
+        <p>
+            The
+            <code>AST.Element</code>
+            node represents a tag. This tag can be a tag node of the corresponding platform, such as
+            <code>div</code>
+            or
+            <code>span</code>
+            , or it can be a component name. During the AST compilation process, the Core cannot determine whether the current tag name represents a component. Only during the actual rendering, by combining the entity object of the current component and the globally registered components, can it be determined whether the current tag is a component.
+        </p>
+        <p>
+            Therefore, as the most commonly used node,
+            <code>AST.Element</code>
+            records information for both general tags and component tags and performs different processing at runtime.
+        </p>
+        <p>
+            <img src="/base/ast-element.png" alt="AST-Element" />
+        </p>
+        <p>
+            Since
+            <code>AST.Element</code>
+            does not distinguish between components and tags, let's use an HTML tag to demonstrate its working principle:
+        </p>
+        <pre><code class="language-html">&lt;div attr=&quot;v1&quot; class=&quot;@v2&quot; @click=&quot;handleClick&quot;&gt;
+    &lt;span&gt;I am the text content&lt;/span&gt;
+&lt;/div&gt;
+</code></pre>
+        <p>
+            We can rewrite the above code using the
+            <code>createElement</code>
+            method:
+        </p>
+        <pre><code class="language-ts">createElement(
+    &quot;div&quot;,
+    {
+        attr: &quot;v1&quot;,
+        class: &quot;@v2&quot;,
+        &quot;@click&quot;: &quot;handleClick&quot;
+    },
+    [createElement(&quot;span&quot;, undefined, [createText(&quot;I am the text content&quot;)])]
+);
+</code></pre>
+        <p>
+            From the above code, we can see that dynamic directives and event registrations in the attributes are not parsed but are passed intact to the
+            <code>createElement</code>
+            method. For development convenience, we will parse these dynamic directives inside the method.
+        </p>
+        <p>
+            Parameters of the
+            <code>createElement</code>
+            method:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Parameter Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Default Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>tagName</td>
+                    <td>Tag name</td>
+                    <td>string</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>attr</td>
+                    <td>Tag attributes</td>
+                    <td>object</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes of the tag</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            Properties of
+            <code>AST.Element</code>
+            (inherited from
+            <code>AST.Node</code>
+            ):
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>tagName</td>
+                    <td>Tag name</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>events</td>
+                    <td>Events</td>
+                    <td>
+                        <code>AST.Event[]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>attributes</td>
+                    <td>Tag attributes</td>
+                    <td>
+                        <code>AST.Attribute[]</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <code>AST.Event</code>
+            , as the event type for tags, includes:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>Event name</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>modifiers</td>
+                    <td>Event modifiers</td>
+                    <td>
+                        <code>Array&lt;string&gt;</code>
+                        . Refer to the description of modifiers in
+                        <a href="/base/template-event" target="_blank">Event Registration</a>
+                        .
+                    </td>
+                </tr>
+                <tr>
+                    <td>functionName</td>
+                    <td>Name of the event execution function</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>functionParam</td>
+                    <td>Parameters of the event execution function</td>
+                    <td>string</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <code>AST.Attribute</code>
+            , as the tag attribute type, includes:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>Attribute name</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>value</td>
+                    <td>Attribute value</td>
+                    <td>string/undefined</td>
+                </tr>
+                <tr>
+                    <td>express</td>
+                    <td>If there is a dynamic directive, it is converted into an expression and stored</td>
+                    <td>string/undefined</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>AST.Command (Directive Node)</h3>
+        <p>
+            <code>AST.Command</code>
+            is a dynamic directive node responsible for rendering all dynamic values outside of tag attributes. Based on its
+            <code>cmdName</code>
+            property, it can be further divided into
+            <code>IfCommand</code>
+            (conditional directive),
+            <code>ForCommand</code>
+            (loop directive),
+            <code>SectionCommand</code>
+            (block directive), and
+            <code>PropertyOrFunctionCommand</code>
+            (general dynamic value directive).
+        </p>
+        <p>
+            First, let's introduce the basic type of these subdivided directives (
+            <code>AST.Command</code>
+            ), which includes:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cmdName</td>
+                    <td>Directive name</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>isGroup</td>
+                    <td>
+                        Whether it is a group. For example,
+                        <code>for</code>
+                        ,
+                        <code>if</code>
+                        , etc., which include
+                        <code>
+                            {}
+                        </code>
+                        subsets
+                    </td>
+                    <td>boolean</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            These subdivided directives can be created using two methods:
+            <code>createCommand</code>
+            and
+            <code>createCodeFunction</code>
+            .
+            <code>createCommand</code>
+            is used to create group nodes such as
+            <code>if</code>
+            ,
+            <code>for</code>
+            , and
+            <code>section</code>
+            , while
+            <code>createCodeFunction</code>
+            is used to create
+            <strong>dynamic attributes or methods</strong>
+            .
+        </p>
+        <pre><code class="language-ts">createCommand(&quot;for&quot;, &quot;let item of list&quot;, [
+    createElement(&quot;div&quot;, undefined, [
+        // Create an @item
+        createCodeFunction(&quot;item&quot;)
+    ])
+]);
+</code></pre>
+        <p>
+            Parameters of the
+            <code>createCommand</code>
+            function:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Parameter Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Default Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cmdName</td>
+                    <td>
+                        Directive name (
+                        <code>if</code>
+                        /
+                        <code>elseif</code>
+                        (no space)/
+                        <code>else</code>
+                        /
+                        <code>for</code>
+                        /
+                        <code>section</code>
+                        )
+                    </td>
+                    <td>string</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>param</td>
+                    <td>Directive parameters</td>
+                    <td>string</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            The
+            <code>createCodeFunction</code>
+            function takes only one parameter,
+            <code>code</code>
+            (dynamic expression). As a leaf node, it has no sub-nodes.
+        </p>
+        <p>
+            When creating nodes using
+            <code>createCommand</code>
+            , we will parse the parameter expression internally based on the directive name and convert it into the corresponding AST node type. You can determine the directive type of the current node by checking the
+            <code>cmdName</code>
+            .
+        </p>
+        <h4>IfCommand</h4>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cmdName</td>
+                    <td>Directive name</td>
+                    <td>
+                        <code>'if'</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>kind</td>
+                    <td>
+                        Type of
+                        <code>if</code>
+                        condition
+                    </td>
+                    <td>
+                        <code>'if'</code>
+                        /
+                        <code>'elseif'</code>
+                        /
+                        <code>'else'</code>
+                        . Note that there is no space in
+                        <code>'elseif'</code>
+                        .
+                    </td>
+                </tr>
+                <tr>
+                    <td>condition</td>
+                    <td>Condition expression</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>ForCommand</h4>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cmdName</td>
+                    <td>Directive name</td>
+                    <td>
+                        <code>'for'</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>keyType</td>
+                    <td>Loop type</td>
+                    <td>
+                        <code>'in'</code>
+                        /
+                        <code>'of'</code>
+                        /
+                        <code>'condition'</code>
+                        , corresponding to
+                        <code>for in</code>
+                        ,
+                        <code>for of</code>
+                        , and
+                        <code>conditional loop</code>
+                        respectively
+                    </td>
+                </tr>
+                <tr>
+                    <td>param</td>
+                    <td>Loop parameter expression</td>
+                    <td>
+                        <code>AST.ConditionParam</code>
+                        /
+                        <code>AST.InOrOfParam</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <code>ConditionParam</code>
+            , as the parameter type for the conditional loop, includes:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>letKey</td>
+                    <td>
+                        Key value of the item, i.e.,
+                        <code>let **item**</code>
+                    </td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>defaultKeyVal</td>
+                    <td>Initial default value of the item</td>
+                    <td>any</td>
+                </tr>
+                <tr>
+                    <td>condition</td>
+                    <td>Condition expression</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>step</td>
+                    <td>Step expression</td>
+                    <td>string</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            <code>InOrOfParam</code>
+            , as the parameter type for
+            <code>for in</code>
+            and
+            <code>for of</code>
+            , includes:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>indexKey</td>
+                    <td>Index key</td>
+                    <td>string/undefined</td>
+                </tr>
+                <tr>
+                    <td>itemKey</td>
+                    <td>Key value of the item</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>dataKey</td>
+                    <td>Expression of the target to be iterated</td>
+                    <td>string</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>SectionCommand</h4>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cmdName</td>
+                    <td>Directive name</td>
+                    <td>
+                        <code>'section'</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>id</td>
+                    <td>Block ID</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>paramKeys</td>
+                    <td>Block parameter expression</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>AST.Component (Dynamic Component Node)</h3>
+        <p>
+            This type does not appear in the parsing result of the
+            <code>template</code>
+            . As a node for dynamic components, it is generally used in dynamic
+            <code>Render</code>
+            rendering. During the static compilation of
+            <strong>SFC</strong>
+            , avoid using this method. Instead, use the
+            <code>AST.Element</code>
+            type and perform different processing at runtime.
+        </p>
+        <pre><code class="language-ts">import MyComponent from &quot;./children.joker&quot;;
+
+createComponent(
+    MyComponent,
+    {
+        message: &quot;@model.message&quot;,
+        &quot;@click&quot;: &quot;handleClick&quot;
+    },
+    [
+        // Sub-nodes
+        createText(&quot;I am the text&quot;)
+    ]
+);
+</code></pre>
+        <p>This method takes three parameters:</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Parameter Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Default Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>component</td>
+                    <td>Component</td>
+                    <td>
+                        <code>IComponent</code>
+                        /
+                        <code>(new (...arg: any[]) =&gt; IComponent)</code>
+                    </td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>attrs</td>
+                    <td>Tag attributes</td>
+                    <td>object</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes of the tag</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            From the above introduction, we can see that it is only applicable to rendering components that have been clearly determined. Therefore, it can only be created in JavaScript, not in the
+            <code>&lt;template&gt;</code>
+            tag.
+        </p>
+        <p>
+            Properties of
+            <code>AST.Component</code>
+            include:
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>children</td>
+                    <td>Sub-nodes</td>
+                    <td>
+                        <code>AST.Node[]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td>attributes</td>
+                    <td>Component attributes</td>
+                    <td>
+                        <code>AST.Attribute[]</code>
+                        (refer to the description in
+                        <code>AST.Element</code>
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td>events</td>
+                    <td>Component events</td>
+                    <td>
+                        <code>AST.Event[]</code>
+                        (refer to the description in
+                        <code>AST.Element</code>
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td>component</td>
+                    <td>Component</td>
+                    <td>
+                        <code>IComponent</code>
+                        /
+                        <code>(new (...arg: any[]) =&gt; IComponent)</code>
+                        [Initialized component / Component to be initialized]
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

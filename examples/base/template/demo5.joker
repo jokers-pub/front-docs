@@ -1,0 +1,27 @@
+<template>
+    <DemorRow>
+        <p style="color:@fontColor">I'm the content</p>
+        <div>
+            <input value="@inputValue" type="text" />
+        </div>
+        <div>
+            <input value="I'm already @(model.age) years old." type="text" />
+        </div>
+    </DemorRow>
+    <button @click="handleClick">Increase the age</button>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    model = {
+        age: 0
+    };
+    fontColor = "var(--jk-color-success)";
+    inputValue = "I'm the input content";
+
+    handleClick() {
+        this.model.age++;
+    }
+}
+</script>

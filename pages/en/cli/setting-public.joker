@@ -1,0 +1,552 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Common Configuration</h2>
+        <p>
+            This section mainly introduces the specification and instructions of the configuration file provided by Joker CLI.
+        </p>
+        <h3>How to Use the Configuration File</h3>
+        <p>
+            In addition to using Joker CLI's command-line parameters (e.g.,
+            <code>--log</code>
+            ) for configuration, you can also set the execution parameters of Joker CLI by creating a dedicated configuration file. Using a configuration file not only meets more complex functional requirements but also provides detailed configuration instructions for
+            <code>rollup</code>
+            . This method improves the flexibility and convenience of configuration and helps enhance the usage experience and efficiency.
+        </p>
+        <p>
+            We can create a
+            <code>js</code>
+            file as the configuration file. The configuration file can be placed anywhere in the project, for example,
+            <code>build/dev.config.js</code>
+            . You can also create multiple configuration files, such as:
+        </p>
+        <ul>
+            <li>
+                <code>dev.server.js</code>
+                : Configuration for the development server environment.
+            </li>
+            <li>
+                <code>dev.build.js</code>
+                : Configuration for the development build environment.
+            </li>
+            <li>
+                <code>prod.config.js</code>
+                : Configuration for the production build.
+            </li>
+            <li>
+                <code>st.config.js</code>
+                : Configuration for the security testing environment.
+            </li>
+            <li>And so on.</li>
+        </ul>
+        <p>
+            We can create multiple execution commands in the
+            <code>script</code>
+            section of
+            <code>package.json</code>
+            and select different configuration files:
+        </p>
+        <pre><code class="language-json">{
+    &quot;scripts&quot;: {
+        &quot;dev&quot;: &quot;joker --config=dev.config.js&quot;,
+        &quot;build&quot;: &quot;joker build --config=build.config.js&quot;
+    }
+}
+</code></pre>
+        <p>
+            We can use the
+            <code>config</code>
+            property to specify different configuration files.
+        </p>
+        <p>
+            The configuration file follows the
+            <a href="https://wiki.commonjs.org/wiki/CommonJS" target="_blank">CommonJS</a>
+            specification. We can export our configuration information via
+            <code>module.exports</code>
+            .
+        </p>
+        <pre><code class="language-js">module.exports = {
+    root: &quot;./src&quot;
+};
+</code></pre>
+        <p>Next, we will introduce the property configurations in the configuration file:</p>
+        <h3>root</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>process.cwd()</code>
+            </li>
+        </ul>
+        <p>
+            When the
+            <code>root</code>
+            parameter is specified, it defines the starting directory of the application. This directory can be an absolute path or a relative path relative to the current working directory
+            <code>process.cwd()</code>
+            . The application will start executing from this specified root directory, and all paths relative to this directory will be resolved based on it.
+        </p>
+        <h3>base</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>/</code>
+            </li>
+        </ul>
+        <p>
+            In the development or production environment, the following legal values can be used for the service public base path:
+        </p>
+        <ul>
+            <li>
+                An absolute path name, such as
+                <code>/base/</code>
+                , which means the path starts from the root directory of the website.
+            </li>
+            <li>
+                A complete URL, for example,
+                <code>https://base.com/</code>
+                . In the development environment, the original URL part will not be used and only serves as a placeholder.
+            </li>
+            <li>
+                An empty string or
+                <code>./</code>
+                , which is used for embedded services in the development environment, indicating the current directory.
+            </li>
+        </ul>
+        <h3>mode</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>development</code>
+            </li>
+        </ul>
+        <p>
+            The
+            <code>mode</code>
+            parameter is used to specify the running mode of the application and supports being set to
+            <code>development</code>
+            or
+            <code>production</code>
+            . These two modes correspond to the development environment and the production environment respectively. After the mode is configured, it can be accessed and utilized through environment variables.
+        </p>
+        <h3>command</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>server</code>
+            </li>
+        </ul>
+        <p>
+            The
+            <code>command</code>
+            <strong>cannot</strong>
+            be configured. It is used to indicate the current command mode. During the startup process of Joker CLI, the value of
+            <code>command</code>
+            will be automatically set. For example,
+            <code>server</code>
+            indicates starting the development service mode, while
+            <code>build</code>
+            represents executing the build mode.
+        </p>
+        <h3>server</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>ServerOptions</code>
+            </li>
+        </ul>
+        <blockquote>
+            <p>
+                For detailed configuration, please refer to the
+                <a href="/cli/setting-server" target="_blank">Development Service</a>
+                configuration instructions.
+            </p>
+        </blockquote>
+        <h3>build</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>BuildOptions</code>
+            </li>
+        </ul>
+        <blockquote>
+            <p>
+                For detailed configuration, please refer to the
+                <a href="/cli/setting-build" target="_blank">Production Build</a>
+                configuration instructions.
+            </p>
+        </blockquote>
+        <h3>cacheDir</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>node_modules/.joker</code>
+            </li>
+        </ul>
+        <p>
+            Define the cache directory, which stores files such as dep dependency caches. The default is
+            <code>node_modules/.joker</code>
+            under the folder where
+            <code>package.json</code>
+            is located. For more details, please refer to
+            <a href="/cli/dep" target="_blank">Dependency Pre-building</a>
+            .
+        </p>
+        <h3>publicDir</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string|false</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>public</code>
+            </li>
+        </ul>
+        <p>
+            The static resource service folder is used to store resource files that do not need to change during the development and build processes. During the development phase, these files are located at the root directory
+            <code>/</code>
+            of the project for direct access. During the build phase, these files will be copied to the root directory of the specified
+            <code>outDir</code>
+            and provided to users as they are without any conversion. This path can be an absolute path in the file system or a relative path relative to the project root directory.
+        </p>
+        <p>
+            If
+            <code>publicDir</code>
+            is set to
+            <code>false</code>
+            , this function will be disabled.
+        </p>
+        <h3>logLeve</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>
+                    &quot;silent&quot; | &quot;error&quot; | &quot;warn&quot; | &quot;info&quot; | &quot;debug&quot;
+                </code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>info</code>
+            </li>
+        </ul>
+        <p>
+            The log output level. The default is
+            <code>info</code>
+            . If you want to understand the running mechanism of Joker CLI or need to debug Joker CLI, you can configure it to
+            <code>debug</code>
+            .
+        </p>
+        <h3>esbuild</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>boolean</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>true</code>
+            </li>
+        </ul>
+        <p>
+            By default, esbuild will be applied in the compilation process of
+            <code>ts</code>
+            files.
+        </p>
+        <p>
+            When you need custom
+            <code>ts</code>
+            compilation, you can configure it to
+            <code>false</code>
+            to disable the
+            <code>esbuild</code>
+            function.
+        </p>
+        <h3>assetsInclude</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string[]</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>Refer to the following ASSET_TYPES content</code>
+            </li>
+        </ul>
+        <p>By configuring additional resource types to be processed, we can achieve the following:</p>
+        <ul>
+            <li>
+                When these resources are referenced through HTML or requested via fetch or XHR, they will not be processed by the plugin's transformation pipeline.
+            </li>
+            <li>
+                If you try to import these resources from JavaScript, you will get a resolved URL string as the result. However, if you use a
+                <code>enforce: 'pre'</code>
+                plugin to handle different types of assets, this behavior may change. You can view the built-in resource type list for more information.
+            </li>
+        </ul>
+        <p>Joker CLI already treats the following types as resource types by default:</p>
+        <pre><code class="language-ts">export const ASSET_TYPES: string[] = [
+    // images
+    &quot;png&quot;,
+    &quot;jpe?g&quot;,
+    &quot;jfif&quot;,
+    &quot;pjpeg&quot;,
+    &quot;pjp&quot;,
+    &quot;gif&quot;,
+    &quot;svg&quot;,
+    &quot;ico&quot;,
+    &quot;webp&quot;,
+    &quot;avif&quot;,
+
+    // media
+    &quot;mp4&quot;,
+    &quot;webm&quot;,
+    &quot;ogg&quot;,
+    &quot;mp3&quot;,
+    &quot;wav&quot;,
+    &quot;flac&quot;,
+    &quot;aac&quot;,
+
+    // fonts
+    &quot;woff2?&quot;,
+    &quot;eot&quot;,
+    &quot;ttf&quot;,
+    &quot;otf&quot;,
+
+    // other
+    &quot;webmanifest&quot;,
+    &quot;pdf&quot;,
+    &quot;txt&quot;
+];
+</code></pre>
+        <p>
+            In this property, you can define new extension types. Joker CLI will combine these custom extensions with the default extensions to form the resource extension values.
+        </p>
+        <h3>plugins</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>Plugin[] | Array&lt;Plugin[]&gt;</code>
+            </li>
+        </ul>
+        <blockquote>
+            <p>
+                Joker CLI plugins. For more details, please refer to
+                <a href="#cli/plugin-create">Creating Plugins</a>
+                .
+            </p>
+        </blockquote>
+        <h3>resolve</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>ResolveOptions</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>
+                    {}
+                </code>
+            </li>
+        </ul>
+        <p>
+            This property is used to configure the resolver. We can perform resolution configuration by setting the internal
+            <code>mainFields</code>
+            and
+            <code>extensions</code>
+            properties.
+        </p>
+        <h4>resolve.mainFields</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string[]</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>[&quot;browser&quot;,&quot;module&quot;, &quot;jsnext:main&quot;, &quot;jsnext&quot;]</code>
+            </li>
+        </ul>
+        <p>
+            In
+            <code>package.json</code>
+            ,
+            <code>resolve.mainFields</code>
+            defines the list of fields to try when resolving the entry point of a package. Note that the priority of this list is lower than that of resolving the entry point from the
+            <code>exports</code>
+            field: if the entry point is successfully found through the
+            <code>exports</code>
+            field,
+            <code>resolve.mainFields</code>
+            will not be considered.
+        </p>
+        <h4>resolve.extensions</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>string[]</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>[&quot;.js&quot;, &quot;mjs&quot;, &quot;mts&quot;, &quot;.ts&quot;, &quot;.json&quot;]</code>
+            </li>
+        </ul>
+        <p>
+            Be cautious when omitting specific extensions during import, especially for extensions of custom import types. Avoid doing so to prevent affecting the normal functionality of the IDE and type support.
+        </p>
+        <h3>define</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>Record&lt;string, any&gt;</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>
+                    {}
+                </code>
+            </li>
+        </ul>
+        <p>
+            Environment variable configuration. For more details, please refer to
+            <a href="/cli/define" target="_blank">Variables and Modes</a>
+            .
+        </p>
+        <h3>css</h3>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>CSSOptions</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>
+                    {}
+                </code>
+            </li>
+        </ul>
+        <p>
+            CSS configuration. You can extend the CSS compilation function by configuring
+            <code>preprocessorOptions</code>
+            and
+            <code>enableSourceMap</code>
+            .
+        </p>
+        <h4>css.preprocessorOptions</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>Record&lt;string, any&gt;</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>
+                    {}
+                </code>
+            </li>
+        </ul>
+        <p>
+            When specifying options to be passed to the CSS pre-processor, the file extension will be used as the key for the options. For the specific options supported by each pre-processor, you can find the information in the corresponding official documentation:
+        </p>
+        <ul>
+            <li>
+                <a href="https://sass-lang.com/documentation/js-api/interfaces/legacystringoptions/" target="_blank">
+                    sass/scss
+                </a>
+            </li>
+            <li>
+                <a href="https://lesscss.org/usage/#less-options" target="_blank">less</a>
+            </li>
+        </ul>
+        <pre><code class="language-json">{
+    &quot;sass&quot;: {
+        &quot;includePaths&quot;: [&quot;node_modules&quot;]
+        //...
+    }
+}
+</code></pre>
+        <h4>enableSourceMap</h4>
+        <ul>
+            <li>
+                <strong>Type</strong>
+                :
+                <code>boolean</code>
+            </li>
+            <li>
+                <strong>Default</strong>
+                :
+                <code>false</code>
+            </li>
+        </ul>
+        <p>Whether to enable sourcemap.</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

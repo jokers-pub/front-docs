@@ -1,0 +1,23 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Toggle the value</button>
+    </DemoRow>
+    @if(model.isShow) {
+        <MyComponent keep-alive />
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import MyComponent from "./children-keep.joker";
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    components = {
+        MyComponent
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+</script>

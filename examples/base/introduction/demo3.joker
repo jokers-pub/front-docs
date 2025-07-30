@@ -1,0 +1,18 @@
+<template>
+    <p>
+        @message
+    </p>
+    <p>
+        You can render dynamic values anywhere.
+        <span>@tip</span>
+        .
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    message = "I'm a string of text.";
+    tip = Date.now().toLocaleString();
+}
+</script>

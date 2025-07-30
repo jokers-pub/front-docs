@@ -1,0 +1,217 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Initializing the Router</h2>
+        <p>
+            This chapter mainly introduces how to initialize
+            <code>Joker Router</code>
+            and the relevant parameters that can be configured during initialization.
+        </p>
+        <h3>Initialization</h3>
+        <p>
+            <code>Joker Router</code>
+            provides the
+            <strong>Router</strong>
+            class for initializing the router.
+        </p>
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/rourter&quot;;
+
+new Router({
+    history: new WebHashHistory(),
+    base: &quot;&quot;,
+    scrollBehavior: (to, from, savePosition) =&gt; {
+        // Custom operation method for the scrollbar after route navigation
+    },
+    loggerLeve: &quot;warn&quot;,
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+</code></pre>
+        <h3>history [History Mode]</h3>
+        <p>
+            The
+            <code>history</code>
+            property allows us to customize the route history mode. Currently, it supports two modes:
+            <code>HTML history</code>
+            and
+            <code>Hash history</code>
+            . By default, we use the
+            <code>Hash</code>
+            mode to manage our route history.
+        </p>
+        <pre><code class="language-ts">import { WebHistory, WebHashHistory } from &quot;@joker.front/rourter&quot;;
+
+new Router({
+    history: new WebHashHistory(),
+
+    // Or
+    history: new WebHistory()
+});
+</code></pre>
+        <p>
+            For detailed information about the
+            <code>HTML history</code>
+            and
+            <code>Hash history</code>
+            modes, please refer to
+            <a href="/router/history-mode" target="_blank">History Modes</a>
+            .
+        </p>
+        <h3>base [Route Root]</h3>
+        <p>
+            With this property, we can add a root node to all route configurations. By default,
+            <code>base</code>
+            is an empty string.
+        </p>
+        <p>
+            For example, if we define a route address of
+            <code>/index</code>
+            :
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [{ path: &quot;/index&quot;, component: MyPage }]
+});
+</code></pre>
+        <p>
+            When we don't configure the
+            <code>base</code>
+            property, we can access this route page by visiting
+            <code>#/index</code>
+            .
+        </p>
+        <pre><code class="language-ts">new Router({
+    base: &quot;demo&quot;,
+    routes: [{ path: &quot;/index&quot;, component: MyPage }]
+});
+</code></pre>
+        <p>
+            After we configure the
+            <code>base</code>
+            property to
+            <strong>demo</strong>
+            , we can access the route by visiting
+            <code>#/demo/index</code>
+            .
+        </p>
+        <p>
+            Once the
+            <code>base</code>
+            is configured, it will take effect for all registered routes, and the route root will be added to the beginning of each route.
+        </p>
+        <h3>scrollBehavior [Scroll Behavior]</h3>
+        <p>
+            The
+            <code>scrollBehavior</code>
+            property allows us to handle the scrollbar behavior after route navigation. This property is of function type and provides the
+            <code>source</code>
+            ,
+            <code>destination</code>
+            , and
+            <code>previously stored scrollbar position of the target route</code>
+            .
+        </p>
+        <p>We can use this method to customize the scrollbar behavior:</p>
+        <pre><code class="language-ts">new Router({
+    scrollBehavior() {
+        window.scrollTo(0, 0);
+    }
+});
+</code></pre>
+        <p>
+            For detailed parameter types and usage methods, please refer to
+            <a href="/router/scroll" target="_blank">Scroll Behavior</a>
+            .
+        </p>
+        <h3>loggerLeve [Log Level]</h3>
+        <p>
+            The
+            <code>loggerLeve</code>
+            property allows us to configure the route output level of Joker Router.
+        </p>
+        <pre><code class="language-ts">new Router({
+    loggerLeve: &quot;info&quot;
+});
+</code></pre>
+        <p>
+            By configuring different levels, we can meet requirements such as
+            <code>debugging</code>
+            and
+            <code>silence in production</code>
+            . The default log level is
+            <code>warn</code>
+            , and logs are only output when there are warnings or errors.
+        </p>
+        <p>The weight of the configured levels is as follows:</p>
+        <p>
+            <code>silent &lt; error &lt; warn &lt; info</code>
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Optional Value</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>silent</td>
+                    <td>Silent mode, no log output</td>
+                </tr>
+                <tr>
+                    <td>error</td>
+                    <td>Only output error logs</td>
+                </tr>
+                <tr>
+                    <td>warn</td>
+                    <td>Output error and warning logs</td>
+                </tr>
+                <tr>
+                    <td>info</td>
+                    <td>Output all logs, generally used for internal debugging of Joker Router</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>routes [Route Registration Configuration]</h3>
+        <p>
+            <code>routes</code>
+            should be the most important property when using Joker Router. It is responsible for registering all known (static) route information in the current project.
+        </p>
+        <p>
+            Through this property, you can also clearly view all route page addresses and configuration information in the project.
+        </p>
+        <pre><code class="language-ts">new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+</code></pre>
+        <p>
+            The configuration rules for
+            <code>routes</code>
+            are very rich. You can learn more about them in the
+            <a href="/router/registry" target="_blank">Register Routes</a>
+            chapter.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

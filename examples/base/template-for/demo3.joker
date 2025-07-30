@@ -1,0 +1,34 @@
+<template>
+    <DemoRow>
+        <p>The following is to loop through a list:</p>
+        <ul>
+            @for(let item in list) {
+                <li>
+                    @item
+                </li>
+            }
+        </ul>
+    </DemoRow>
+    <DemoRow>
+        <p>The following is to loop through an object:</p>
+        <ul>
+            @for(let item in obj) {
+                <li>
+                    @item
+                </li>
+            }
+        </ul>
+    </DemoRow>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    list = ["Zhang San", "Li Si", "Wang Wu"];
+
+    obj = {
+        userName: "Zhang San",
+        age: 12
+    };
+}
+</script>

@@ -1,0 +1,303 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>路由跳转</h2>
+        <p>本章节主要介绍如何进行路由跳转，如何去传递路由参数。</p>
+        <h3>原生跳转</h3>
+        <p>
+            我们可以借用
+            <code>a</code>
+            标签的
+            <strong>href</strong>
+            属性直接实现路由跳转，以
+            <code>Hash</code>
+            模式为例：
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;a href=&quot;#/router/init&quot; target=&quot;_blank&quot;&gt;Normal navigation&lt;/a&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>RouteLocationRaw [类型]</h3>
+        <p>
+            除了原生 link 模式跳转外，我们还提供了 push、replace 等跳转方式，这些通过 js 方法跳转都必须传递
+            <code>RouteLocationRaw</code>
+            类型参数作为跳转目标信息，我们先介绍下该类型的属性规范。
+        </p>
+        <pre><code class="language-ts">type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNameRaw;
+</code></pre>
+        <p>
+            接下来我们会以
+            <code>push</code>
+            方法为例来介绍下该参数的使用类型。
+        </p>
+        <ol>
+            <li>string</li>
+        </ol>
+        <p>
+            我们可以直接设置为字符串地址，若在
+            <code>hash</code>
+            模式下，
+            <code>#</code>
+            是可以忽略的。
+        </p>
+        <pre><code class="language-ts">push(&quot;router/init&quot;);
+</code></pre>
+        <ol start="2">
+            <li>RouteLocationPathRaw [path 模式]</li>
+        </ol>
+        <p>
+            <code>path</code>
+            模式跳转，并支持各种功能配置。
+        </p>
+        <pre><code class="language-ts">push({
+    path: &quot;router/init&quot;,
+    query: {
+        role: &quot;manager&quot;
+    },
+    refresh: true
+    //...
+});
+</code></pre>
+        <p>该类型的完整属性：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>path</td>
+                    <td>跳转地址</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>replace</td>
+                    <td>是否不记录该路由历史</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>force</td>
+                    <td>强制跳转，一般适用于相同地址的强制刷新</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>refresh</td>
+                    <td>刷新缓存，当页面存在 keepalive 时，可通过该属性刷新缓存</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>state</td>
+                    <td>路由状态数据</td>
+                    <td>HistoryState</td>
+                </tr>
+                <tr>
+                    <td>hash</td>
+                    <td>
+                        当使用
+                        <code>HTML History模式</code>
+                        下使用 hash 做参数配置
+                    </td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>query</td>
+                    <td>URL Query 传参</td>
+                    <td>object</td>
+                </tr>
+            </tbody>
+        </table>
+        <ol start="3">
+            <li>RouteLocationNameRaw [name 模式]</li>
+        </ol>
+        <p>
+            <code>name</code>
+            模式跳转，并支持各种功能配置。name 相关知识，请了解
+            <a href="/router/registry" target="_blank">注册路由</a>
+            中的 name 属性。
+        </p>
+        <pre><code class="language-ts">push({
+    name: &quot;userlist&quot;,
+    query: {
+        role: &quot;manager&quot;
+    },
+    refresh: true
+    //...
+});
+</code></pre>
+        <p>该类型的完整属性：</p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>name</td>
+                    <td>目标路由名[命名路由]</td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>params</td>
+                    <td>路由参数</td>
+                    <td>object</td>
+                </tr>
+                <tr>
+                    <td>replace</td>
+                    <td>是否不记录该路由历史</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>force</td>
+                    <td>强制跳转，一般适用于相同地址的强制刷新</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>refresh</td>
+                    <td>刷新缓存，当页面存在 keepalive 时，可通过该属性刷新缓存</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>state</td>
+                    <td>路由状态数据</td>
+                    <td>HistoryState</td>
+                </tr>
+                <tr>
+                    <td>hash</td>
+                    <td>
+                        当使用
+                        <code>HTML History模式</code>
+                        下使用 hash 做参数配置
+                    </td>
+                    <td>string</td>
+                </tr>
+                <tr>
+                    <td>query</td>
+                    <td>URL Query 传参</td>
+                    <td>object</td>
+                </tr>
+            </tbody>
+        </table>
+        <blockquote>
+            <p>
+                值的注意的是只有
+                <code>name</code>
+                模式下
+                <strong>才允许</strong>
+                传递
+                <code>params</code>
+                ，而在
+                <code>path</code>
+                模式下，params 会根据当前
+                <strong>path</strong>
+                去解析动态参数。
+            </p>
+        </blockquote>
+        <h3>push</h3>
+        <p>导航到一个地址。内部调用 history.pushState 来有效改变 URL。</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;a href=&quot;javascript:void(0)&quot; @click=&quot;handleClick&quot;&gt;Normal navigation&lt;/a&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { router } from &quot;@joker.front/router&quot;;
+
+export default class extends Component {
+    handleClick() {
+        router.push(&quot;/router/init&quot;);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            push 方法支持一个参数，参数类型为
+            <code>RouteLocationRaw</code>
+            。
+        </p>
+        <h3>replace</h3>
+        <p>
+            和 push 方法一样，它使用了 history.replaceState 以换掉改变浏览器的 URL，但它不会在历史记录列表中创建新的条目，而是替换当前条目。这意味着当用户点击后退按钮时，他们不会返回到之前的状态，而是直接返回到初始状态。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;a href=&quot;javascript:void(0)&quot; @click=&quot;handleClick&quot;&gt;Normal navigation&lt;/a&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { router } from &quot;@joker.front/router&quot;;
+
+export default class extends Component {
+    handleClick() {
+        router.replace(&quot;/router/init&quot;);
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            replace 方法会将当前地址忽略历史，它支持一个参数，参数类型为
+            <code>RouteLocationRaw</code>
+            。
+        </p>
+        <h3>go</h3>
+        <p>跳转方法，它支持向前、向后跳转。</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+router.go(1);
+
+router.go(-1);
+</code></pre>
+        <p>它支持整数类型参数，正数为向后跳转，负数为向前跳转。</p>
+        <h3>back</h3>
+        <p>返回上一级。</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+router.back();
+</code></pre>
+        <h3>forward</h3>
+        <p>向前跳转，仅在有返回历史时生效。</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+
+router.forward();
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo3 from "../../../examples/router/change/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/router/change/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/router/change/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

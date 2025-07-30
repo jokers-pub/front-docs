@@ -1,0 +1,14 @@
+<template>
+    <button @click="handleClick">I'm the button from the original template.</button>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    handleClick() {
+        this.$render((h) => {
+            return [h.createElement("div", undefined, [h.createText("I'm the newly rendered text.")])];
+        });
+    }
+}
+</script>

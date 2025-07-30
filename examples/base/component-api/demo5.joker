@@ -1,0 +1,51 @@
+<template>
+    <DemoRow>
+        @if(model.show) {
+            <div ref="refNode" class="@model.className">I'm a paragraph</div>
+        }
+    </DemoRow>
+    <button @click="handleChangeShow">Toggle the display state</button>
+    @if(model.show) {
+        <button @click="handleChangeClassName">Toggle the class name</button>
+    }
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { Message } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        show: true,
+        className: "normal"
+    };
+
+    mounted() {
+        this.$watchNode("refNode", (node, type, property) => {
+            Message(
+                `From Demo: The node has been ${type}${
+                    type === "update" ? ", and the property value is: " + property : ""
+                }.`
+            );
+        });
+    }
+
+    handleChangeShow() {
+        this.model.show = !this.model.show;
+    }
+
+    handleChangeClassName() {
+        this.model.className = this.model.className === "normal" ? "larger" : "normal";
+    }
+}
+</script>
+
+
+<style lang="scss" scoped>
+button {
+    margin-right: 10px;
+}
+
+.larger {
+    font-size: 24px;
+}
+</style>

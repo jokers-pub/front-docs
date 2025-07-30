@@ -1,0 +1,111 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>组件的生命周期</h2>
+        <p>
+            在 Joker 中，当组件类被实例化并渲染其视图及其子视图时，组件的生命周期即告开始。这个生命周期伴随着持续的变更检测，Joker 会监控数据绑定属性的变化，并在必要时对视图和组件实例进行更新。当组件实例被销毁且其渲染的模板从 DOM 中移除时，生命周期随之终结。在 Joker 的执行过程中，创建、更新和销毁组件实例时，指令也会经历类似的生命周期。
+        </p>
+        <p>
+            你的应用程序可以利用生命周期钩子方法来响应组件或指令生命周期中的关键事件，这些方法可以用于初始化新实例、启动变更检测、响应更新，以及在实例被销毁之前执行清理操作。
+        </p>
+        <h3>响应生命周期事件</h3>
+        <p>
+            可以通过实现 core 库中定义的一个或多个生命周期钩子接口，来响应组件或指令生命周期中的事件。这些钩子接口为你提供了在适当的时机对组件或指令实例进行操作的的机会，例如在创建、更新或销毁实例时。
+        </p>
+        <p>
+            每个接口都包含一个唯一的钩子方法。例如 create 钩子函数，如果在组件或指令类中实现了这个方法，Joker 就会在首次检查完组件或指令的输入属性后，立即调用此方法。
+        </p>
+        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    created() {
+        //组件创建时触发
+    }
+
+    mounted() {
+        //组件渲染并挂载到DOM后触发
+    }
+
+    destroyed() {
+        //组件销毁后触发，作为声明周期最后一个钩子函数
+    }
+}
+</code></pre>
+        <p>你不必实现所有生命周期钩子，只要实现你需要的那些就可以了。</p>
+        <h3>生命周期的顺序</h3>
+        <p>当你的应用通过调用构造函数来创建一个组件实例时，Joker 会根据实例生命周期的阶段，调用相应实现的钩子方法。</p>
+        <p>下面是实例生命周期的图表。你现在并不需要完全理解图中的所有内容，但以后它将是一个有用的参考。</p>
+        <p>
+            <img src="/base/component-life.png" alt="组件生命周期" />
+        </p>
+        <h3>针对需要保持组件状态的生命周期</h3>
+        <p>
+            在默认的 Joker 体系下，一个组件的挂载和卸载都是一次性的，不存在状态保持，为了满足组件状态的保持，Joker 提供了
+            <code>keep-alive</code>
+            属性，可以主动让一个组件在调用 destroy 时，
+            <strong>只销毁 DOM 节点</strong>
+            ，而不去销毁组件实例，当组件再次被装载时会使用
+            <strong>存活实例</strong>
+            重新
+            <strong>render</strong>
+            DOM，实现组件的状态保持。
+        </p>
+        <p>针对以上的介绍，那这种保持状态的组件生命周期如下：</p>
+        <p>
+            <img src="/base/keepalive-life.png" alt="组件生命周期" />
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>函数名称</th>
+                    <th>介绍</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>created</td>
+                    <td>组件创建后触发</td>
+                </tr>
+                <tr>
+                    <td>mounted</td>
+                    <td>组件渲染完毕并挂载 DOM 后触发</td>
+                </tr>
+                <tr>
+                    <td>beforeDestroy</td>
+                    <td>组件销毁前触发</td>
+                </tr>
+                <tr>
+                    <td>destroyed</td>
+                    <td>组件销毁后触发，作为生命周期最后一个钩子函数</td>
+                </tr>
+                <tr>
+                    <td>sleeped</td>
+                    <td>组件被睡眠后的钩子函数</td>
+                </tr>
+                <tr>
+                    <td>weakup</td>
+                    <td>组件被唤醒后触发的钩子函数</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>看到这里你可能有很多疑问，不用担心，请继续往下一个章节学习，最后会有完整的教程来让我们全面了解 Joker。</p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

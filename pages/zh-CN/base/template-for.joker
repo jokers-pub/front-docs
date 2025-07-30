@@ -1,0 +1,370 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>列表渲染</h2>
+        <p>
+            该章节将介绍下如何在
+            <code>template</code>
+            中实现循环逻辑。
+        </p>
+        <h3>for(let .. of ..)</h3>
+        <p>
+            使用
+            <code>for..of</code>
+            可以快速的遍历数组/对象中的所有项/值，它的用法和
+            <code>javascript</code>
+            中的使用方式一致
+        </p>
+        <pre><code class="language-xml">&lt;template&gt;
+    @for(let item of list){
+        &lt;p&gt;@item&lt;/p&gt;
+    }
+    @for(let item of obj){
+        &lt;p&gt;@item&lt;/p&gt;
+    }
+&lt;/template&gt;
+</code></pre>
+        <pre><code class="language-html">&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export default class extends Component {
+        list = [&quot;张三&quot;, &quot;李四&quot;, &quot;王五&quot;,...];
+
+        obj:{
+            userName:&quot;张三&quot;,
+            age:12
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through a list:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item of list) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through an object:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item of obj) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+
+    obj = {
+        userName: &quot;Zhang San&quot;,
+        age: 12
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            通过上面的例子可以看到，我们可以在 for 循环中使用
+            <code>let</code>
+            定义了一个
+            <strong>item</strong>
+            属性，该属性只会在
+            <code>for</code>
+            代码块中生效。
+            通过下面的例子再看一下值的定义生效范围：
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;I'm a loop.&lt;/p&gt;
+    &lt;ul&gt;
+        @for(let item of list) {
+            &lt;li&gt;
+                @item
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+    &lt;p&gt;
+        I'm the value outside the for loop: @('&quot;' + item + '&quot;')
+        .
+    &lt;/p&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>fro(let .. in ..)</h3>
+        <p>
+            <code>for..in</code>
+            指令，它也是一种循环命令，它区别于
+            <code>for..of</code>
+            ，它循环的值是对象/数组的
+            <strong>索引</strong>
+            。
+        </p>
+        <p>
+            同样的例子，我们看一下
+            <strong>for...in</strong>
+            的输出结果：
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through a list:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in list) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through an object:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in obj) {
+                &lt;li&gt;
+                    @item
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+
+    obj = {
+        userName: &quot;Zhang San&quot;,
+        age: 12
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            通过上面的例子可以看到，我们使用
+            <code>let</code>
+            定义的
+            <strong>item</strong>
+            ，在循环过程中代表每一项的索引，当然我们也可以在
+            <code>for</code>
+            代码块中使用表达式，来完成值的输出：
+        </p>
+        <pre><code class="language-xml">@for(let item in list){
+    &lt;p&gt;@list[item]&lt;/p&gt;
+}
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through a list:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in list) {
+                &lt;li&gt;
+                    @list[item]
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;DemoRow&gt;
+        &lt;p&gt;The following is to loop through an object:&lt;/p&gt;
+        &lt;ul&gt;
+            @for(let item in obj) {
+                &lt;li&gt;
+                    @item
+                    :
+                    &lt;span&gt;@obj[item]&lt;/span&gt;
+                &lt;/li&gt;
+            }
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;];
+
+    obj = {
+        userName: &quot;Zhang San&quot;,
+        age: 12
+    };
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>除此上述使用方式外，我们也提供了一种全参数的循环语法：</p>
+        <pre><code class="language-xml">@for(let (index,item) in list){
+    &lt;p&gt;@list[index] ===  @item&lt;/p&gt;
+}
+</code></pre>
+        <p>
+            当 let 的值为
+            <code>()</code>
+            规则时，我们会将第一个参数作为 index 索引 key，第二个参数作为 item 项的 key。该用法只可以在
+            <code>for in</code>
+            指令中使用。
+        </p>
+        <h3>for(..;..;..)</h3>
+        <p>除了上述两种常用的循环指令，我们也提供了自定义表达式循环，我们可以使用自定义表达式完成更加复杂的循环。</p>
+        <p>例如：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;Loop with i + 2&lt;/p&gt;
+    &lt;ul&gt;
+        @for(let i = 0; i &lt; list.length; i = i + 2) {
+            &lt;li&gt;
+                @i
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+    &lt;p&gt;Output in reverse order &amp; i - 2&lt;/p&gt;
+    &lt;ul&gt;
+        @for(let i = list.length - 1; i &gt;= 0; i = i - 2) {
+            &lt;li&gt;
+                @i
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>我们不建议在表达式中对非 for 循环定义的值进行修改。</p>
+        </blockquote>
+        <h3>深入原理</h3>
+        <p>该小结我们主要介绍下，循环列表的数据响应机制以及节点更新机制。</p>
+        <p>
+            由于
+            <code>Joker</code>
+            数据响应处理是 VNode 关联实际输出节点，数据的变更会即时响应节点的变更操作，当我们对某一项进行修改时，最终也只会又一条 DOM 节点的变更操作被执行，无变更的节点不会执行更新操作。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo6)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;add&quot;&gt;Add&lt;/button&gt;
+        &lt;button @click=&quot;remove&quot;&gt;Remove&lt;/button&gt;
+        &lt;button @click=&quot;update&quot;&gt;Update&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    &lt;ul&gt;
+        @for(let item of model.list) {
+            &lt;li&gt;
+                Name: @item.userName
+            &lt;/li&gt;
+        }
+    &lt;/ul&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { Message } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        list: [] as any[]
+    };
+    add() {
+        this.model.list.push({
+            userName: &quot;User Name&quot; + new Date().getTime()
+        });
+    }
+
+    remove() {
+        this.model.list.pop();
+    }
+
+    update() {
+        if (this.model.list.length &gt; 1) {
+            this.model.list[0].userName = &quot;Zhang San&quot;;
+        } else {
+            Message(&quot;There must be at least one piece of data to test property changes.&quot;);
+        }
+    }
+}
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            当需要循环的列表/对象变更时
+            <code>（长度）</code>
+            ，我们会从头进行一次循环，将循环的
+            <strong>值</strong>
+            与已经渲染的值进行对比，若相同则不执行
+            <strong>Render</strong>
+            渲染，若有变更则销毁以渲染的节点，并插入新的节点；当循环结束后，会将
+            <strong>多出来的(本次渲染长度小于原长度)</strong>
+            进行销毁操作。值的注意的是，我们刚才提到的
+            <strong>值对比</strong>
+            是指
+            <strong>表达式的值</strong>
+            而非虚拟 DOM 对比，它的响应速度是极快的。
+        </p>
+        <p>
+            当更改列表/对象中属性的值时
+            <strong>（非长度变化）</strong>
+            ，不会触发列表循环，会直接去更新
+            <strong>列表项</strong>
+            的渲染节点。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo6 from "../../../examples/base/template-for/demo6.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/template-for/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/template-for/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/template-for/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-for/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-for/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo6,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

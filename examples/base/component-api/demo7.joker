@@ -1,0 +1,42 @@
+<template>
+    @if(model.hasOn) {
+        <button @click="handleOffClick">Unbind the event</button>
+        <button @click="handleTriggerClick">Trigger the event</button>
+    }
+    else {
+        <button @click="handleOnClick">Bind the event</button>
+    }
+</template>
+<script>
+import { Component, VNode } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        hasOn: false
+    };
+    handleOnClick() {
+        this.model.hasOn = true;
+        this.$on("event1", this.eventHandle);
+    }
+
+    handleOffClick() {
+        this.model.hasOn = false;
+        this.$off("event1", this.eventHandle);
+    }
+
+    handleTriggerClick() {
+        this.$trigger("event1", "I'm a string parameter. Did you receive it?");
+    }
+
+    eventHandle = (e: VNode.Event<string>) => {
+        MessageBox.alert(e.data);
+    };
+}
+</script>
+
+<style lang="scss" scoped>
+button {
+    margin-right: 10px;
+}
+</style>

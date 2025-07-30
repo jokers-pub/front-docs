@@ -1,0 +1,504 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Requester 请求处理程序</h2>
+        <p>
+            <code>Requester</code>
+            是一个用于处理 HTTP 请求的类，提供了请求前置、后置和错误处理回调，支持请求缓存、超时处理、Mock 数据等功能，同时可自定义请求和响应数据的转换以及错误处理逻辑。
+        </p>
+        <h2>引入模块</h2>
+        <pre><code class="language-typescript">import { Requester, RequestOption, RequesterOption } from &quot;./yourFilePath&quot;;
+</code></pre>
+        <h2>错误码常量</h2>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>常量名</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>ERROR_CODE_REQUEST_BREAK</code>
+                    </td>
+                    <td>请求中断错误码</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>ERROR_CODE_REQUEST_ABORT</code>
+                    </td>
+                    <td>请求中止错误码</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>ERROR_CODE_REQUEST_DEFAULT</code>
+                    </td>
+                    <td>默认请求错误码</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>ERROR_CDODE_TIME_OUT</code>
+                    </td>
+                    <td>请求超时错误码</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>类和类型定义</h2>
+        <h3>
+            <code>Requester</code>
+            类
+        </h3>
+        <h4>构造函数</h4>
+        <pre><code class="language-typescript">constructor(option: RequesterOption);
+</code></pre>
+        <ul>
+            <li>
+                <strong>参数</strong>
+                ：
+                <ul>
+                    <li>
+                        <code>option</code>
+                        ：
+                        <code>RequesterOption</code>
+                        类型，请求处理程序的配置选项。
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h4>属性</h4>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名</th>
+                    <th>类型</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>beforeCallbacks</code>
+                    </td>
+                    <td>
+                        <code>
+                            Callbacks&lt;(requestOption: RequestOption &amp; T) =&gt; false | Promise&lt;false&gt; | Promise&lt;void&gt; | void&gt;
+                        </code>
+                    </td>
+                    <td>请求前置回调函数集合</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>afterCallbacks</code>
+                    </td>
+                    <td>
+                        <code>
+                            Callbacks&lt;(requestOption: RequestOption &amp; T, data: any | RequestError, response?: Response) =&gt; void&gt;
+                        </code>
+                    </td>
+                    <td>请求后置回调函数集合</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>errorCallbacks</code>
+                    </td>
+                    <td>
+                        <code>Callbacks&lt;(error: RequestError&lt;T&gt;, response?: Response) =&gt; void&gt;</code>
+                    </td>
+                    <td>请求错误回调函数集合</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>requestList</code>
+                    </td>
+                    <td>
+                        <code>Array&lt;RequestQueueItem&gt;</code>
+                    </td>
+                    <td>请求中队列</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>方法</h4>
+        <h5>
+            <code>request</code>
+        </h5>
+        <pre><code class="language-typescript">public async request&lt;I = any, O = any&gt;(
+    url: string,
+    option?: Partial&lt;Omit&lt;RequestOption&lt;I&gt;, &quot;url&quot;&gt; &amp; T&gt;
+): Promise&lt;O&gt;;
+</code></pre>
+        <ul>
+            <li>
+                <strong>参数</strong>
+                ：
+                <ul>
+                    <li>
+                        <code>url</code>
+                        ：请求的 URL。
+                    </li>
+                    <li>
+                        <code>option</code>
+                        ：可选参数，请求配置选项，继承自
+                        <code>RequestOption</code>
+                        并可扩展。
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <strong>返回值</strong>
+                ：返回一个
+                <code>Promise</code>
+                ，解析为请求的响应数据。
+            </li>
+            <li>
+                <strong>描述</strong>
+                ：发起一个 HTTP 请求，支持缓存、超时处理、Mock 数据等功能。
+            </li>
+        </ul>
+        <h5>
+            <code>cancelAllRequest</code>
+        </h5>
+        <pre><code class="language-typescript">public cancelAllRequest();
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：取消所有正在进行的请求。
+            </li>
+        </ul>
+        <h3>
+            <code>RequestQueueItem</code>
+            类型
+        </h3>
+        <pre><code class="language-typescript">export type RequestQueueItem = {
+    cancel: Function;
+    option: RequestOption;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：请求队列项，包含取消请求的函数和请求配置选项。
+            </li>
+        </ul>
+        <h3>
+            <code>RequestError</code>
+            类型
+        </h3>
+        <pre><code class="language-typescript">export type RequestError&lt;T = any&gt; = {
+    code: string;
+    message: string;
+    data?: any;
+    option: RequestOption &amp; T;
+    e?: Error;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：请求错误信息，包含错误码、错误消息、请求配置选项等。
+            </li>
+        </ul>
+        <h3>
+            <code>RequesterOption</code>
+            类型
+        </h3>
+        <pre><code class="language-typescript">export type RequesterOption = {
+    base?: string;
+    timeout?: number | false;
+    errorCodeMessage?: Record&lt;string, string&gt;;
+    defaultErrorFunc?: (err: RequestError, response?: Response) =&gt; void;
+    transformReqData?: (
+        data: any,
+        option: RequestOption &amp; Record&lt;string, any&gt;,
+        requesteroption: RequesterOption
+    ) =&gt; any | Promise&lt;any&gt;;
+    transformRspData?: (
+        data: any,
+        option: RequestOption &amp; Record&lt;string, any&gt;,
+        requesteroption: RequesterOption
+    ) =&gt; any | Promise&lt;any&gt;;
+    analyRspResult?: (
+        data: any,
+        success: (data: any) =&gt; void,
+        error: (err: Omit&lt;RequestError, &quot;option&quot;&gt;) =&gt; void,
+        response: Response
+    ) =&gt; void;
+    mock?: (option: RequestOption &amp; Record&lt;string, any&gt;) =&gt; Promise&lt;any&gt;;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：请求处理程序的配置选项，包含以下属性：
+                <ul>
+                    <li>
+                        <code>base</code>
+                        ：请求地址根，可选。
+                    </li>
+                    <li>
+                        <code>timeout</code>
+                        ：接口超时时间，单位为秒，设置为
+                        <code>false</code>
+                        时不做超时处理，默认值为 10s。
+                    </li>
+                    <li>
+                        <code>errorCodeMessage</code>
+                        ：错误码 - 信息映射转译，可选。
+                    </li>
+                    <li>
+                        <code>defaultErrorFunc</code>
+                        ：自定义默认错误处理函数，可选。
+                    </li>
+                    <li>
+                        <code>transformReqData</code>
+                        ：自定义请求数据转换函数，可选。
+                    </li>
+                    <li>
+                        <code>transformRspData</code>
+                        ：自定义服务端返回数据转换函数，可选。
+                    </li>
+                    <li>
+                        <code>analyRspResult</code>
+                        ：自定义解析响应数据，并进行成功、失败分流的函数，可选。
+                    </li>
+                    <li>
+                        <code>mock</code>
+                        ：Mock 数据函数，可选。
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h3>
+            <code>RequestMethod</code>
+            类型
+        </h3>
+        <pre><code class="language-typescript">export type RequestMethod = &quot;GET&quot; | &quot;POST&quot; | &quot;DELETE&quot; | &quot;PUT&quot;;
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：支持的 HTTP 请求方法。
+            </li>
+        </ul>
+        <h3>
+            <code>RequestCacheOption</code>
+            类型
+        </h3>
+        <pre><code class="language-typescript">export type RequestCacheOption = {
+    id: string;
+    expires?: number;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：请求缓存配置选项，包含缓存 ID 和缓存过期时间（毫秒）。
+            </li>
+        </ul>
+        <h3>
+            <code>RequestOption</code>
+            类型
+        </h3>
+        <pre><code class="language-typescript">export type RequestOption&lt;T = any&gt; = {
+    url: string;
+    method: RequestMethod;
+    data?: T;
+    rspType?: &quot;json&quot; | &quot;stream&quot;;
+    timeout?: number | false;
+    mock?: boolean;
+    cache?: RequestCacheOption | true;
+    headers?: Record&lt;string, any&gt;;
+    error?: (err: RequestError, response?: Response) =&gt; void | false;
+    success?: (data: any, response?: Response) =&gt; void;
+    stream?: (chunk: string, allChunk: string, response?: Response) =&gt; void;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>描述</strong>
+                ：请求参数配置选项，包含以下属性：
+                <ul>
+                    <li>
+                        <code>url</code>
+                        ：请求的 URL。
+                    </li>
+                    <li>
+                        <code>method</code>
+                        ：HTTP 请求方法。
+                    </li>
+                    <li>
+                        <code>data</code>
+                        ：请求数据，可选。
+                    </li>
+                    <li>
+                        <code>rspType</code>
+                        ：响应数据类型，可选值为
+                        <code>&quot;json&quot;</code>
+                        或
+                        <code>&quot;stream&quot;</code>
+                        ，默认值为
+                        <code>&quot;json&quot;</code>
+                        。
+                    </li>
+                    <li>
+                        <code>timeout</code>
+                        ：接口超时时间，单位为秒，设置为
+                        <code>false</code>
+                        时不做超时处理，可选。
+                    </li>
+                    <li>
+                        <code>mock</code>
+                        ：是否使用 Mock 数据，可选。
+                    </li>
+                    <li>
+                        <code>cache</code>
+                        ：请求缓存配置选项，可选。
+                    </li>
+                    <li>
+                        <code>headers</code>
+                        ：请求头，可选。
+                    </li>
+                    <li>
+                        <code>error</code>
+                        ：请求错误处理函数，可选。
+                    </li>
+                    <li>
+                        <code>success</code>
+                        ：请求成功处理函数，可选。
+                    </li>
+                    <li>
+                        <code>stream</code>
+                        ：流式响应处理函数，可选。
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <h2>辅助函数</h2>
+        <h3>
+            <code>transformRequestBody</code>
+        </h3>
+        <pre><code class="language-typescript">function transformRequestBody(data: any);
+</code></pre>
+        <ul>
+            <li>
+                <strong>参数</strong>
+                ：
+                <ul>
+                    <li>
+                        <code>data</code>
+                        ：请求数据。
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <strong>返回值</strong>
+                ：返回一个对象，包含请求体和请求头。
+            </li>
+            <li>
+                <strong>描述</strong>
+                ：根据请求数据是否包含文件，将请求数据转换为合适的格式（
+                <code>FormData</code>
+                或 JSON 字符串）。
+            </li>
+        </ul>
+        <h2>使用示例</h2>
+        <pre><code class="language-typescript">// 创建请求处理程序实例
+const requester = new Requester({
+    base: &quot;https://api.example.com&quot;,
+    timeout: 10,
+    errorCodeMessage: {
+        &quot;404&quot;: &quot;未找到资源&quot;
+    },
+    defaultErrorFunc: (err, response) =&gt; {
+        console.error(&quot;默认错误处理:&quot;, err);
+    },
+    transformReqData: (data, option, requesterOption) =&gt; {
+        // 自定义请求数据转换
+        return data;
+    },
+    transformRspData: (data, option, requesterOption) =&gt; {
+        // 自定义响应数据转换
+        return data;
+    },
+    analyRspResult: (data, success, error, response) =&gt; {
+        // 自定义解析响应数据
+        if (data.code === 200) {
+            success(data.data);
+        } else {
+            error({
+                code: data.code.toString(),
+                message: data.message
+            });
+        }
+    },
+    mock: (option) =&gt; {
+        // Mock 数据
+        return Promise.resolve({
+            code: 200,
+            data: {
+                message: &quot;Mock 数据&quot;
+            }
+        });
+    }
+});
+
+// 添加请求前置回调
+requester.beforeCallbacks.add((requestOption) =&gt; {
+    console.log(&quot;请求前置回调:&quot;, requestOption);
+});
+
+// 添加请求后置回调
+requester.afterCallbacks.add((requestOption, data, response) =&gt; {
+    console.log(&quot;请求后置回调:&quot;, requestOption, data, response);
+});
+
+// 添加请求错误回调
+requester.errorCallbacks.add((error, response) =&gt; {
+    console.error(&quot;请求错误回调:&quot;, error, response);
+});
+
+// 发起请求
+requester
+    .request(&quot;users&quot;, {
+        method: &quot;GET&quot;,
+        cache: {
+            id: &quot;users&quot;,
+            expires: 60 * 1000 // 缓存 1 分钟
+        }
+    })
+    .then((data) =&gt; {
+        console.log(&quot;请求成功:&quot;, data);
+    })
+    .catch((error) =&gt; {
+        console.error(&quot;请求失败:&quot;, error);
+    });
+
+// 取消所有请求
+requester.cancelAllRequest();
+</code></pre>
+        <p>
+            以上示例展示了如何创建
+            <code>Requester</code>
+            实例，添加回调函数，发起请求以及取消所有请求。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

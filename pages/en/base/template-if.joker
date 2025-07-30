@@ -1,0 +1,391 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Conditional Rendering</h2>
+        <p>
+            This chapter mainly introduces how to implement a logical branch in the
+            <code>template</code>
+            template.
+        </p>
+        <h3>if</h3>
+        <p>
+            In the template, use
+            <code>
+                @("@if(condition){... }")
+            </code>
+            to implement a logical branch. It is used to conditionally render a block of content. This content will only be rendered when the expression of the directive returns a truthy value. The condition in
+            <code>if(condition)</code>
+            can be a value, an expression, a property, or a method call.
+        </p>
+        <pre><code class="language-xml">@if(value){
+    &lt;p&gt;This is a paragraph&lt;/p&gt;
+}
+</code></pre>
+        <p>
+            From the above code example, it can be seen that the syntax is the same as that of
+            <code>if</code>
+            in JavaScript, except that the
+            <code>if / else if / else</code>
+            directives provided by Joker must use
+            <code>
+                {}
+            </code>
+            to enclose your content, and the curly braces
+            <strong>cannot be omitted</strong>
+            .
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the rendering state&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;p&gt;I'm a paragraph.&lt;/p&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: false
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>else if</h3>
+        <p>
+            <code>else if</code>
+            cannot exist independently. It must be used together with the
+            <code>if</code>
+            directive. When using
+            <code>else if</code>
+            , there is no need to add
+            <code>@</code>
+            in front. The start of
+            <code>if</code>
+            already indicates the start of a directive, and
+            <code>else if</code>
+            is just a logical branch syntax.
+        </p>
+        <p>
+            <strong>else if</strong>
+            and
+            <strong>if</strong>
+            must be adjacent and at the same level. They cannot be associated across positions or levels.
+        </p>
+        <pre><code class="language-xml">@if(value === 1){
+    &lt;p&gt;This is paragraph one&lt;/p&gt;
+}
+else if(value === 2){
+    &lt;p&gt;This is paragraph two&lt;/p&gt;
+}
+else if(value === 3){
+    &lt;p&gt;This is paragraph three&lt;/p&gt;
+}
+...
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value ( value=@model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.value === 1) {
+        &lt;p&gt;I'm paragraph one.&lt;/p&gt;
+    }
+    else if(model.value === 2) {
+        &lt;p&gt;I'm paragraph two.&lt;/p&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                It should be noted that the
+                <code>if</code>
+                judgments are made in order from top to bottom. If the previous judgment is
+                <code>true</code>
+                , even if the conditions of the subsequent
+                <code>else if</code>
+                are also
+                <code>true</code>
+                , it will not be rendered (the single-judgment condition will be executed, see the following text).
+            </p>
+        </blockquote>
+        <p>
+            Here, it should be noted that
+            <strong>if</strong>
+            and
+            <strong>else if</strong>
+            in
+            <code>template</code>
+            do not execute from top to bottom every time like our traditional coding operation mechanism. Although we have implemented a top-down condition operation mechanism and controlled its rendering internally, the judgment conditions in
+            <strong>if</strong>
+            and
+            <strong>else if</strong>
+            will be run and their results will be tried to be parsed every time. Therefore, the
+            <strong>constraint conditions should be independent rather than related</strong>
+            to achieve the
+            <code>extreme responsive performance experience of local condition updates in else if</code>
+            . Let's take a look at an example:
+        </p>
+        <pre><code class="language-xml">@if(array === undefined){
+    &lt;p&gt;This is paragraph one&lt;/p&gt;
+}
+else if(array.length === 0){
+    &lt;p&gt;This is paragraph two&lt;/p&gt;
+}
+else {
+    &lt;p&gt;This is paragraph three&lt;/p&gt;
+}
+</code></pre>
+        <p>
+            From the above example, it can be seen that if
+            <code>array</code>
+            is
+            <code>undefined</code>
+            , the judgment condition in
+            <code>else if</code>
+            will report an error because it cannot read the
+            <code>length</code>
+            property. So the correct way to write it is:
+        </p>
+        <pre><code class="language-xml">@if(array === undefined){
+    &lt;p&gt;This is paragraph one&lt;/p&gt;
+}
+else if(array &amp;&amp; array.length === 0){
+    &lt;p&gt;This is paragraph two&lt;/p&gt;
+}
+else {
+    &lt;p&gt;This is paragraph three&lt;/p&gt;
+}
+</code></pre>
+        <h3>else</h3>
+        <p>
+            The
+            <code>else</code>
+            keyword can form a pair with
+            <code>if</code>
+            , or it can form a pair with other
+            <code>else if</code>
+            statements in an
+            <code>if-else</code>
+            chain. When the
+            <code>if</code>
+            condition is not met, the program will continue to execute the code block following
+            <code>else</code>
+            . In an
+            <code>if-else</code>
+            chain, only the last
+            <code>else</code>
+            (if there is no
+            <code>else if</code>
+            statement) can exist independently, and other
+            <code>else</code>
+            must form a pair with
+            <code>if</code>
+            or
+            <code>else if</code>
+            .
+        </p>
+        <pre><code class="language-xml">@if(value === 1){
+    &lt;p&gt;This is paragraph one&lt;/p&gt;
+}
+else if(value === 2){
+    &lt;p&gt;This is paragraph two&lt;/p&gt;
+}
+else {
+    &lt;p&gt;This is paragraph three&lt;/p&gt;
+}
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value ( value=@model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.value === 1) {
+        &lt;p&gt;I'm paragraph one.&lt;/p&gt;
+    }
+    else if(model.value === 2) {
+        &lt;p&gt;I'm paragraph two.&lt;/p&gt;
+    }
+    else {
+        &lt;p&gt;I'm paragraph three.&lt;/p&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>In-depth Principles</h3>
+        <p>
+            During conditional rendering, only the logical block whose first condition is met will be rendered. Otherwise, the
+            <code>else</code>
+            logical block will be rendered or nothing will be rendered (if there is no
+            <code>else</code>
+            ). When we need to dynamically configure the display state of a component, its display and hiding are actually operations of
+            <strong>creating</strong>
+            and
+            <strong>destroying</strong>
+            a component.
+        </p>
+        <p>Let's feel the actual working principle of the logical block through the following example:</p>
+        <p>This is the code of the child component</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;I'm the child component @props.name&lt;/p&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    import { Message } from &quot;@joker.front/ui&quot;;
+
+    export default class extends Component&lt;{
+        name: string
+    }&gt; {
+        mounted() {
+            Message({
+                message: `${this.props.name} has been initialized and mounted`,
+                type: &quot;success&quot;
+            });
+        }
+        beforeDestroy() {
+            Message({
+                message: `${this.props.name} has been destroyed`,
+                type: &quot;warning&quot;
+            });
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value ( value=@model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.value === 1) {
+        &lt;MyComponent name=&quot;One&quot; /&gt;
+    }
+    else if(model.value === 2) {
+        &lt;MyComponent name=&quot;Two&quot; /&gt;
+    }
+    else {
+        &lt;MyComponent name=&quot;Three&quot; /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    components = {
+        MyComponent
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            Of course, you can also use
+            <code>keep-alive</code>
+            in
+            <code>if</code>
+            to meet the need for state retention during switching.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;MyComponent keep-alive /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children-keep.joker&quot;;
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    components = {
+        MyComponent
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/template-if/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/template-if/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/template-if/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-if/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-if/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

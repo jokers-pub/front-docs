@@ -1,0 +1,116 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Overview of Joker Component Styles</h2>
+        <p>
+            This chapter mainly introduces the rendering styles of the component template. We can use the
+            <code>style</code>
+            tag to add styles to the template.
+        </p>
+        <h3>Overview</h3>
+        <p>
+            The
+            <code>style</code>
+            tag supports three types of style languages. By default, it is
+            <code>css</code>
+            , and in addition, it also includes
+            <code>scss</code>
+            and
+            <code>less</code>
+            . We can switch the style language by configuring the
+            <code>lang</code>
+            attribute of the
+            <code>style</code>
+            tag (after switching, the Joker Front Tools VSCODE extension will also automatically switch the corresponding style highlighting and code-checking mechanisms). Now, let's take a look at an example:
+        </p>
+        <pre><code class="language-html">&lt;style lang=&quot;scss&quot;&gt;
+    div {
+        span {
+            background: red;
+        }
+    }
+&lt;/style&gt;
+</code></pre>
+        <h3>Style Scope</h3>
+        <p>
+            In addition to the
+            <code>lang</code>
+            attribute, the
+            <code>style</code>
+            tag also provides the
+            <code>scoped</code>
+            style. When the
+            <code>&lt;style&gt;</code>
+            tag has the
+            <code>scoped</code>
+            attribute, its CSS will only affect the elements of the current component, which is similar to the style encapsulation in Shadow DOM. There are some precautions when using it, but the advantage is that no polyfill is required. Its implementation method is through PostCSS to transform the following content:
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;example&quot;&gt;Hello&lt;/div&gt;
+&lt;/template&gt;
+&lt;style scoped&gt;
+    .example {
+        color: red;
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>Into:</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;example&quot; data-scoped-981d2c8a&gt;Hello&lt;/div&gt;
+&lt;/template&gt;
+&lt;style&gt;
+    .example[data-scoped-981d2c8a] {
+        color: red;
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>Using the style scope can effectively isolate the styles between components.</p>
+        <h3>Style Penetration</h3>
+        <p>
+            After using
+            <code>scoped</code>
+            , the styles of the parent component will not penetrate into the child component. However, the root node of the child component will be affected by both the scoped styles of the parent component and the scoped styles of the child component. This design allows the parent component to adjust the style of the root element of its child component from a layout perspective.
+        </p>
+        <p>
+            Of course, in some specific scenarios where we need to change the style of a child component with
+            <code>scoped</code>
+            from the parent node, we can use
+            <code>:deep()</code>
+            to penetrate the style and achieve the style change of the child component. For example:
+        </p>
+        <pre><code class="language-html">&lt;style scoped&gt;
+    .a :deep(.b) {
+        /*... */
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>The above code will be compiled into:</p>
+        <pre><code class="language-css">.a[data-scoped-981d2c8a].b {
+    /*... */
+}
+</code></pre>
+        <p>
+            We often use style penetration to control the styles of child components. Of course, we can also use style penetration in the child component to change the style of the
+            <strong>block template of the parent container</strong>
+            .
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

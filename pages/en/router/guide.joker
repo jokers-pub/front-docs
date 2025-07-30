@@ -1,0 +1,93 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Getting Started</h2>
+        <p>Next, we'll learn how to use Joker Router in a project through this section.</p>
+        <blockquote>
+            <p>
+                The following example is a simple case of first-level routing. Scenarios such as nested routing and route state preservation will be introduced in detail in subsequent tutorials. This section only serves as an introductory guide.
+            </p>
+        </blockquote>
+        <h3>Create an Entry File/Layout File</h3>
+        <p>
+            In the
+            <code>main entry</code>
+            file
+            <strong>(App.joker)</strong>
+            of the project, we configure the
+            <code>router-view</code>
+            component in the
+            <code>template</code>
+            block. This component represents the rendering position of our dynamic components in the following.
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;h1&gt;Welcome to use Joker Router&lt;/h1&gt;
+    &lt;div&gt;
+        &lt;p&gt;Below is the component rendering block:&lt;/p&gt;
+        &lt;router-view&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</code></pre>
+        <h3>Create a Component (Block Page)</h3>
+        <p>
+            <strong>What is a block page?</strong>
+            A page can consist of multiple different parts, such as the
+            <code>header</code>
+            ,
+            <code>menu</code>
+            ,
+            <code>content block</code>
+            , etc. Each block can be a partial page and the new page components will be updated on-demand when the route changes.
+        </p>
+        <p>
+            <img src="/router/layout.png" alt="Layout" />
+        </p>
+        <p>
+            For how to create a page, please refer to
+            <a href="/base/component" target="_blank">Component Overview</a>
+            .
+        </p>
+        <h3>Initialize the Router and Register Routes</h3>
+        <pre><code class="language-js">import { Router } from &quot;@joker.front/rourter&quot;;
+
+// Main entry file/main layout file
+import App from &quot;./app.joker&quot;;
+
+// My block page
+import MyPage from &quot;./my-page.joker&quot;;
+
+new Router({
+    routes: [
+        { path: &quot;/&quot;, redirect: &quot;/index&quot; },
+        { path: &quot;/index&quot;, component: MyPage }
+    ]
+});
+
+// Initialize the main entry
+new App().$mount(document.getElementById(&quot;app&quot;));
+</code></pre>
+        <p>
+            Joker Router depends on Joker Core, which provides the
+            <code>&lt;router-view&gt;</code>
+            routing component.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

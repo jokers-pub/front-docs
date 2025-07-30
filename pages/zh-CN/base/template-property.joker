@@ -1,0 +1,403 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>内置属性</h2>
+        <p>本节将重点介绍模板中内建的一些高效功能属性。这些属性旨在协助开发人员迅速应对常见开发场景，提升开发效率。</p>
+        <h3>ref（标记）</h3>
+        <p>
+            通过这些属性，您可以给标签打上标记，这样在使用
+            <a href="#base/component-api">组件 API</a>
+            中的
+            <code>$getRef</code>
+            等方法时，就能够快速定位到这些已标记的标签。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div ref=&quot;myDiv&quot;&gt;&lt;/div&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    export default class extends Component {
+        test() {
+            this.$getRef(&quot;myDiv&quot;);
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <h3>keep-alive（保持状态）</h3>
+        <p>
+            通过配置该属性来实现对一个
+            <strong>组件</strong>
+            的状态保留，使其在渲染/销毁切换时可以保留过程状态，该属性一般配合 if 指令一起使用。
+        </p>
+        <p>通过下面这个例子来了解下：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;template keep-alive&gt;
+            &lt;input type=&quot;text&quot; placeholder=&quot;Enter content to observe the state&quot; /&gt;
+        &lt;/template&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            该属性一定是作用于
+            <strong>组件</strong>
+            类型标签上的，当然你可以可以参考上述例子，使用虚拟组件来进行包裹，实现保持状态的功能。
+        </p>
+        <p>既然数据被保留，那我们什么时候会真正的销毁掉该组件的实例呢？接下来我们来介绍下 keep-alive 的销毁机制：</p>
+        <p>
+            通过学习
+            <a href="/base/component-api" target="_blank">组件方法</a>
+            中的
+            <code>$destroy</code>
+            方法可以知道，只有在该方法的传入参数为
+            <code>true</code>
+            时才会被销毁。
+        </p>
+        <p>
+            我们刚才的例子使用的 if 判断，在条件不成立进行内容销毁时，并未指定为强制销毁，所以它才会支持保持状态的能力。
+        </p>
+        <blockquote>
+            <p>睡眠的节点，只是不存在 DOM 树的挂载关系，但是虚拟节点和组件实例仍然存在。</p>
+        </blockquote>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle&lt;/button&gt;
+        &lt;button @click=&quot;handleGetRefClick&quot;&gt;Get ref&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    &lt;p&gt;
+        You can first hide the input box and then click &quot;Get ref&quot; to understand the destruction mechanism of the component in the sleep state.
+    &lt;/p&gt;
+    @if(model.isShow) {
+        &lt;template keep-alive&gt;
+            &lt;input ref=&quot;input&quot; type=&quot;text&quot; placeholder=&quot;Enter content to observe the state&quot; /&gt;
+        &lt;/template&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+
+    handleGetRefClick() {
+        MessageBox.alert(&quot;Retrieved: &quot; + this.$getRefs(&quot;input&quot;)?.length + &quot; virtual nodes&quot;);
+    }
+}
+&lt;/script&gt;
+
+
+&lt;style scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <div class="warning">
+            <p>
+                当我们的上级或自身组件被销毁时，若
+                <code>isKeepalive</code>
+                属性为
+                <code>false</code>
+                或存在强制销毁的要求，我们将依次向下销毁所有保持状态的组件。
+            </p>
+        </div>
+        <h3>transition-name/transition-type（动画）</h3>
+        <p>
+            transition-name/transition-type 是 Joker Core 提供的节点动画功能属性，该属性提供
+            <code>enter</code>
+            /
+            <code>leave</code>
+            两种状态动画，分别对应组件的挂载和销毁。
+        </p>
+        <p>先看一个例子，该例子借用 joker.front/ui 组件库中的动画来展示它的工作原理：</p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;div class=&quot;demo&quot; transition-name=&quot;jk-fade-in&quot;&gt;&lt;/div&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+.demo {
+    height: 100px;
+    width: 100px;
+    background: var(--jk-color-primary);
+}
+&lt;/style&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            我们有六个 CSS 类，它们分别用于定义进入和离开的过渡效果。每个过渡效果类别（enter 和 leave）各有三个对应的样式类。以下是对应于进入效果的三个样式类：
+        </p>
+        <ul>
+            <li>
+                <strong>from</strong>
+                作为动画开始的起始样式，会在动画开始时被添加到节点。
+            </li>
+            <li>
+                在 from 样式添加完毕后，等待下一帧动画处理完毕后，会添加
+                <strong>active</strong>
+                样式，并移除
+                <strong>from</strong>
+                样式，移除后立即添加
+                <strong>to</strong>
+                样式。
+            </li>
+        </ul>
+        <p>
+            <img src="/base/transition-name.png" alt="transition-name" />
+        </p>
+        <pre><code class="language-scss">.jk-fade-in-enter-active,
+.jk-fade-in-leave-active {
+    transition: all 0.2s cubic-bezier(0.55, 0, 0.1, 1);
+}
+.jk-fade-in-enter-from,
+.jk-fade-in-leave-to {
+    opacity: 0;
+}
+</code></pre>
+        <p>
+            transition-type 属性默认为
+            <strong>transition</strong>
+            ，当然我们也可以指定该属性为
+            <strong>animation</strong>
+            ，使用 animation 去完成动画。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;div class=&quot;demo&quot; transition-name=&quot;jk-dialog-fade&quot; transition-type=&quot;animation&quot;&gt;&lt;/div&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+
+&lt;style scoped lang=&quot;scss&quot;&gt;
+.demo {
+    height: 100px;
+    width: 100px;
+    background: var(--jk-color-primary);
+}
+
+.jk-dialog-fade-enter-from {
+    opacity: 0;
+}
+
+.jk-dialog-fade-enter-active {
+    animation: dialog-fade-in 0.3s;
+}
+.jk-dialog-fade-leave-active {
+    animation: dialog-fade-out 0.3s;
+}
+
+@keyframes dialog-fade-in {
+    0% {
+        transform: translate3d(0, -20px, 0);
+        opacity: 0;
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes dialog-fade-out {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate3d(0, -20px, 0);
+        opacity: 0;
+    }
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                注意，由于 Joker 的 template 模板是不限制根节点个数的，所以当为组件使用动画属性时，它只会作用于该组件的
+                <strong>第一级 &amp;&amp; 第一个</strong>
+                Element 元素上。
+            </p>
+        </blockquote>
+        <h3>append-to（变更输出位置）[高阶 API]</h3>
+        <p>
+            在组件开发中，经常需要将组件内的节点内容，例如下拉菜单或弹出窗口，投射到组件外部容器中。当组件需要独立挂载并且脱离原有 DOM 结构时，可以将内容直接注入到
+            <strong>body</strong>
+            中，此时可以使用特定的属性来迅速实现这一需求。
+        </p>
+        <pre><code class="language-html">&lt;div append-to=&quot;body&quot;&gt;我是一个div&lt;/div&gt;
+</code></pre>
+        <blockquote>
+            <p>
+                这里需要注意的是，我们只是修改了节点的 Render 渲染关系，但是不会影响到
+                <a href="/base/vnode" target="_blank">VNode</a>
+                树结构，虚拟节点树仍然会按照我们组件内的层级关系存在。我们仍然可以使用
+                <code>$getRef</code>
+                方法来获取到，并且当我们使用
+                <strong>outside</strong>
+                事件修饰符时，即使它的输出结构已经改变，但是它也会受
+                <a href="/base/vnode" target="_blank">VNode</a>
+                树结构影响。
+            </p>
+        </blockquote>
+        <p>接下来我们用一个示例来展示下工作原理：</p>
+        <p>
+            我们通过 append-to 向 body 中输出一个
+            <strong>absolute</strong>
+            定位的元素块。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle&lt;/button&gt;
+        &lt;button @click=&quot;handleFindClick&quot;&gt;Check if there is an element with ref='demo' in the current component&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;div @click=&quot;hide&quot; class=&quot;demo&quot; ref=&quot;demo&quot; append-to=&quot;body&quot;&gt;I'm appended to the body&lt;/div&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: false
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+
+    handleFindClick() {
+        MessageBox.alert(`Found ` + this.$getRefs(&quot;demo&quot;)?.length + &quot; elements&quot;);
+    }
+
+    hide() {
+        this.model.isShow = false;
+    }
+}
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+.demo {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    color: #fff;
+    line-height: 2;
+    cursor: pointer;
+    text-align: center;
+    transform: translateX(-50%);
+    background: var(--jk-color-primary);
+}
+
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                append-to 支持两种类型的值，分别是：
+                <code>VNode.Node</code>
+                和
+                <code>string</code>
+                ，当为 string 时，会按照
+                <strong>document.querySelector</strong>
+                ，去获取目标容器。
+            </p>
+        </blockquote>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/template-property/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/template-property/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/template-property/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-property/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-property/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

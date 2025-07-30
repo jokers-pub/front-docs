@@ -1,0 +1,26 @@
+<template>
+    <ul>
+        @for(let name in testValue) {
+            <li>
+                @name
+                : @testValue[name]
+            </li>
+        }
+    </ul>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    testValue = {
+        objectValue: { name: "1" },
+        arrayValue: [1, 2, 3],
+        numberValue: 1,
+        undefinedValue: undefined,
+        nullValue: null,
+        falseValue: false,
+        trueValue: true
+    };
+}
+</script>
+

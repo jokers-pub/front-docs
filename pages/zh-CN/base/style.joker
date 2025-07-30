@@ -1,0 +1,100 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Joker 组件样式概述</h2>
+        <p>
+            该章节主要介绍组件 template 的渲染样式，我们可以使用
+            <code>style</code>
+            标签来为 template 模板添加样式。
+        </p>
+        <h3>概述</h3>
+        <p>
+            其中 style 支持三种样式语言，默认为
+            <code>css</code>
+            ，除此之外还包括
+            <code>scss</code>
+            和
+            <code>less</code>
+            两种。我们可以通过配置 style 的
+            <strong>lang</strong>
+            属性来切换我们的样式语言（切换后，Joker Front Tools VSCODE 扩展也会自动切换对应的样式高亮和代码检查机制），接下来我们一切看一下示例：
+        </p>
+        <pre><code class="language-html">&lt;style lang=&quot;scss&quot;&gt;
+    div {
+        span {
+            background: red;
+        }
+    }
+&lt;/style&gt;
+</code></pre>
+        <h3>样式作用域</h3>
+        <p>
+            除 lange 属性外，style 还提供了
+            <code>scoped</code>
+            样式，当 &lt;style&gt; 标签带有 scoped attribute 的时候，它的 CSS 只会影响当前组件的元素，和 Shadow DOM 中的样式封装类似。使用时有一些注意事项，不过好处是不需要任何的 polyfill。它的实现方式是通过 PostCSS 将以下内容：
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;example&quot;&gt;你好&lt;/div&gt;
+&lt;/template&gt;
+&lt;style scoped&gt;
+    .example {
+        color: red;
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>转换为：</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div class=&quot;example&quot; data-scoped-981d2c8a&gt;你好&lt;/div&gt;
+&lt;/template&gt;
+&lt;style&gt;
+    .example[data-scoped-981d2c8a] {
+        color: red;
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>使用样式作用域可有效的进行组件之间的样式隔离。</p>
+        <h3>样式穿透</h3>
+        <p>
+            使用 scoped 后，父组件的样式将不会渗透到子组件中。不过，子组件的根节点会同时被父组件的作用域样式和子组件的作用域样式影响。这样设计是为了让父组件可以从布局的角度出发，调整其子组件根元素的样式。
+        </p>
+        <p>
+            当然在某些特定场景需求我们需要在父节点去改变一个带有 scoped 的子组件样式时，我们可以使用
+            <code>:deep()</code>
+            去穿透样式去实现子组件的样式变更，例如：
+        </p>
+        <pre><code class="language-html">&lt;style scoped&gt;
+    .a :deep(.b) {
+        /* ... */
+    }
+&lt;/style&gt;
+</code></pre>
+        <p>上面的代码会被编译成：</p>
+        <pre><code class="language-css">.a[data-scoped-981d2c8a] .b {
+    /* ... */
+}
+</code></pre>
+        <p>
+            我们会经常使用样式穿透，来实现对子组件的样式控制，当然也可以在子组件使用样式穿透更改
+            <strong>父容器的区块模板</strong>
+            样式。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

@@ -1,0 +1,177 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>router-view 视图容器</h2>
+        <p>
+            本章主要介绍 Joker Router 中的核心组件：
+            <code>&lt;router-view&gt;</code>
+            ，它作为视图容器，提供页面组件的渲染容器。
+        </p>
+        <h3>什么是视图容器</h3>
+        <p>
+            我们可以将页面拆分为多个动态渲染区块，并通过
+            <code>视图容器&lt;router-view&gt;</code>
+            来动态渲染区块的页面组件。
+        </p>
+        <p>
+            一个页面中可以由多个不同的部分组成，例如：
+            <code>头部</code>
+            、
+            <code>菜单</code>
+            、
+            <code>内容区块</code>
+            等等，每个区块都可以是一个局部页面，并在路由变化时按需去更新新的页面组件。
+        </p>
+        <p>
+            <img src="/router/layout.png" alt="Layout" />
+        </p>
+        <h3>如何使用</h3>
+        <p>
+            我们可以在页面中添加
+            <code>&lt;router-view&gt;</code>
+            来创建一个动态视图容器，并通过 Router 的
+            <a href="/router/registry" target="_blank">配置</a>
+            来管理视图容器的渲染组件。
+        </p>
+        <pre><code class="language-html">&lt;div&gt;
+    &lt;router-view&gt;&lt;/router-view&gt;
+&lt;/div&gt;
+</code></pre>
+        <h3>命名视图容器</h3>
+        <p>
+            我们可以在一个页面中配置多个视图容器，为了明确不同容器的渲染组件，我们通过配置
+            <code>name</code>
+            属性来设置该视图容器需要渲染的组件。：
+        </p>
+        <pre><code class="language-html">&lt;div&gt;
+    &lt;div class=&quot;top&quot;&gt;
+        &lt;router-view name=&quot;top&quot;&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;content&quot;&gt;
+        &lt;router-view name=&quot;content&quot;&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bottom&quot;&gt;
+        &lt;router-view name=&quot;bottom&quot;&gt;&lt;/router-view&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+        <p>
+            命名视图容器通常需要与路由配置中的
+            <code>components</code>
+            字段协同工作。当路由设置中定义了多个视图组件时，这些组件便可以在各自的视图容器中按路由匹配进行渲染。
+        </p>
+        <h3>事件 [updated]</h3>
+        <p>
+            视图容器提供
+            <code>updated</code>
+            事件，该事件在视图组件加载完成并装入视图容器后触发执行。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;router-view @updated=&quot;handleUpdated&quot;&gt;&lt;/router-view&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+    import {Component} from &quot;@joker.front/core&quot;;
+    import {RouterViewUpdatedEventData} from &quot;@joker.front/router&quot;;
+
+    export class extends Component{
+        handleUpdated(e:VNode.Event&lt;RouterViewUpdatedEventData&gt;){
+            //TODO: e.data
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <p>
+            其中
+            <code>RouterViewUpdatedEventData</code>
+            作为
+            <strong>updated</strong>
+            事件的参数类型它包括：
+        </p>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>属性名称</th>
+                    <th>说明</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>deep</td>
+                    <td>
+                        当前视图容器层级，详细可了解
+                        <a href="/router/nested-routes" target="_blank">嵌套路由</a>
+                    </td>
+                    <td>number</td>
+                </tr>
+                <tr>
+                    <td>isLeaf</td>
+                    <td>
+                        是否是叶子容器，详细可了解
+                        <a href="/router/nested-routes" target="_blank">嵌套路由</a>
+                    </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>keepAlive</td>
+                    <td>是否保持状态</td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <td>component</td>
+                    <td>当前视图容器装载的组件实例</td>
+                    <td>
+                        <a href="/base/component-property" target="_blank">Component</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>currentRoute</td>
+                    <td>当前路由信息</td>
+                    <td>RouteLocation</td>
+                </tr>
+                <tr>
+                    <td>routeRecord</td>
+                    <td>当前匹配的路由记录</td>
+                    <td>RouteRecord</td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>待渲染区块传递</h3>
+        <p>
+            <code>&lt;router-view&gt;</code>
+            作为组件也支持待渲染区块传递。
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;router-view&gt;
+        &lt;p&gt;我是待渲染区块模板&lt;/p&gt;
+    &lt;/router-view&gt;
+&lt;/template&gt;
+</code></pre>
+        <p>
+            上面示例可以看出，我们会把
+            <code>router-view</code>
+            中的
+            <a href="/base/template-section" target="_blank">section</a>
+            传递到装载组件中，交由渲染组件去执行相应的渲染。
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

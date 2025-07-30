@@ -1,0 +1,494 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Requester Request Handler</h2>
+        <p>
+            <code>Requester</code>
+            is a class designed to handle HTTP requests. It offers pre-request, post-request, and error-handling callbacks, supports features such as request caching, timeout handling, and Mock data. Additionally, it allows for customizing the transformation of request and response data, as well as the error-handling logic.
+        </p>
+        <h2>Importing Modules</h2>
+        <pre><code class="language-typescript">import { Requester, RequestOption, RequesterOption } from &quot;./yourFilePath&quot;;
+</code></pre>
+        <h2>Error Code Constants</h2>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Constant Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>ERROR_CODE_REQUEST_BREAK</code>
+                    </td>
+                    <td>Request interruption error code</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>ERROR_CODE_REQUEST_ABORT</code>
+                    </td>
+                    <td>Request abort error code</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>ERROR_CODE_REQUEST_DEFAULT</code>
+                    </td>
+                    <td>Default request error code</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>ERROR_CDODE_TIME_OUT</code>
+                    </td>
+                    <td>Request timeout error code</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>Class and Type Definitions</h2>
+        <h3>
+            <code>Requester</code>
+            Class
+        </h3>
+        <h4>Constructor</h4>
+        <pre><code class="language-typescript">constructor(option: RequesterOption);
+</code></pre>
+        <ul>
+            <li>
+                <strong>Parameters</strong>
+                :
+            </li>
+            <li>
+                <code>option</code>
+                : of type
+                <code>RequesterOption</code>
+                , which represents the configuration options for the request handler.
+            </li>
+        </ul>
+        <h4>Properties</h4>
+        <table class="mkd-table">
+            <thead>
+                <tr>
+                    <th>Property Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <code>beforeCallbacks</code>
+                    </td>
+                    <td>
+                        <code>
+                            Callbacks&lt;(requestOption: RequestOption &amp; T) =&gt; false | Promise&lt;false&gt; | Promise&lt;void&gt; | void&gt;
+                        </code>
+                    </td>
+                    <td>Collection of pre-request callback functions</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>afterCallbacks</code>
+                    </td>
+                    <td>
+                        <code>
+                            Callbacks&lt;(requestOption: RequestOption &amp; T, data: any | RequestError, response?: Response) =&gt; void&gt;
+                        </code>
+                    </td>
+                    <td>Collection of post-request callback functions</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>errorCallbacks</code>
+                    </td>
+                    <td>
+                        <code>Callbacks&lt;(error: RequestError&lt;T&gt;, response?: Response) =&gt; void&gt;</code>
+                    </td>
+                    <td>Collection of request error callback functions</td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>requestList</code>
+                    </td>
+                    <td>
+                        <code>Array&lt;RequestQueueItem&gt;</code>
+                    </td>
+                    <td>Queue of ongoing requests</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4>Methods</h4>
+        <h5>
+            <code>request</code>
+        </h5>
+        <pre><code class="language-typescript">public async request&lt;I = any, O = any&gt;(
+    url: string,
+    option?: Partial&lt;Omit&lt;RequestOption&lt;I&gt;, &quot;url&quot;&gt; &amp; T&gt;
+): Promise&lt;O&gt;;
+</code></pre>
+        <ul>
+            <li>
+                <strong>Parameters</strong>
+                :
+            </li>
+            <li>
+                <code>url</code>
+                : The URL of the request.
+            </li>
+            <li>
+                <code>option</code>
+                : Optional parameter. Request configuration options, inheriting from
+                <code>RequestOption</code>
+                and allowing for extensions.
+            </li>
+            <li>
+                <strong>Return Value</strong>
+                : Returns a
+                <code>Promise</code>
+                that resolves to the response data of the request.
+            </li>
+            <li>
+                <strong>Description</strong>
+                : Initiates an HTTP request, supporting features such as caching, timeout handling, and Mock data.
+            </li>
+        </ul>
+        <h5>
+            <code>cancelAllRequest</code>
+        </h5>
+        <pre><code class="language-typescript">public cancelAllRequest();
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Cancels all ongoing requests.
+            </li>
+        </ul>
+        <h3>
+            <code>RequestQueueItem</code>
+            Type
+        </h3>
+        <pre><code class="language-typescript">export type RequestQueueItem = {
+    cancel: Function;
+    option: RequestOption;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Represents an item in the request queue, containing a function to cancel the request and the request configuration options.
+            </li>
+        </ul>
+        <h3>
+            <code>RequestError</code>
+            Type
+        </h3>
+        <pre><code class="language-typescript">export type RequestError&lt;T = any&gt; = {
+    code: string;
+    message: string;
+    data?: any;
+    option: RequestOption &amp; T;
+    e?: Error;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Holds information about the request error, including the error code, error message, and request configuration options.
+            </li>
+        </ul>
+        <h3>
+            <code>RequesterOption</code>
+            Type
+        </h3>
+        <pre><code class="language-typescript">export type RequesterOption = {
+    base?: string;
+    timeout?: number | false;
+    errorCodeMessage?: Record&lt;string, string&gt;;
+    defaultErrorFunc?: (err: RequestError, response?: Response) =&gt; void;
+    transformReqData?: (
+        data: any,
+        option: RequestOption &amp; Record&lt;string, any&gt;,
+        requesteroption: RequesterOption
+    ) =&gt; any | Promise&lt;any&gt;;
+    transformRspData?: (
+        data: any,
+        option: RequestOption &amp; Record&lt;string, any&gt;,
+        requesteroption: RequesterOption
+    ) =&gt; any | Promise&lt;any&gt;;
+    analyRspResult?: (
+        data: any,
+        success: (data: any) =&gt; void,
+        error: (err: Omit&lt;RequestError, &quot;option&quot;&gt;) =&gt; void,
+        response: Response
+    ) =&gt; void;
+    mock?: (option: RequestOption &amp; Record&lt;string, any&gt;) =&gt; Promise&lt;any&gt;;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Configuration options for the request handler, including the following properties:
+            </li>
+            <li>
+                <code>base</code>
+                : The root of the request address, optional.
+            </li>
+            <li>
+                <code>timeout</code>
+                : Interface timeout in seconds. Set to
+                <code>false</code>
+                to disable timeout handling. The default value is 10 seconds.
+            </li>
+            <li>
+                <code>errorCodeMessage</code>
+                : Mapping and translation of error codes to error messages, optional.
+            </li>
+            <li>
+                <code>defaultErrorFunc</code>
+                : Custom default error-handling function, optional.
+            </li>
+            <li>
+                <code>transformReqData</code>
+                : Custom function for transforming request data, optional.
+            </li>
+            <li>
+                <code>transformRspData</code>
+                : Custom function for transforming server-returned response data, optional.
+            </li>
+            <li>
+                <code>analyRspResult</code>
+                : Custom function for parsing response data and diverting between success and failure, optional.
+            </li>
+            <li>
+                <code>mock</code>
+                : Function for providing Mock data, optional.
+            </li>
+        </ul>
+        <h3>
+            <code>RequestMethod</code>
+            Type
+        </h3>
+        <pre><code class="language-typescript">export type RequestMethod = &quot;GET&quot; | &quot;POST&quot; | &quot;DELETE&quot; | &quot;PUT&quot;;
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Supported HTTP request methods.
+            </li>
+        </ul>
+        <h3>
+            <code>RequestCacheOption</code>
+            Type
+        </h3>
+        <pre><code class="language-typescript">export type RequestCacheOption = {
+    id: string;
+    expires?: number;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Configuration options for request caching, including the cache ID and cache expiration time (in milliseconds).
+            </li>
+        </ul>
+        <h3>
+            <code>RequestOption</code>
+            Type
+        </h3>
+        <pre><code class="language-typescript">export type RequestOption&lt;T = any&gt; = {
+    url: string;
+    method: RequestMethod;
+    data?: T;
+    rspType?: &quot;json&quot; | &quot;stream&quot;;
+    timeout?: number | false;
+    mock?: boolean;
+    cache?: RequestCacheOption | true;
+    headers?: Record&lt;string, any&gt;;
+    error?: (err: RequestError, response?: Response) =&gt; void | false;
+    success?: (data: any, response?: Response) =&gt; void;
+    stream?: (chunk: string, allChunk: string, response?: Response) =&gt; void;
+};
+</code></pre>
+        <ul>
+            <li>
+                <strong>Description</strong>
+                : Configuration options for request parameters, including the following properties:
+            </li>
+            <li>
+                <code>url</code>
+                : The URL of the request.
+            </li>
+            <li>
+                <code>method</code>
+                : The HTTP request method.
+            </li>
+            <li>
+                <code>data</code>
+                : Request data, optional.
+            </li>
+            <li>
+                <code>rspType</code>
+                : The type of response data. Optional values are
+                <code>&quot;json&quot;</code>
+                or
+                <code>&quot;stream&quot;</code>
+                , with a default value of
+                <code>&quot;json&quot;</code>
+                .
+            </li>
+            <li>
+                <code>timeout</code>
+                : Interface timeout in seconds. Set to
+                <code>false</code>
+                to disable timeout handling, optional.
+            </li>
+            <li>
+                <code>mock</code>
+                : Whether to use Mock data, optional.
+            </li>
+            <li>
+                <code>cache</code>
+                : Configuration options for request caching, optional.
+            </li>
+            <li>
+                <code>headers</code>
+                : Request headers, optional.
+            </li>
+            <li>
+                <code>error</code>
+                : Request error-handling function, optional.
+            </li>
+            <li>
+                <code>success</code>
+                : Request success-handling function, optional.
+            </li>
+            <li>
+                <code>stream</code>
+                : Function for handling streaming responses, optional.
+            </li>
+        </ul>
+        <h2>Helper Functions</h2>
+        <h3>
+            <code>transformRequestBody</code>
+        </h3>
+        <pre><code class="language-typescript">function transformRequestBody(data: any);
+</code></pre>
+        <ul>
+            <li>
+                <strong>Parameters</strong>
+                :
+            </li>
+            <li>
+                <code>data</code>
+                : Request data.
+            </li>
+            <li>
+                <strong>Return Value</strong>
+                : Returns an object containing the request body and request headers.
+            </li>
+            <li>
+                <strong>Description</strong>
+                : Converts the request data into an appropriate format (
+                <code>FormData</code>
+                or JSON string) based on whether the request data contains files.
+            </li>
+        </ul>
+        <h2>Usage Example</h2>
+        <pre><code class="language-typescript">// Create an instance of the request handler
+const requester = new Requester({
+    base: &quot;https://api.example.com&quot;,
+    timeout: 10,
+    errorCodeMessage: {
+        &quot;404&quot;: &quot;Resource not found&quot;
+    },
+    defaultErrorFunc: (err, response) =&gt; {
+        console.error(&quot;Default error handling:&quot;, err);
+    },
+    transformReqData: (data, option, requesterOption) =&gt; {
+        // Custom request data transformation
+        return data;
+    },
+    transformRspData: (data, option, requesterOption) =&gt; {
+        // Custom response data transformation
+        return data;
+    },
+    analyRspResult: (data, success, error, response) =&gt; {
+        // Custom parsing of response data
+        if (data.code === 200) {
+            success(data.data);
+        } else {
+            error({
+                code: data.code.toString(),
+                message: data.message
+            });
+        }
+    },
+    mock: (option) =&gt; {
+        // Mock data
+        return Promise.resolve({
+            code: 200,
+            data: {
+                message: &quot;Mock data&quot;
+            }
+        });
+    }
+});
+
+// Add a pre-request callback
+requester.beforeCallbacks.add((requestOption) =&gt; {
+    console.log(&quot;Pre-request callback:&quot;, requestOption);
+});
+
+// Add a post-request callback
+requester.afterCallbacks.add((requestOption, data, response) =&gt; {
+    console.log(&quot;Post-request callback:&quot;, requestOption, data, response);
+});
+
+// Add a request error callback
+requester.errorCallbacks.add((error, response) =&gt; {
+    console.error(&quot;Request error callback:&quot;, error, response);
+});
+
+// Initiate a request
+requester
+    .request(&quot;users&quot;, {
+        method: &quot;GET&quot;,
+        cache: {
+            id: &quot;users&quot;,
+            expires: 60 * 1000 // Cache for 1 minute
+        }
+    })
+    .then((data) =&gt; {
+        console.log(&quot;Request succeeded:&quot;, data);
+    })
+    .catch((error) =&gt; {
+        console.error(&quot;Request failed:&quot;, error);
+    });
+
+// Cancel all requests
+requester.cancelAllRequest();
+</code></pre>
+        <p>
+            The above example demonstrates how to create an instance of
+            <code>Requester</code>
+            , add callback functions, initiate a request, and cancel all requests.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+export default class extends Component {
+    components = {
+        BottomNav
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

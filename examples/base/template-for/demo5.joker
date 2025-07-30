@@ -1,0 +1,25 @@
+<template>
+    <p>Loop with i + 2</p>
+    <ul>
+        @for(let i = 0; i < list.length; i = i + 2) {
+            <li>
+                @i
+            </li>
+        }
+    </ul>
+    <p>Output in reverse order & i - 2</p>
+    <ul>
+        @for(let i = list.length - 1; i >= 0; i = i - 2) {
+            <li>
+                @i
+            </li>
+        }
+    </ul>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component {
+    list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+}
+</script>

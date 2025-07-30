@@ -1,0 +1,372 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>条件渲染</h2>
+        <p>
+            该章节主要介绍在
+            <code>template</code>
+            模板中如何去实现一个逻辑分支。
+        </p>
+        <h3>if</h3>
+        <p>
+            在模板中使用
+            <code>
+                @("@if(条件)"){...}
+            </code>
+            ，来实现逻辑分支，它被用于条件性地渲染一块内容。这块内容只会在指令的表达式返回真值时才被渲染。
+            <code>if(条件)</code>
+            中的条件，可以为一个值、表达式、属性也可以是一个方法调用。
+        </p>
+        <pre><code class="language-xml">@if(value){
+    &lt;p&gt;我是一条段落&lt;/p&gt;
+}
+</code></pre>
+        <p>
+            通过上面的代码示例，可以看到语法上和 javascript 中 if 的使用规则是一样的，只不过 Joker 提供的
+            <code>if / else if / else</code>
+            指令都必须使用
+            <code>
+                {}
+            </code>
+            来包裹你的内容，大括号是
+            <strong>不可以被省略</strong>
+            的。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the rendering state&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;p&gt;I'm a paragraph.&lt;/p&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        isShow: false
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>else if</h3>
+        <p>
+            <code>else if</code>
+            不可独立存在，它一定是随着
+            <code>if</code>
+            指令一起使用的。在使用
+            <code>else if</code>
+            时，前面无需加入
+            <code>@</code>
+            。
+            <code>if</code>
+            的开始已经表明了一个指令的开始，
+            <code>else if</code>
+            只是作为一个逻辑的分支语法。
+        </p>
+        <p>
+            <strong>else if</strong>
+            和
+            <strong>if</strong>
+            必须是邻近同级，不可以隔位或跨级进行关联。
+        </p>
+        <pre><code class="language-xml">@if(value===1){
+    &lt;p&gt;我是段落一&lt;/p&gt;
+}
+else if(value===2){
+    &lt;p&gt;我是段落二&lt;/p&gt;
+}
+else if(value===3){
+    &lt;p&gt;我是段落三&lt;/p&gt;
+}
+...
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value ( value=@model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.value === 1) {
+        &lt;p&gt;I'm paragraph one.&lt;/p&gt;
+    }
+    else if(model.value === 2) {
+        &lt;p&gt;I'm paragraph two.&lt;/p&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                值的注意的是，if 判断的顺序是从上向下的，若前面的判断为 true 时，即时后面 else if 的条件也为 true，它也不会被渲染（单判断条件会执行，看后文）。
+            </p>
+        </blockquote>
+        <p>
+            这里需要注意的是，
+            <code>template</code>
+            中的
+            <strong>if</strong>
+            、
+            <strong>else if</strong>
+            ，不会像我们传统编码运行机制一样每次从上到下的去执行，虽然我们在内部实现了从上到下的条件运行机制并控制其渲染，但是
+            <strong>if</strong>
+            、
+            <strong>else if</strong>
+            中的判断条件每次都会去运行并尝试去解析结果，所以
+            <strong>约束条件要互相独立而不是关联的</strong>
+            ，这样的目的是实现 else if 的
+            <code>局部条件更新到达极致的响应性能体验</code>
+            ，我们结合一个例子看下：
+        </p>
+        <pre><code class="language-xml">@if(array===undefined){
+    &lt;p&gt;我是段落一&lt;/p&gt;
+}
+else if(array.length===0){
+    &lt;p&gt;我是段落二&lt;/p&gt;
+}
+else {
+    &lt;p&gt;我是段落三&lt;/p&gt;
+}
+</code></pre>
+        <p>
+            通过上面的例子可以看到，若
+            <code>array</code>
+            为 undefined 时，
+            <code>else if</code>
+            中的判断条件会报错，因为它无法读取 length 属性，所以正确的写法是：
+        </p>
+        <pre><code class="language-xml">@if(array===undefined){
+    &lt;p&gt;我是段落一&lt;/p&gt;
+}
+else if(array &amp;&amp; array.length===0){
+    &lt;p&gt;我是段落二&lt;/p&gt;
+}
+else {
+    &lt;p&gt;我是段落三&lt;/p&gt;
+}
+</code></pre>
+        <h3>else</h3>
+        <p>
+            <code>else</code>
+            关键字可以与
+            <code>if</code>
+            形成一对，也可以与
+            <code>if-else</code>
+            链中的其他
+            <code>else if</code>
+            语句形成一对。当
+            <code>if</code>
+            条件不满足时，程序会继续执行
+            <code>else</code>
+            后面的代码块。在一个
+            <code>if-else</code>
+            链中，只有最后一个
+            <code>else</code>
+            （如果没有
+            <code>else if</code>
+            语句）可以独立存在，其他
+            <code>else</code>
+            必须与
+            <code>if</code>
+            或
+            <code>else if</code>
+            形成一对。
+        </p>
+        <pre><code class="language-xml">@if(value===1){
+    &lt;p&gt;我是段落一&lt;/p&gt;
+}
+else if(value===2){
+    &lt;p&gt;我是段落二&lt;/p&gt;
+}
+else {
+    &lt;p&gt;我是段落三&lt;/p&gt;
+}
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value ( value=@model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.value === 1) {
+        &lt;p&gt;I'm paragraph one.&lt;/p&gt;
+    }
+    else if(model.value === 2) {
+        &lt;p&gt;I'm paragraph two.&lt;/p&gt;
+    }
+    else {
+        &lt;p&gt;I'm paragraph three.&lt;/p&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>深入原理</h3>
+        <p>
+            在条件渲染过程中，只有第一个条件符合的逻辑快才会被渲染，否则渲染
+            <code>else</code>
+            逻辑块或者不渲染(没有 else)，当我们需要动态去配置一个组件的展示状态时，他的展示和隐藏其实是一个组件
+            <strong>创建</strong>
+            和
+            <strong>销毁</strong>
+            的操作。
+        </p>
+        <p>通过下面的一个例子来感受下逻辑块实际的工作原理：</p>
+        <p>这是子组件的代码</p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;p&gt;我是子组件@props.name&lt;/p&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    import { Message } from &quot;@joker.front/ui&quot;;
+
+    export default class extends Component&lt;{
+        name: string
+    }&gt; {
+        mounted() {
+            Message({
+                message: `${this.props.name}被初始化挂载`,
+                type: &quot;success&quot;
+            });
+        }
+        beforeDestroy() {
+            Message({
+                message: `${this.props.name}被销毁了`,
+                type: &quot;warning&quot;
+            });
+        }
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value ( value=@model.value )&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.value === 1) {
+        &lt;MyComponent name=&quot;One&quot; /&gt;
+    }
+    else if(model.value === 2) {
+        &lt;MyComponent name=&quot;Two&quot; /&gt;
+    }
+    else {
+        &lt;MyComponent name=&quot;Three&quot; /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+export default class extends Component {
+    model = {
+        value: 1
+    };
+    components = {
+        MyComponent
+    };
+    handleClick() {
+        if (this.model.value === 3) {
+            this.model.value = 1;
+        } else {
+            this.model.value++;
+        }
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            当然你也可以在 if 中使用
+            <code>keep-alive</code>
+            来实现切换时状态保持的需求。
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the value&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.isShow) {
+        &lt;MyComponent keep-alive /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children-keep.joker&quot;;
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    components = {
+        MyComponent
+    };
+    handleClick() {
+        this.model.isShow = !this.model.isShow;
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/template-if/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/template-if/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/template-if/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/template-if/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/template-if/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

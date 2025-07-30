@@ -1,0 +1,344 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Component Registration</h2>
+        <p>
+            This chapter mainly introduces how to register components, including the registration mechanisms for private components and global components.
+        </p>
+        <h3>Private Component Registration</h3>
+        <p>
+            Configure private components within the current component by configuring the
+            <code>component</code>
+            attribute. For the component registration mechanism, refer to
+            <a href="/base/component-register" target="_blank">Component Registration</a>
+            .
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent /&gt;
+    &lt;MyAsyncComponent /&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    import MyComponent from &quot;./children.joker&quot;;
+    export default class extends Component {
+        component = {
+            MyComponent,
+            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+        };
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent message=&quot;I'm a parameter.&quot; /&gt;
+    &lt;MyAsyncComponent message=&quot;I'm a parameter.&quot; /&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./children.joker&quot;;
+
+export default class extends Component {
+    components = {
+        MyComponent,
+        MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+    };
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            Component registration supports asynchronous operations. You can use the
+            <code>() =&gt; import('component.joker')</code>
+            method for asynchronous component references. Asynchronous components will not be loaded with the initialization of the parent component, but will be loaded only when the component needs to be rendered. For example:
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    @if(false){
+    &lt;MyAsyncComponent /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+
+    export default class extends Component {
+        component = {
+            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+        };
+    }
+&lt;/script&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo2)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Toggle the display state of the child component.&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.show) {
+        &lt;MyAsyncComponent message=&quot;I'm a parameter.&quot; /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { Component, VNode } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    components = {
+        MyAsyncComponent: () =&gt; import(&quot;./async-children-import.joker&quot;)
+    };
+    model = {
+        show: false
+    };
+
+    handleClick() {
+        this.model.show = !this.model.show;
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            From the above code and the console output (network), it can be seen that the asynchronous component will be loaded only when it is required to be loaded.
+        </p>
+        <h3>Global Component Registration (registerGlobalComponent)</h3>
+        <p>
+            The
+            <code>registerGlobalComponent</code>
+            function is provided in the Core library to register global components. If a component is registered as a global component, it can be used in all components, avoiding repeated registration.
+        </p>
+        <pre><code class="language-ts">import { registerGlobalComponent } from &quot;@joker.front/core&quot;;
+import MyComponent from &quot;./components/my-component.joker&quot;;
+
+// Register a single component
+registerGlobalComponent(&quot;my-componet&quot;, MyComponent);
+
+// Also supports registering multiple components
+registerGlobalComponent({
+    &quot;my-componet&quot;: MyComponent,
+    &quot;my-test-component&quot;: MyTestComponent,
+    &quot;my-async-component&quot;: () =&gt; import(&quot;./components/async-component.joker&quot;)
+    //...
+});
+</code></pre>
+        <p>Let's look at an example of a global component:</p>
+        <pre><code class="language-ts">import { registerGlobalComponent } from &quot;@joker.front/core&quot;;
+
+// We register global components in the main.ts (entry) file
+registerGlobalComponent({
+    DemoRow: DemoRow
+});
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo3)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        I'm a text within the global component. This global component comes with a built-in padding property.
+    &lt;/DemoRow&gt;
+&lt;/template&gt;
+
+</code></pre>
+        </DemoContainer>
+        <p>
+            Global component registration, like private component registration, supports the introduction of asynchronous components. Asynchronous components will not be loaded when the project starts, but will be loaded only before they are rendered.
+        </p>
+        <blockquote>
+            <p>
+                We do not restrict the location of using the
+                <strong>registerGlobalComponent</strong>
+                function, but we still recommend using it in the entry file, so that it is clearer and faster to understand which global components a project has.
+            </p>
+        </blockquote>
+        <h3>Finding Global Components (getGlobalComponent)</h3>
+        <p>
+            The Core also provides the
+            <strong>getGlobalComponent</strong>
+            function to obtain global components. Through this method, we can dynamically determine whether the global component you need exists.
+        </p>
+        <p>It should be noted that the return type of this method has three types:</p>
+        <ul>
+            <li>
+                <strong>undefined</strong>
+                (not found)
+            </li>
+            <li>
+                <strong>ComponentConstructor</strong>
+                (the component class to be initialized)
+            </li>
+            <li>
+                <strong>ImportComponentConstructor</strong>
+                (the asynchronous component loading method)
+            </li>
+        </ul>
+        <pre><code class="language-ts">getGlobalComponent(&quot;my-component&quot;);
+</code></pre>
+        <h3>Built-in Global Component (template)</h3>
+        <p>
+            We internally provide a virtual container node. This node only serves as a container and displays the content within the container. The component itself will not output any elements.
+            We can use this component to achieve the grouping function. For example:
+        </p>
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;ul&gt;
+        &lt;li&gt;I'm the fixed column 1&lt;/li&gt;
+        &lt;li&gt;I'm the fixed column 2&lt;/li&gt;
+        &lt;template ref=&quot;test&quot;&gt;
+            &lt;li&gt;I'm column 3&lt;/li&gt;
+            &lt;li&gt;I'm column 4&lt;/li&gt;
+        &lt;/template&gt;
+    &lt;/ul&gt;
+&lt;/template&gt;
+</code></pre>
+        <DemoContainer component="@(components.DEMO_JOKER_demo4)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;ul&gt;
+            &lt;li&gt;I'm the fixed column 1&lt;/li&gt;
+            &lt;li&gt;I'm the fixed column 2&lt;/li&gt;
+            &lt;template ref=&quot;test&quot;&gt;
+                &lt;li&gt;I'm the column 3&lt;/li&gt;
+                &lt;li&gt;I'm the column 4&lt;/li&gt;
+            &lt;/template&gt;
+        &lt;/ul&gt;
+    &lt;/DemoRow&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Get the number of non - fixed columns&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { VNode } from &quot;@joker.front/core&quot;;
+import { Component } from &quot;@joker.front/core&quot;;
+import { Message } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    handleClick() {
+        let count = this.$getRef(&quot;test&quot;)?.find((n) =&gt; n instanceof VNode.Element).length || 0;
+
+        Message(&quot;Got &quot; + count + &quot; non - fixed columns.&quot;);
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <h3>Built-in Global Component (component)</h3>
+        <p>
+            The built-in
+            <code>component</code>
+            is used to render dynamic components.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo5)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleChangeComponet('Test1')&quot;&gt;Load Component 1&lt;/button&gt;
+        &lt;button @click=&quot;handleChangeComponet('Test2')&quot;&gt;Load Component 2&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    @if(model.name) {
+        &lt;component name=&quot;@model.name&quot; message=&quot;I'm a parameter&quot; user-name=&quot;Zhang San&quot;&gt;
+            &lt;span&gt;I'm the content&lt;/span&gt;
+        &lt;/component&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+import { VNode } from &quot;@joker.front/core&quot;;
+import { Component } from &quot;@joker.front/core&quot;;
+import Test1 from &quot;./component-test1.joker&quot;;
+import Test2 from &quot;./component-test2.joker&quot;;
+
+export default class extends Component {
+    model = {
+        name: &quot;&quot;
+    };
+    components = {
+        Test1,
+        Test2
+    };
+
+    handleChangeComponet(e: VNode.Event, name: string) {
+        this.model.name = name;
+    }
+}
+&lt;/script&gt;
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+button {
+    margin-right: 10px;
+}
+&lt;/style&gt;
+</code></pre>
+        </DemoContainer>
+        <p>
+            You can specify the name of the current component through the
+            <code>name</code>
+            method. This value can be the name of a private component within the current component or the name of a global component. At the same time, changes in
+            <code>name</code>
+            will trigger the rendering of the component to render a new component.
+        </p>
+        <p>
+            You can use this component as a dynamic component container. Its parameter passing, event registration, etc. are the same as other components. It should be noted that, except for the
+            <strong>keep-alive</strong>
+            ,
+            <strong>name</strong>
+            ,
+            <strong>transition-name</strong>
+            , and
+            <strong>ref</strong>
+            attributes, all other attributes will be passed through to the component you actually render. The event handling mechanism is the same. We listen to the
+            <code>*</code>
+            event of the rendered component within this component (you can view the $on API) and then broadcast all events upward without handling or intercepting them.
+        </p>
+        <p>
+            Of course, in addition to using
+            <strong>name</strong>
+            to render dynamic components, we also provide the
+            <code>loadComponent</code>
+            API. You can call this method to implement a more complex rendering mechanism.
+        </p>
+        <pre><code class="language-ts">import { Component, ComponentContainer } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    testFunction() {
+        // Render the component
+        this.$getRef&lt;VNode.Component&lt;ComponentContainer&gt;&gt;(&quot;test&quot;)?.component.loadComponent(&quot;name&quot;);
+    }
+}
+</code></pre>
+        <p>
+            Since it is a dynamic component and supports maintaining data state (keep-alive), we also provide the
+            <code>removeCache</code>
+            API to clear the cache of a rendered component.
+        </p>
+        <pre><code class="language-ts">import { Component, ComponentContainer } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    testFunction() {
+        // Render the component
+        this.$getRef&lt;VNode.Component&lt;ComponentContainer&gt;&gt;(&quot;test&quot;)?.component.removeCache(&quot;name&quot;);
+    }
+}
+</code></pre>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo5 from "../../../examples/base/component-register/demo5.joker";
+import DEMO_JOKER_demo4 from "../../../examples/base/component-register/demo4.joker";
+import DEMO_JOKER_demo3 from "../../../examples/base/component-register/demo3.joker";
+import DEMO_JOKER_demo2 from "../../../examples/base/component-register/demo2.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/component-register/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo5,
+        DEMO_JOKER_demo4,
+        DEMO_JOKER_demo3,
+        DEMO_JOKER_demo2,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>

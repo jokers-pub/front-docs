@@ -1,0 +1,20 @@
+<template>
+    <div>
+        <p>I'm the content of the test1 component.</p>
+        <p>
+            I've received the message parameter:@props.message
+        </p>
+    </div>
+    <p>
+        Render the section content:
+        @RenderSection()
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+
+export default class extends Component<{
+    message: string;
+}> {}
+</script>
+

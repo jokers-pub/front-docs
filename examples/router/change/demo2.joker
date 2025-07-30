@@ -1,0 +1,15 @@
+<template>
+    <DemoRow>
+        <a href="javascript:void(0)" @click="handleClick">Normal navigation</a>
+    </DemoRow>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { router } from "@joker.front/router";
+
+export default class extends Component {
+    handleClick() {
+        router.push("/router/init");
+    }
+}
+</script>

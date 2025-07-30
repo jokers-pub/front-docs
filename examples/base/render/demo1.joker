@@ -1,0 +1,24 @@
+<template>
+    <DemoRow>
+        <button @click="handleClick">Change the value and immediately get the DOM</button>
+    </DemoRow>
+    <p ref="test">
+        The current value is: @model.value
+    </p>
+</template>
+<script>
+import { Component } from "@joker.front/core";
+import { MessageBox } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    handleClick() {
+        this.model.value++;
+
+        MessageBox.alert(this.$getRef("test")?.output.innerHTML);
+    }
+}
+</script>

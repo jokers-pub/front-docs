@@ -1,0 +1,47 @@
+<template>
+    <DemoRow>
+        @if(!model.isShow) {
+            <button @click="handleClick(true)">Show</button>
+        }
+        else {
+            <button @click="handleClick(false)">Hide</button>
+        }
+    </DemoRow>
+    <div ref="demo" class="demo"></div>
+</template>
+<script>
+import { Component, VNode } from "@joker.front/core";
+import { Message } from "@joker.front/ui";
+
+export default class extends Component {
+    model = {
+        isShow: true
+    };
+    handleClick(e: VNode.Event, isShow: boolean) {
+        if (isShow) {
+            this.$getRef("demo")!.output.style.display = "block";
+        }
+
+        this.$nodeTransition("demo", isShow ? "enter" : "leave", "jk-zoom-in-top", () => {
+            Message("The animation is over.");
+
+            if (!isShow) {
+                this.$getRef("demo")!.output.style.display = "none";
+            }
+            this.model.isShow = isShow;
+        });
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+.demo {
+    width: 150px;
+    height: 150px;
+    background: var(--jk-color-success);
+}
+
+button {
+    margin-right: 10px;
+}
+</style>

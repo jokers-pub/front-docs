@@ -1,0 +1,268 @@
+<template>
+    <div ref="container" class="joker-demo-container">
+        <h2>Rendering</h2>
+        <p>
+            This section aims to deeply explore the rendering processing architecture of Joker Core and the technical principles behind it.
+        </p>
+        <h3>Prerequisites</h3>
+        <p>
+            Please complete the learning of
+            <a href="/base/template" target="_blank">template</a>
+            first.
+        </p>
+        <p>
+            Two keywords,
+            <code>AST</code>
+            and
+            <code>VNode</code>
+            , will be mentioned in the following text. We can have an in-depth understanding in the subsequent chapters:
+        </p>
+        <ul>
+            <li>
+                <p>
+                    <a href="/base/ast" target="_blank">AST</a>
+                    Joker syntax tree.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="/base/vnode" target="_blank">VNode</a>
+                    Virtual node tree, used to render the AST syntax tree into structured data according to component data.
+                </p>
+            </li>
+        </ul>
+        <h3>File Splitting</h3>
+        <p>
+            When developing component templates, Joker provides a development specification of standard HTML tags plus dynamic directives. This development-stage code will not run directly in the browser because the browser does not support the development specification provided by Joker. During runtime, we use the compilation of
+            <code>Joker CLI</code>
+            to transcribe the Joker files. The SFC file is split into three files that can be executed by the browser:
+        </p>
+        <ul>
+            <li>
+                <code>*.joker?type=script</code>
+                Component class
+            </li>
+            <li>
+                <code>*.joker?type=template</code>
+                Component rendering template
+            </li>
+            <li>
+                <code>*,joker?type=style</code>
+                Component style
+            </li>
+        </ul>
+        <p>
+            A component runs through these three files. Of course, in the actual production environment, these three files will be merged and compressed. Only in the development (DEV) environment will these three file types appear. This is because
+            <code>Joker CLI</code>
+            adopts the
+            <code>ES Module</code>
+            loading mechanism, which compiles and runs on-demand. For detailed content, please refer to
+            <a href="/cli" target="_blank">Joker CLI</a>
+            .
+        </p>
+        <h3>Rendering Template</h3>
+        <p>
+            By understanding the file-splitting rules, this section mainly introduces the rendering mechanism of
+            <code>template</code>
+            .
+        </p>
+        <p>
+            Since the browser does not recognize Joker's syntax, during compilation, the
+            <code>template</code>
+            content will be compiled and converted by the CLI into an
+            <code>AST[]</code>
+            syntax tree. When the component needs to be loaded, these syntax trees will be compiled into a
+            <code>VNode.Node[]</code>
+            virtual DOM tree through the
+            <code>Parser</code>
+            parsing class and the instance of the current component. After the entire virtual DOM tree is constructed, the actual rendering will be done through the
+            <code>Render</code>
+            rendering class.
+        </p>
+        <p>
+            <img src="/base/render.png" alt="render" />
+        </p>
+        <ul>
+            <li>
+                <p>
+                    <code>AST.Node[]</code>
+                    is used to convert the
+                    <code>template</code>
+                    into data that can be recognized by Joker Core.
+                </p>
+            </li>
+            <li>
+                <p>
+                    <code>VNode.Node[]</code>
+                    is used to store the structured data output by the current rendering.
+                </p>
+            </li>
+        </ul>
+        <blockquote>
+            <p>
+                The process of converting a Joker file into
+                <code>AST.Node[]</code>
+                only occurs in the
+                <code>DEV</code>
+                and
+                <code>Prod</code>
+                CLI processes. After the actual production build, the output only contains JS and CSS, and there is no longer a process of parsing the template into an AST.
+            </p>
+        </blockquote>
+        <p>
+            When
+            <code>AST.Node[]</code>
+            is compiled into
+            <code>VNode.Node[]</code>
+            , the relationship between the current node and the reactive data will be associated. When the reactive data changes, the virtual node will be updated through the
+            <strong>Parser</strong>
+            rendering class, and then the virtual node will be updated to the DOM. Since the update range of a single change is fixed, this process is
+            <strong>instantaneous</strong>
+            and the performance is optimal.
+        </p>
+        <p>
+            Since page rendering is
+            <code>instantaneous</code>
+            , it means that when we change the value through reactive data, we can immediately obtain the updated DOM node data.
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo1)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;DemoRow&gt;
+        &lt;button @click=&quot;handleClick&quot;&gt;Change the value and immediately get the DOM&lt;/button&gt;
+    &lt;/DemoRow&gt;
+    &lt;p ref=&quot;test&quot;&gt;
+        The current value is: @model.value
+    &lt;/p&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+import { MessageBox } from &quot;@joker.front/ui&quot;;
+
+export default class extends Component {
+    model = {
+        value: 0
+    };
+
+    handleClick() {
+        this.model.value++;
+
+        MessageBox.alert(this.$getRef(&quot;test&quot;)?.output.innerHTML);
+    }
+}
+&lt;/script&gt;
+
+</code></pre>
+        </DemoContainer>
+        <div class="warning">
+            <p>
+                When we need to frequently change reactive data within a code logic, the DOM will also be updated multiple times, which will bring unnecessary performance overhead. In this case, you can use
+                <a href="/base/combined-reply" target="_blank">Combined Reply</a>
+                to achieve grouped and one-time rendering.
+            </p>
+        </div>
+        <h3>Cross-Platform/One-Code-for-Multiple-Ends [High-Order API]</h3>
+        <p>
+            The
+            <code>Render</code>
+            rendering class is pluggable. Currently, Joker Core internally inherits the
+            <code>HTML Render</code>
+            implementation class by default, which can compile
+            <code>VNode.Node[]</code>
+            into
+            <code>DOM Node</code>
+            .
+        </p>
+        <p>
+            You can also customize the
+            <code>Render</code>
+            to achieve the result output of the target platform:
+        </p>
+        <pre><code class="language-ts">import { IContainer, Render } from &quot;@joker.front/core&quot;;
+
+// Inject your implementation class
+IContainer.bind(Render.IRENDERIOCTAGID, YourImplementationClass);
+</code></pre>
+        <p>
+            Your implementation class needs to implement all the properties of the
+            <code>Render.IRender</code>
+            interface.
+        </p>
+        <pre><code class="language-ts">export interface IRender {
+    /**
+     * Mount
+     * @param root Mounting root
+     * The type of root is not restricted for multi-end compatibility in the future
+     */
+    mount(root: any): void;
+
+    /**
+     * Append a node
+     * @param node NodeInfo
+     */
+    appendNode(node: VNode.Node): void;
+
+    /**
+     * Update a node
+     * @param node NodeInfo
+     * @param propertyKey Name of the updated property
+     */
+    updateNode(node: VNode.Node, propertyKey?: string): void;
+
+    /**
+     * Remove a node
+     * @param {VNode.Node} node
+     * @param {VNode.Node} parent If empty, it represents the children of the root node
+     * @param {boolean} reserveOutPut Whether to retain the out product
+     */
+    removeNode(node: VNode.Node, reserveOutPut?: boolean): void;
+
+    /**
+     * Destroy, unmount the DOM and release variables
+     */
+    destroy(): void;
+
+    /**
+     * element node transition enter
+     */
+    elementToEnter(node: VNode.Element, name: string, type?: TransitionType, callBack?: Function): void;
+
+    /**
+     * element node transition leave
+     */
+    elementToLeave(node: VNode.Element, name: string, type?: TransitionType, callBack?: Function): void;
+
+    /**
+     * Trigger a component event
+     * @param node
+     * @param eventName
+     * @returns false means stop broadcasting
+     */
+    triggerEvent(node: VNode.Component, eventName: string, e: VNode.Event): void | false;
+}
+</code></pre>
+        <p>
+            Joker will continuously improve the output docking of mainstream market platforms in the future, including native clients, mini-programs, etc.
+        </p>
+        <BottomNav />
+    </div>
+</template>
+
+<script>
+import { Component } from "@joker.front/core";
+import hljs from "highlight.js/lib/common";
+import BottomNav from "../../../common/components/bottom-nav.joker";
+import DEMO_JOKER_demo1 from "../../../examples/base/render/demo1.joker";
+export default class extends Component {
+    components = {
+        BottomNav,
+        DEMO_JOKER_demo1
+    };
+    mounted() {
+        let container = this.$getRef("container")?.output!;
+        container.querySelectorAll("pre code").forEach((el: HTMLElement) => {
+            hljs.highlightElement(el);
+        });
+    }
+}
+
+</script>
