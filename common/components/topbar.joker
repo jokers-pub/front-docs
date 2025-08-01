@@ -126,9 +126,10 @@ export default class extends Component {
         let menus = this.lang === "zh-CN" ? MenuZhCN : MenuEn;
         let defaultTitle =
             this.lang === "zh-CN" ? "Joker 前端框架 - 开发界的百搭王牌" : "Joker Framework - The Wildcard for Frontend";
+        debugger;
         for (let group of menus.allMenus) {
             for (let item of group.children) {
-                if (item.path === router.route.value.path) {
+                if (item.path === (this.lang === "zh-CN" ? "/cn" : "") + router.route.value.path) {
                     document.title = `${group.title} - ${item.title} ${defaultTitle}`;
                     return;
                 }
