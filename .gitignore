@@ -4,4 +4,5 @@ dist
 types
 pnpm-lock.yaml
 build/algoliasearch.ts
+build/translate.ts
 .npmrc
