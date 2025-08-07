@@ -2,19 +2,19 @@
     <div ref="container" class="joker-demo-container">
         <h2>Building for Production</h2>
         <p>
-            When deploying your application to the production environment, you can run the
+            When deploying your application to a production environment, you can run the
             <code>joker build</code>
-            command. By default, this command uses
+            command. By default, this command will use
             <code>&lt;root&gt;/index.html</code>
-            as the starting point for the build and creates an application package suitable for static deployment.
+            as the build entry point and create an application bundle ready for static deployment.
         </p>
         <h3>Browser Compatibility</h3>
         <p>
-            The production-ready build assumes that the target browsers are compatible with the latest JavaScript language features. By default, Joker CLI supports browsers that can natively parse
+            Production builds assume the target browsers can natively support modern JavaScript features. The Joker CLI by default supports browsers capable of natively parsing
             <a href="https://caniuse.com/es6-module" target="_blank">ESM script tags</a>
             ,
-            <a href="https://caniuse.com/es6-module-dynamic-import" target="_blank">execute ESM dynamic imports</a>
-            , and support
+            <a href="https://caniuse.com/es6-module-dynamic-import" target="_blank">executing ESM dynamic imports</a>
+            , and supporting
             <a href="https://caniuse.com/mdn-javascript_operators_import_meta" target="_blank">import.meta</a>
             :
         </p>
@@ -25,21 +25,21 @@
             <li>Edge &gt;=88</li>
         </ul>
         <p>
-            You can use the
+            You can specify target browser versions using the
             <a href="/cli/setting-build" target="_blank">build.target</a>
-            configuration option to specify the target browser version for the build, with a minimum support down to the ES2015 standard.
+            configuration, with minimum support down to ES2015.
         </p>
         <p>
-            It should be noted that by default, Joker CLI only handles syntax transformation and does not include any polyfills. If you need to provide support for older browsers, you can visit
+            Note that Joker CLI only handles syntax transformation by default and doesn't include any polyfills. For supporting legacy browsers, you can use
             <a href="https://polyfill.io/" target="_blank">Polyfill.io</a>
-            , a service that can automatically generate polyfill packages based on the user's browser User-Agent.
+            , a service that automatically generates polyfill bundles based on the user's browser User-Agent.
         </p>
         <p>
-            For scenarios that require compatibility with traditional browsers, you can support them by installing and using the plugin
+            For traditional browser compatibility scenarios, you can install and use the
             <code>
                 @("@joker.front/cli-plugin-legacy")
             </code>
-            . This plugin will automatically generate versions suitable for older browsers and the necessary polyfills to ensure correct operation on these browsers. These compatibility-version chunks will only be loaded on-demand when the target browser does not support native ESM.
+            plugin. This plugin automatically generates legacy-compatible builds with necessary polyfills that are loaded on-demand when the target browser lacks native ESM support.
         </p>
         <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);
 
@@ -53,7 +53,9 @@ module.exports = {
 </code></pre>
         <h3>Customizing the Build</h3>
         <p>
-            The build process can be customized through various build configuration options. Specifically, you can directly adjust the underlying
+            The build process can be customized through various
+            <a href="/cli/setting-build" target="_blank">build configuration options</a>
+            . Specifically, you can directly adjust the underlying
             <a href="https://rollupjs.org/configuration-options/" target="_blank">Rollup</a>
             options via
             <a href="/cli/setting-build" target="_blank">build.rollupOptions</a>
@@ -67,72 +69,69 @@ module.exports = {
 </code></pre>
         <h3>Public Base Path</h3>
         <p>
-            When you need to deploy your project to a public path with a nested structure, you can specify the base path by setting the
+            When deploying your project to a nested public path, you can specify the base path using the
             <a href="/cli/setting-public" target="_blank">base</a>
-            configuration option. All resource paths will be rewritten accordingly based on this configuration. Additionally, you can also set this option via command-line arguments, for example, using
+            configuration. This ensures all resource paths are rewritten accordingly. The option can also be set via CLI, e.g.,
             <code>joker build --base=/my/public/path/</code>
             .
         </p>
         <p>
-            During the build process, the resource URLs imported in JavaScript files, the
+            During build, resource URLs in JavaScript files,
             <code>url()</code>
-            references used in CSS files, and the resources referenced in HTML files will be automatically adjusted to adapt to the new base-path configuration. This automated path transformation ensures that resources can be accessed correctly after deployment, regardless of the directory in which they are placed within the project.
+            references in CSS, and resource references in HTML files are automatically adjusted to match the new base path, ensuring correct access post-deployment regardless of directory structure.
         </p>
-        <h3>Production Directory</h3>
+        <h3>Output Directory</h3>
         <p>
-            To customize the storage location of the built artifacts, you can specify the output directory by setting the
+            To customize the build output location, configure the
             <a href="/cli/setting-build" target="_blank">build.outDir</a>
-            property. You can also specify
-            <code>outDir</code>
-            via CLI command-line arguments.
+            property or specify it via CLI:
         </p>
         <pre><code class="language-bash">joker build --outDir=./my-dist
 </code></pre>
         <p>
-            By default, if not specified otherwise,
+            By default,
             <code>build.outDir</code>
             is set to the
             <code>dist</code>
-            directory.
+            directory if not specified.
         </p>
-        <h3>Artifact Chunking Strategy</h3>
+        <h3>Chunking Strategy</h3>
         <p>
-            You can utilize the
+            Customize code splitting via
             <a href="/cli/setting-build" target="_blank">build.rollupOptions.output.manualChunks</a>
-            configuration option to customize the code-splitting strategy. Refer to the
-            <a href="https://rollupjs.org/configuration-options/#output-manualchunks" target="_blank">Rollup</a>
-            documentation for details on how to set it.
+            . Refer to the
+            <a href="https://rollupjs.org/configuration-options/#output-manualchunks" target="_blank">
+                Rollup documentation
+            </a>
+            for configuration details.
         </p>
-        <p>Joker CLI provides a basic set of splitting logic and artifact path optimization features by default:</p>
+        <p>Joker CLI provides default chunking and path optimization:</p>
         <ul>
             <li>
-                <code>node_module</code>
-                will be merged into
+                <code>node_modules</code>
+                are bundled into
                 <strong>vendor</strong>
-                .
+                chunks.
             </li>
             <li>
-                For
                 <code>import()</code>
-                references, we will generate artifacts according to the reference path instead of outputting all to the root of the
+                references generate chunks based on their paths rather than dumping everything into the root
                 <code>dist</code>
                 directory.
             </li>
         </ul>
         <p>
-            Of course, you can extend your own logic on top of the splitting rules provided by Joker CLI. For example, if we want to prevent
+            You can extend this logic, e.g., to isolate
             <code>dayjs</code>
-            from being merged into
-            <strong>vendor</strong>
-            and handle it as a separate package:
+            from vendor bundles:
         </p>
         <pre><code class="language-js">module.exports = {
     rollupOptions: {
         output: {
             manualChunks: (id, api) =&gt; {
                 if (id.includes(&quot;node_modules/dayjs&quot;)) {
-                    // Customize
-                    return &quot;dayjs&quot;;
+                    // Custom chunking
+                    return &quot;dayjs&quot;; 
                 }
             }
         }
@@ -141,45 +140,41 @@ module.exports = {
 </code></pre>
         <blockquote>
             <p>
-                When the
+                When
                 <code>manualChunks</code>
-                property is defined as a
+                is defined as a
                 <strong>function</strong>
-                , it will not override the default rules provided by Joker CLI. We will first execute according to the custom rules passed in. If the method does not return a value, it will be executed according to the rules provided by Joker CLI. We do not recommend setting the
+                , it does not override Joker CLI's default rules. Custom rules execute first; if they return no value, Joker's defaults apply. We recommend
+                <strong>against</strong>
+                using an object for
                 <code>manualChunks</code>
-                property to an
-                <strong>object</strong>
-                because Joker CLI cannot safely perform a merge transformation. It is recommended to use a Function to configure this property, which can retain the asynchronous file-path output of
-                <code>import()</code>
-                and the splitting logic of the
-                <code>vendor</code>
-                package provided by Joker.
+                as it prevents safe merging with Joker's logic—always prefer functions to preserve async chunk paths and vendor splitting.
             </p>
         </blockquote>
-        <h3>Building a Library [lib Library Mode]</h3>
+        <h3>Library Mode [lib]</h3>
         <p>
-            When developing a browser-facing library, creating a test/demo page is usually a crucial task, and Joker CLI enables you to enjoy a smooth development experience by using the
+            When developing browser-oriented libraries, creating a test/demo page is often essential, and Joker CLI provides a smooth development experience via
             <code>index.html</code>
-            file.
+            .
         </p>
         <p>
-            When preparing a release build of your library, you should configure the
+            For library publication builds, configure
             <a href="/cli/setting-build" target="_blank">build.lib</a>
-            option to ensure that dependencies that do not need to be packaged into the library are externalized, which can optimize the size and performance of the library.
+            to externalize dependencies that shouldn't be bundled, optimizing library size and performance.
         </p>
         <pre><code class="language-js">module.exports = {
     lib: {
         entry: resolve(__dirname, &quot;lib/main.js&quot;),
-        name: &quot;MyLib&quot;,
+        name: &quot;MyLib&quot;, 
         fileName: &quot;my-lib&quot;
     },
     rollupOptions: {
-        // Ensure that dependencies you don't want to include in the library are externalized
+        // Ensure dependencies like echarts are externalized
         external: [&quot;echarts&quot;],
         output: {
-            // Provide a global variable for these externalized dependencies in the UMD build mode
+            // Provide global variables for externalized dependencies in UMD builds
             globals: {
-                echarts: &quot;echarts&quot; // Set the global variable name for echarts
+                echarts: &quot;echarts&quot; // Global variable name for echarts
             }
         }
     }

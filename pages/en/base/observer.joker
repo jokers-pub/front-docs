@@ -1,115 +1,129 @@
 <template>
     <div ref="container" class="joker-demo-container">
         <h2>Data Proxy</h2>
-        <p>This chapter mainly introduces how to proxy data.</p>
+        <p>This chapter focuses on how to proxy data.</p>
         <h3>Declaring Reactive State</h3>
         <p>
             We can use the
             <code>observer</code>
             and
             <code>ShallowObserver</code>
-            methods provided by Core in any script file to proxy and hijack an object.
+            methods provided by Core in any script file to intercept and proxy an object.
         </p>
         <p>
             We can specify the properties to be proxied in the
             <code>model</code>
             attribute of a
-            <a href="/base/component" target="_blank">component</a>
-            . These properties will be data-proxied by the
+            <a href="/base/component" target="_blank">Component</a>
+            . These properties will be proxied via the
             <code>observer</code>
-            function before the component is loaded, so that corresponding operations can be performed when the property values change.
+            function before the component loads, enabling operations to be executed when property values change.
         </p>
-        <pre><code class="language-ts">import { observer } from &quot;@joker.front/core&quot;;
+        <pre><code class="language-ts">import { observer } from &quot;@joker.front/core&quot;;  
 
-let obj = observer({ userName: &quot;Zhang San&quot; });
+let obj = observer({ userName: &quot;Zhang San&quot; });  
 
-let arr = observer([1, 2, 3, 4]);
+let arr = observer([1, 2, 3, 4]);  
 </code></pre>
         <blockquote>
             <p>
-                Usually, this function is generally used in conjunction with watcher
-                <a href="/base/watcher" target="_blank">data subscription</a>
-                . If it is certain that the object will not be subscribed, it is not recommended to perform data proxy operations to avoid unnecessary performance overhead.
+                Typically, this function is used in conjunction with
+                <a href="/base/watcher" target="_blank">Data Subscription</a>
+                . If the object is not intended to be subscribed, it is not recommended to perform data proxying to avoid unnecessary performance overhead.
             </p>
         </blockquote>
-        <h3>observer Data Proxy Hijacking</h3>
+        <h3>Observer Deep Proxy Interception</h3>
         <p>
             <code>observer</code>
-            is a widely used general-purpose data proxy function. It can perform real-time data proxy operations on all deep-level properties of an object. In addition, when a new property is added to the object, this function can automatically proxy and hijack the new property value to ensure that data changes can be monitored and processed immediately.
+            is a widely-used generic data proxy function that performs real-time proxying on all deeply nested properties of an object. Additionally, it can automatically intercept and proxy newly added properties, ensuring that data changes are promptly monitored and processed.
         </p>
         <p>This method provides two parameter configurations:</p>
         <ul>
             <li>
                 The
                 <strong>object</strong>
-                to be proxied, which must be of the object type.
+                to be proxied, which must be of an object type.
             </li>
             <li>
-                Whether to clone (optional), with the default value of false. We can set it to true to clone a new object for proxying without polluting the original data.
+                Whether to
+                <code>clone</code>
+                (optional, defaults to
+                <code>false</code>
+                ). Setting this to
+                <code>true</code>
+                clones a new object for proxying without modifying the original data.
             </li>
         </ul>
-        <p>The object to be proxied has the following type requirements:</p>
+        <p>The object to be proxied must meet the following type requirements:</p>
         <ul>
-            <li>A pure object or array</li>
-            <li>Extensible Object.isExtensible</li>
-            <li>Not frozen Object.isFrozen</li>
+            <li>A plain object or array</li>
+            <li>
+                Extensible (
+                <code>Object.isExtensible</code>
+                )
+            </li>
+            <li>
+                Not frozen (
+                <code>Object.isFrozen</code>
+                )
+            </li>
         </ul>
         <p>
-            When we want to perform data proxy hijacking on a complex object and also exclude some data that does not need to be proxied, we can use the freezing method. Frozen properties can avoid data proxy manipulation.
+            When proxying a complex object while excluding certain properties, freezing methods can be used to prevent unwanted interception.
         </p>
-        <p>Or you can add a property to an object that needs to be proxied:</p>
-        <pre><code class="language-ts">defineObserverProperty(obj, &quot;keyName&quot;, {
-    userName: &quot;Zhang San&quot;
-});
+        <p>Alternatively, you can add a specific property to an object that requires proxying:</p>
+        <pre><code class="language-ts">defineObserverProperty(obj, &quot;keyName&quot;, {  
+    userName: &quot;Zhang San&quot;  
+});  
 </code></pre>
         <p>
             The
             <code>defineObserverProperty</code>
-            method can be used to configure a property in an object and proxy the value of this property.
+            method allows configuring a property on an object and proxying its value.
         </p>
-        <h3>ShallowObserver Data Shallow Proxy Hijacking</h3>
+        <h3>ShallowObserver Shallow Proxy Interception</h3>
         <p>
             <code>ShallowObserver</code>
-            is a data proxy mechanism. Compared with
+            is a data proxy mechanism that, unlike
             <code>observer</code>
-            , it can proxy and hijack any data type. However, the difference is that
+            , can intercept values of any data type. However, it differs in that
             <code>ShallowObserver</code>
-            does not proxy the deeply nested properties of an object or array, but only performs data proxy on the directly passed-in value.
+            does not proxy deeply nested properties of objects or arrays—it only performs interception on the directly provided value.
         </p>
-        <pre><code class="language-ts">import { ShallowObserver } from &quot;@joker.front/core&quot;;
+        <pre><code class="language-ts">import { ShallowObserver } from &quot;@joker.front/core&quot;;  
 
-let obj = new ShallowObserver({ userName: &quot;Zhang San&quot; });
-//obj.value  =&gt; Zhang San
+let obj = new ShallowObserver({ userName: &quot;Zhang San&quot; });  
+// obj.value  =&gt; Zhang San  
 
-let arr = new ShallowObserver([1, 2, 3, 4]);
-//obj.value  =&gt; [1, 2, 3, 4]
+let arr = new ShallowObserver([1, 2, 3, 4]);  
+// obj.value  =&gt; [1, 2, 3, 4]  
 
-let age = new ShallowObserver(12);
-//obj.value  =&gt; 12
+let age = new ShallowObserver(12);  
+// obj.value  =&gt; 12  
 
-let message = new ShallowObserver(&quot;This is a prompt&quot;);
-//obj.value  =&gt; This is a prompt
+let message = new ShallowObserver(&quot;I am a notification&quot;);  
+// obj.value  =&gt; I am a notification  
 </code></pre>
         <p>
-            Through
+            Using
             <code>ShallowObserver</code>
-            , we get a proxy object. We can obtain the currently proxied value by getting the
+            , we obtain a proxied object whose
             <code>value</code>
-            property of this object. Getting the value will be
-            <strong>subscribed</strong>
-            and a subscription notification will be sent when the value is updated.
+            property can be accessed to retrieve the current proxied value. Retrieving the value triggers
+            <strong>subscription</strong>
+            , and updates notify subscribers.
         </p>
         <p>
-            In addition, we can also use the
+            Moreover, the
             <code>isChanged</code>
-            property it provides to determine whether the current value has changed:
+            property can be used to determine whether the value has been modified:
         </p>
-        <pre><code class="language-ts">let message = new ShallowObserver(&quot;This is a prompt&quot;);
-//obj.isChanged  =&gt; false
+        <pre><code class="language-ts">let message = new ShallowObserver(&quot;I am a notification&quot;);  
+// obj.isChanged  =&gt; false  
 
-// Update the value
-message.value = &quot;This is a new prompt&quot;;
-//obj.isChanged  =&gt; true
+// Update the value  
+message.value = &quot;I am a new notification&quot;;  
+// obj.isChanged  =&gt; true  
 </code></pre>
         <BottomNav />
     </div>

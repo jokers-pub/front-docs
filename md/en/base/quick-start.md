@@ -1,132 +1,128 @@
-## Quick Start
+## Quick Start Guide  
 
-This guide explains how to use the Joker CLI tool to set up your Joker development environment. It includes prerequisite conditions, installing the CLI, creating an initial workspace and a starter application, and running the application locally to verify your setup.
+This guide explains how to set up your Joker development environment using the Joker CLI tool. It includes prerequisites, CLI installation, creating an initial workspace and starter application, and running the application locally to verify your setup.  
 
-**We offer two development modes:**
+**We offer two development modes:**  
 
-1. Official website visual development platform ([Visual Platform](https://viscode.jokers.pub)) **Recommended**
-2. Local code development
+1. Official Visual Development Platform ([Visual Platform](https://viscode.jokers.pub)) **Recommended**  
+2. Local Code Development  
 
-The following is the tutorial for the local development mode:
+Below is the tutorial for the local development mode:  
 
-### Prerequisite Conditions
+### Prerequisites  
 
-To use the Joker framework, you need to be familiar with the following technologies:
+To use the Joker framework, you should be familiar with the following technologies:  
 
--   [JavaScript](https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
+-   [JavaScript](https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript)  
+-   [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)  
+-   [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)  
+-   [TypeScript](https://www.typescriptlang.org/)  
 
--   [HTML](https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML)
+TypeScript is a superset of JavaScript that enhances static validation through type inference and annotations. Type definitions help clarify interfaces between software components and improve understanding of existing JavaScript library behaviors.  
 
--   [CSS](https://developer.mozilla.org/docs/Learn/CSS/First_steps)
+To install Joker on your local system, follow these steps:  
 
--   [Typescript](https://www.typescriptlang.org/)
+| Requirement    | Description                                                                                                                                                                                                                                       |  
+| ---------------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |  
+| Node.js        | Joker requires Node.js [Active LTS or Maintenance LTS version](https://nodejs.org/en).                                                                                                                                                           |  
+| npm Package Manager | Joker, Joker CLI, and Joker applications rely on npm packages for various features and functionalities. To download and install npm packages, you need an npm package manager. This guide uses the npm client CLI, which is typically installed by default with Node.js. To check if you have the npm client installed, run `npm -v` in a terminal window. |  
 
-TypeScript is a superset of JavaScript. Through type inference, type annotations can be added to enhance the static verification of code. Type definitions help clarify the interfaces between software components and understand the behavior of existing JavaScript libraries.
-
-To install Joker on your local system, the following steps are required:
-
-| Requirement         | Introduction                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Node.js             | Joker requires the [Active LTS or Maintenance LTS version of Node.js](https://nodejs.org/en)                                                                                                                                                                                                                                                                                              |
-| npm Package Manager | Joker, Joker CLI, and Joker applications all rely on npm packages to implement various features and functions. To download and install npm packages, you need an npm package manager. This guide uses the npm client command-line interface, which is usually installed by default along with Node.js. To check if you have installed the npm client, run `npm -v` in the terminal window |
-
-For package management, we recommend using [pnpm](https://pnpm.js.org/) to manage the packages of the current project. The installation is very simple:
+For package management, we recommend using [pnpm](https://pnpm.js.org/) for managing packages in the current project. Installation is simple:  
 
 ```
 npm i -g pnpm
 ```
 
-### Installing Joker CLI
+### Installing the Joker CLI  
 
-If you are an experienced developer, the project framework must depend on at least the following two packages:
-
-```
-//CLI Scaffolding
-pnpm add @joker.front/cli
-
-//Core Kernel
-pnpm add @joker.front/core
-```
-
-After installing the above two packages, the framework setup is completed.
-
-If you are a novice, we recommend following the steps below to quickly learn how to use it:
-
-You can use the Joker CLI to create projects, generate application and library code, and perform various continuous development tasks such as testing, packaging, and deployment.
-
-To install the Joker CLI, open a terminal/console window and run the following command:
+If you are an experienced developer, the project framework must include at least the following two packages:  
 
 ```
-pnpm i -g @joker.front/cli
-```
+// CLI Scaffolding  
+pnpm add @joker.front/cli  
 
-> On Windows client computers, the execution of PowerShell scripts is disabled by default. To allow the execution of PowerShell scripts required by npm global binaries, you must set the following [execution policy](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view = powershell-7.4)
+// Core Package  
+pnpm add @joker.front/core  
+```  
 
-**Set-ExecutionPolicy-Scope CurrentUser-ExecutionPolicy RemoteSigned**
+After installing these two packages, the framework setup is complete.  
 
-### Creating a Workspace and an Initial Application
+For beginners, we recommend following the steps below to quickly learn how to use the framework:  
 
-You need to develop applications in the context of a Joker workspace.
+You can use the Joker CLI to create projects, generate application and library code, and perform various continuous development tasks such as testing, building, and deployment.  
 
-To create a new workspace and an initial starter application:
-
-1. Run the CLI command **joker create** and provide the name `my-app` as a parameter, as shown below:
-
-```
-joker create my-app
-```
-
-2. In the `my-app` working directory, install dependencies
+To install the Joker CLI, open a terminal/console window and run the following command:  
 
 ```
-cd my-app
+pnpm i -g @joker.front/cli  
+```  
 
-pnpm i
-```
+> On Windows client machines, PowerShell script execution is disabled by default. To allow execution of PowerShell scripts required for npm global binaries, you must set the following [Execution Policy](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4):  
 
-The CLI will create a new workspace and a simple welcome application that you can run at any time.
+**Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned**  
 
-### Running the Application
+### Creating a Workspace and Initial Application  
 
-The Joker CLI includes a server command and a build command. The server command makes it easy for you to build and serve the application locally.
+You will develop your application within the context of a Joker workspace.  
 
-We provide two commands, `dev` and `build`, representing the development environment and code building respectively.
+To create a new workspace and initial starter application:  
 
-1. Navigate to the workspace folder, such as `my-app`.
-
-```
-cd my-app
-```
-
-2. Run the following command:
+1. Run the CLI command `joker create` and provide the name `my-app` as an argument, as shown below:  
 
 ```
-npm run dev
+joker create my-app  
+```  
+
+2. Install dependencies in the `my-app` workspace directory:  
+
 ```
+cd my-app  
 
-After successful execution, you will see a simple sample page.
+pnpm i  
+```  
 
-### Installing VSCODE and Plugins
+The CLI will create a new workspace and a simple welcome application that you can run at any time.  
 
-Click [here](https://code.visualstudio.com/) to download VSCODE from the official website and install it.
+### Running the Application  
 
-Search for the `Joker Front Tools` extension in the VSCODE app marketplace.
+The Joker CLI includes a server command and a build command. The server command facilitates local building and serving of the application.  
 
-![Installing VSCODE Plugin](/base/vscode-extend-install.png)
+By default, we provide two commands: `dev` (development environment) and `build` (code compilation).  
 
-Be sure to install the `Joker Front Tools` extension, which provides:
+1. Navigate to the workspace folder (e.g., `my-app`).  
 
--   Highlighting for SFC Joker single-file components
--   Joker code formatting
--   Joker code hints
--   Joker code checking
+```
+cd my-app  
+```  
 
-In addition, it provides many basic development assistance capabilities, and this extension will greatly improve development efficiency.
+2. Run the following command:  
 
-### Next Steps
+```
+npm run dev  
+```  
 
-For a detailed introduction to the basic concepts and terms of the Joker single-page application architecture and design principles, refer to the basic concepts section of Joker.
+After successful execution, you will see a simple example page.  
 
-Go through the development tutorial, which is a complete hands-on exercise that will teach you the process of developing applications using the Joker CLI and gradually introduce important subsystems.
+### Installing VSCODE and Extensions  
 
-To learn more about using the Joker CLI, refer to the CLI overview.
+Click [here](https://code.visualstudio.com/) to download and install VSCODE from the official website.  
+
+Search for the `Joker Front Tools` extension in the VSCODE Marketplace.  
+
+![Install VSCODE Extension](/base/vscode-extend-install.png)  
+
+Be sure to install the `Joker Front Tools` extension, which provides the following features:  
+- Syntax highlighting for Joker SFC (Single File Components)  
+- Joker code formatting  
+- Joker code hints  
+- Joker code linting  
+
+Additionally, it offers many foundational development aids, significantly improving development efficiency.  
+
+### Next Steps  
+
+For a comprehensive introduction to the basic concepts and design principles of Joker's single-page application architecture, refer to the Joker Fundamentals section.  
+
+Go through the development tutorial—a hands-on exercise that will guide you through the process of application development using the Joker CLI, introducing key subsystems step by step.  
+
+For more information about using the Joker CLI, see the CLI Overview.

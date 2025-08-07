@@ -1,22 +1,22 @@
 <template>
     <div ref="container" class="joker-demo-container">
         <h2>Optional Plugins</h2>
-        <p>This chapter mainly introduces the official Joker CLI plugins.</p>
+        <p>This chapter introduces the official Joker CLI plugins.</p>
         <h3>
             @("@joker.front/cli-plugin-legacy")
         </h3>
-        <p>This plugin is mainly responsible for compatibility transformation.</p>
+        <p>This plugin primarily handles compatibility transformations.</p>
         <p>
-            By default, Joker CLI only handles syntax transformation and does not include any polyfills. If you need to provide support for older browsers, you can visit
+            By default, Joker CLI only performs syntax transformations and does not include any polyfills. If you need support for legacy browsers, you can visit
             <a href="https://polyfill.io/" target="_blank">Polyfill.io</a>
-            , a service that can automatically generate polyfill packages based on the user's browser User - Agent.
+            , a service that automatically generates polyfill bundles based on the user's browser User-Agent.
         </p>
         <p>
-            For scenarios that require compatibility with traditional browsers, you can support them by installing and using the plugin
+            For scenarios requiring compatibility with legacy browsers, you can install and use the
             <code>
                 @("@joker.front/cli-plugin-legacy")
             </code>
-            . This plugin will automatically generate versions suitable for older browsers and the necessary polyfills to ensure correct operation on these browsers. These compatibility - version chunks will only be loaded on - demand when the target browser does not support native ESM.
+            plugin. This plugin automatically generates optimized versions for legacy browsers along with necessary polyfills to ensure proper functionality. These compatibility chunks are loaded on-demand only when the target browser lacks native ESM support.
         </p>
         <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);
 
@@ -28,7 +28,7 @@ module.exports = {
     ]
 };
 </code></pre>
-        <p>This plugin provides the following optional configurations:</p>
+        <p>This plugin offers the following optional configurations:</p>
         <pre><code class="language-ts">export interface Option {
     /**
      * Target platforms
@@ -36,20 +36,20 @@ module.exports = {
      */
     targets?: string | string[];
     /**
-     * Name of the compatibility version file
+     * Legacy bundle filename suffix
      * @default '-legacy'
      */
     legacyName?: string;
     /**
-     * Whether to use external SystemJs
+     * Use external SystemJS
      */
     externalSystemJs?: boolean;
     /**
-     * Compatibility for modern browsers
+     * Modern browser polyfills
      */
     modernPolyfills?: string[];
     /**
-     * Compatibility handling mechanism for old browsers
+     * Legacy browser polyfill mechanism
      */
     legacyPolyfills?: string[];
 }
@@ -57,125 +57,122 @@ module.exports = {
         <h4>targets</h4>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>
                     string | string[] |{[key: string]: string}
                 </code>
             </li>
             <li>
-                <strong>Default value</strong>
-                :
+                Default:
                 <code>last 2 versions and not dead, &gt;0.3%, Firefox ESR</code>
             </li>
         </ul>
         <p>
-            When rendering the legacy chunk, if explicitly set, it will be passed to
+            When generating legacy chunks, if explicitly set, this value is passed to
             <code>
                 @("@babel/preset-env")
             </code>
             .
-            This query is also compatible with Browserslist. For more details, see [Browserslist](https://github.com/browserslist/browserslist#best - practices) best practices.
+            <br />
+            The query is also compatible with Browserslist. For details, refer to
+            <a href="https://github.com/browserslist/browserslist#best-practices" target="_blank">Browserslist</a>
+            best practices.
         </p>
         <p>
-            If not set, plugin - legacy will load the browserslist configuration source and then fallback to the default value.
+            If unset, plugin-legacy will load the browserslist configuration source and fall back to the default value.
         </p>
         <h4>legacyName</h4>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>string</code>
             </li>
             <li>
-                <strong>Default value</strong>
-                :
+                Default:
                 <code>-legacy</code>
             </li>
         </ul>
-        <p>Used to configure the suffix name of the compatibility file.</p>
-        <h4>externalSystemJS</h4>
+        <p>Configures the suffix for compatibility bundles.</p>
+        <h4>externalSystemJs</h4>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>boolean</code>
             </li>
             <li>
-                <strong>Default value</strong>
-                :
+                Default:
                 <code>false</code>
             </li>
         </ul>
         <p>
-            The default value is false. Enabling this option will exclude systemjs/dist/s.min.js from the polyfills - legacy chunk.
+            When false (default), the plugin includes systemjs/dist/s.min.js in polyfills-legacy chunks.
+            <br />
+            When true, the SystemJS dependency is excluded.
         </p>
         <h4>modernPolyfills</h4>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>boolean | string[]</code>
             </li>
             <li>
-                <strong>Default value</strong>
-                :
+                Default:
                 <code>false</code>
             </li>
         </ul>
         <p>
-            The default value is false. Enabling this option will generate a separate polyfills chunk in the modern build (for browsers that support widely available features).
+            When false (default), no separate polyfills chunk is generated for modern builds (targeting browsers with widely available features).
         </p>
         <p>
-            Set it to an array of strings to explicitly control the polyfills to be included. For more details, see Polyfill specifiers.
-            Note that the
+            Set to a string array to explicitly control included polyfills. Refer to Polyfill Specifiers for details.
+            <br />
+            Note: Using
             <code>true</code>
-            value (using auto - detection) is not recommended because
-            <code>core - js3</code>
-            is very aggressive in including polyfills as it supports all cutting - edge features. Even for native ESM support, it will inject
+            (auto-detection) is discouraged because
+            <code>core-js3</code>
+            aggressively includes polyfills for all cutting-edge features – potentially adding
             <strong>15kb</strong>
-            of polyfills!
+            even for native ESM browsers!
         </p>
         <p>
-            If you are not particularly dependent on cutting - edge runtime features, it is entirely possible to avoid using polyfills in the modern build. As an alternative, consider using an on - demand service like Polyfill.io to inject only the necessary polyfills based on the actual browser user - agent (most modern browsers don't need anything).
+            If your project doesn't heavily rely on bleeding-edge features, avoiding modern polyfills entirely is feasible. As an alternative, consider on-demand services like Polyfill.io to inject only necessary polyfills per user agent (most modern browsers require none).
         </p>
         <h4>legacyPolyfills</h4>
         <p>
-            By default, a polyfills chunk will be generated based on the target browser range and the actual usage in the final bundle (detected by
+            By default, a polyfill chunk is generated based on target browser ranges and actual usage detected via
             <code>
                 @babel
-                /preset - env
+                /preset-env
             </code>
             's
             <code>useBuiltIns: 'usage'</code>
-            ).
-            Set it to an array of strings to explicitly control the polyfills to be included. For more details, see Polyfill specifiers.
+            .
+            <br />
+            Set to a string array to explicitly control included polyfills. Refer to Polyfill Specifiers for details.
         </p>
         <p>
-            The Polyfill specifier strings for
+            Polyfill specifier strings for both
             <code>legacyPolyfills</code>
             and
             <code>modernPolyfills</code>
-            can be any of the following:
+            can be either:
         </p>
         <ul>
             <li>
-                A sub - import path of
-                <code>core - js 3</code>
-                - for example,
+                <code>core-js 3 sub-import paths</code>
+                – e.g.,
                 <code>es/map</code>
-                will import
-                <code>core - js/es/map</code>
-                [link](https://unpkg.com/browse/core - js@3.35.1/)
+                imports
+                <code>core-js/es/map</code>
+                <a href="https://unpkg.com/browse/core-js@3.35.1/" target="_blank">link</a>
             </li>
             <li>
-                A separate
-                <code>core - js 3</code>
-                module - for example,
+                <code>Individual core-js 3 modules</code>
+                – e.g.,
                 <code>es.array.iterator</code>
-                will import
-                <code>core - js/modules/es.array.iterator.js</code>
-                [link](https://unpkg.com/browse/core - js@3.35.1/modules/)
+                imports
+                <code>core-js/modules/es.array.iterator.js</code>
+                <a href="https://unpkg.com/browse/core-js@3.35.1/modules/" target="_blank">link</a>
             </li>
         </ul>
         <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);

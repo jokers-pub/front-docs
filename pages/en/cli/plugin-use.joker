@@ -1,88 +1,93 @@
 <template>
     <div ref="container" class="joker-demo-container">
         <h2>Using Plugins</h2>
-        <p>This section mainly introduces how to use plugins.</p>
+        <p>This section primarily covers how to use plugins.</p>
         <p>
-            Joker CLI supports functional expansion through plugins, thanks to the powerful plugin interface of
+            Joker CLI supports feature extension through plugins, benefiting from
             <code>Rollup</code>
-            and the unique additional configuration options of Joker CLI. This enables users of Joker CLI to fully utilize the rich plugin ecosystem of
+            's powerful plugin interface and Joker CLI's unique additional configuration options. This allows users of Joker CLI to fully leverage
             <code>Rollup</code>
-            to enhance the functionality of the tool.
+            's rich plugin ecosystem to enhance the tool's functionalities.
         </p>
         <h3>How to Use</h3>
         <p>
-            To use a plugin, you first need to add it to the
+            To use a plugin, you first need to add it to your project's
             <code>devDependencies</code>
-            file of your project, and then introduce the plugin in the
+            file and then import the plugin in the
             <code>plugins</code>
-            array of the
+            array within the project's
             <code>joker.config.js</code>
-            configuration file of the project. For example, if you want to support legacy browsers, you can use the officially provided plugin
+            configuration file. For example, if you wish to support legacy browsers, you can use the officially provided plugin
             <code>
-                @("@joker.front/cli-plugin-legacy")
+                @joker.front
+                /cli-plugin-legacy
             </code>
-            like this:
+            as follows:
         </p>
-        <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);
+        <pre><code class="language-js">const { legacyPlugin } = require(&quot;@joker.front/cli-plugin-legacy&quot;);  
 
-module.exports = {
-    plugins: [
-        legacyPlugin({
-            targets: [&quot;chrome 80&quot;, &quot;ie &gt;= 10&quot;]
-        })
-    ]
-};
+module.exports = {  
+    plugins: [  
+        legacyPlugin({  
+            targets: [&quot;chrome 80&quot;, &quot;ie &gt;= 10&quot;]  
+        })  
+    ]  
+};  
 </code></pre>
         <h3>Plugin Ordering</h3>
         <p>
-            To ensure compatibility with specific Rollup plugins, it may be necessary to adjust the execution order of plugins during the build process or specifically enable these plugins during the build. Such operations are usually internal mechanisms implemented by Joker CLI plugins. You can use the
+            To ensure compatibility with specific Rollup plugins, it may be necessary to adjust the execution order of plugins during the build process or explicitly enable them during builds. Such operations are typically part of the internal mechanisms implemented by Joker CLI plugins. You can use the
             <code>enforce</code>
-            modifier to control the position of the plugin:
+            modifier to control a plugin's position:
         </p>
         <ul>
             <li>
                 <code>pre</code>
-                : Ensures that the plugin is executed before the core plugins of Joker CLI.
+                : Ensures the plugin executes before Joker CLI core plugins.
             </li>
             <li>
                 <code>default</code>
-                : The plugin will be executed in sequence after the core plugins of Joker CLI.
+                : The plugin will execute in sequence after Joker CLI core plugins.
             </li>
             <li>
                 <code>post</code>
-                : The plugin will be executed after the completion of the Joker CLI build process.
+                : The plugin will execute after Joker CLI's build process completes.
             </li>
         </ul>
-        <p>In this way, you can precisely control the execution timing of plugins to meet different requirements.</p>
-        <pre><code class="language-js">// joker.config.js
-const image = require(&quot;@rollup/plugin-image&quot;);
+        <p>This approach allows fine-grained control over plugin execution timing to meet various requirements.</p>
+        <pre><code class="language-js">// joker.config.js  
+const image = require(&quot;@rollup/plugin-image&quot;);  
 
-module.exports = {
-    plugins: [
-        {
-            ...image(),
-            enforce: &quot;pre&quot;
-        }
-    ]
-};
+module.exports = {  
+    plugins: [  
+        {  
+            ...image(),  
+            enforce: &quot;pre&quot;  
+        }  
+    ]  
+};  
 </code></pre>
-        <h3>On-demand Reference</h3>
+        <h3>Conditional Application</h3>
         <p>
-            By default, plugins are called in both development (serve) and production (build) modes. If you want a plugin to be used on-demand only in a specific mode, you can specify that the plugin is only called in the 'build' or'serve' mode by setting the
+            By default, plugins are invoked in both development (
+            <code>serve</code>
+            ) and production (
+            <code>build</code>
+            ) modes. If you want a plugin to be applied only in a specific mode, you can specify it using the
             <code>apply</code>
-            property:
+            property, indicating whether the plugin should be invoked only in 'build' or 'serve' mode:
         </p>
-        <pre><code class="language-js">const image = require(&quot;@rollup/plugin-image&quot;);
+        <pre><code class="language-js">const image = require(&quot;@rollup/plugin-image&quot;);  
 
-module.exports = {
-    plugins: [
-        {
-            ...image(),
-            // This plugin only takes effect in the build mode
-            apply: &quot;build&quot;
-        }
-    ]
-};
+module.exports = {  
+    plugins: [  
+        {  
+            ...image(),  
+            // This plugin takes effect only in build mode  
+            apply: &quot;build&quot;  
+        }  
+    ]  
+};  
 </code></pre>
         <BottomNav />
     </div>

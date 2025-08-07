@@ -1,12 +1,12 @@
 ## History Modes
 
-Joker Router currently offers two history modes: `HTML History` and `HASH`.
+Joker Router currently provides two history modes: `HTML History` and `HASH`.
 
-This chapter mainly introduces the differences between these two modes and how to customize the history mode.
+This chapter introduces the differences between these two modes and how to customize the history mode.
 
 ### WebHashHistory [HASH]
 
-The `WebHashHistory` mode is one of the most widely used routing methods in front-end applications. It handles route navigation by appending a hash symbol (#) to the URL, which avoids additional burden on the server because URLs with hash symbols are not sent to the server. However, this mode has a certain negative impact on search engine optimization (SEO) because search engines usually do not crawl and index URLs with hash symbols.
+The `WebHashHistory` mode is one of the most widely used routing methods in frontend applications. It handles route navigation by adding a hash symbol (#) to the URL, thereby avoiding additional server overhead since these hash-based URLs are not sent to the server. However, this mode has a negative impact on search engine optimization (SEO), as search engines typically do not crawl or index URLs with hash symbols.
 
 ```ts
 import { Router, WebHashHistory } from "@joker.front/rourter";
@@ -18,10 +18,10 @@ new Router({
 
 ### WebHistory [HTML5 Mode]
 
-The `WebHashHistory` mode allows URLs to look more like those of traditional static pages, such as `https://example.com/user/id`, which is a significant advantage in terms of user experience. However, it also poses a challenge: since our application is a single-page client-side application, if the server is not configured correctly, users directly accessing `https://example.com/user/id` through the browser may encounter a 404 error, which is obviously not what we want.
-Fortunately, solving this problem is not complicated. You need to set up a simple redirection route on the server to ensure that any URL that does not match a static resource will be redirected to the `index.html` page of your application. In this way, no matter how users access the application, they will get a consistent page display, which is crucial for improving the user experience and avoiding embarrassing 404 errors.
+The `WebHashHistory` mode allows URLs to appear more like traditional static page URLs, such as `https://example.com/user/id`, which provides a significant advantage in terms of user experience. However, this also presents a challenge: since our application is a client-side single-page application, if the server is not properly configured, users accessing `https://example.com/user/id` directly via the browser might encounter a 404 error, which is not what we want.
+Luckily, resolving this issue is straightforward. You need to set up a simple redirect route on the server to ensure that any URL that doesn't match a static resource is redirected to your application's `index.html` page. This way, no matter how users access the application, they will see a consistent page display, which is crucial for improving user experience and avoiding awkward 404 errors.
 
-If you have high requirements for SEO, you can consider using the `history.pushState` API of HTML5 to manage routes. This method does not leave a hash symbol in the URL, which helps improve the page's discoverability in search engines.
+If SEO is a high priority, consider using the HTML5 `history.pushState` API to manage routes. This approach does not leave hash symbols in the URL, which helps improve the page's discoverability in search engines.
 
 ```ts
 import { Router, WebHistory } from "@joker.front/rourter";
@@ -31,11 +31,11 @@ new Router({
 });
 ```
 
-> This mode requires corresponding configuration on the front-end deployment service.
+> This mode requires corresponding configuration on the frontend deployment server.
 
 ### How to Customize the History Mode
 
-We provide the `IRouteHistory` interface type. You only need to implement all the properties and methods of this interface to create a custom history mode.
+We provide the `IRouteHistory` interface type. You only need to implement all properties and methods of this interface to create a custom history mode.
 
 ```ts
 export interface IRouteHistory {

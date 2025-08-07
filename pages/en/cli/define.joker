@@ -1,86 +1,11 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Variables and Modes</h2>
+        <h2>Variables and Patterns</h2>
         <p>
-            This chapter mainly elaborates that Joker CLI provides developers with convenient environment variable operation functions, enabling developers to flexibly use these environment variables to perform various operations in the project code.
+            This chapter mainly explains how Joker CLI provides developers with convenient environment variable manipulation features, enabling flexible utilization of these variables in project code to perform various operations.
         </p>
         <h3>Environment Variables</h3>
-        <p>
-            Joker CLI provides access to environment variables through the
-            <code>import.meta.define</code>
-            object.
-        </p>
-        <ol>
-            <li>
-                We can configure
-                <code>define</code>
-                variables in the
-                <a href="/cli/setting-plugin" target="_blank">configuration file</a>
-                of Joker CLI. We can configure different configuration files according to different environments.
-            </li>
-        </ol>
-        <pre><code class="language-js">module.exports = {
-    define: {
-        appName: &quot;Joker (Official Version)&quot;,
-        version: &quot;1.0.0&quot;
-    }
-};
-</code></pre>
-        <ol start="2">
-            <li>
-                In the development project, we can obtain some of the defined environment variables through the
-                <code>import.meta.define</code>
-                variable.
-            </li>
-        </ol>
-        <pre><code class="language-ts">console.log(import.meta.define.appName); // Joker (Official Version)
-
-console.log(import.meta.define.version); // 1.0.0
-
-console.log(import.meta.define.date); // undefined
-</code></pre>
-        <h3>Modes</h3>
-        <p>
-            When starting the Joker command, we can specify the current running mode through
-            <code>--mode</code>
-            . Commonly, we configure it as
-            <code>development</code>
-            or
-            <code>production</code>
-            . Of course, you can also customize the running mode.
-        </p>
-        <p>
-            In the development code, we can obtain the current running mode through
-            <code>process.env.NODE_ENV</code>
-            .
-        </p>
-        <pre><code class="language-ts">console.log(process.env.NODE_ENV);
-</code></pre>
-        <h3>HTML Environment Variables</h3>
-        <p>
-            Joker ClI also supports replacing environment variables in HTML files. Any property in
-            <code>import.meta.define</code>
-            can be used in HTML files through the special
-            <strong>%variable%</strong>
-            syntax:
-        </p>
-        <pre><code class="language-html">&lt;h1&gt;Welcome to use %appName%&lt;/h1&gt;
-&lt;p&gt;The current version is %version%&lt;/p&gt;
-</code></pre>
-        <p>
-            If the environment variable does not exist in
-            <code>import.meta.define</code>
-            , such as %date% which does not exist, it will be ignored and not replaced. This is different from
-            <code>import.meta.define.dete</code>
-            in JS, where it will be replaced with
-            <strong>undefined</strong>
-            in JS.
-        </p>
-        <blockquote>
-            <p>
-                HTML variables are only for variable conversion in html files and will not be converted for templates in Joker.
-            </p>
-        </blockquote>
+        <p>Joker CLI provides access to environment variables via the `</p>
         <BottomNav />
     </div>
 </template>

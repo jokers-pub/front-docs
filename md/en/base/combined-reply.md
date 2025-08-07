@@ -1,18 +1,18 @@
-## Combined Reply
+## Combined Reply 
 
-This chapter mainly introduces what a combined reply is and its use cases.
+This chapter mainly introduces what combined reply is and its use cases.
 
-Before reading this chapter, please first understand [Template Rendering](/base/render).
+Before reading this chapter, please familiarize yourself with [Template Rendering](/base/render).  
 
-### Why Use Combined Reply
+### Why Use Combined Reply  
 
-The instant rendering mechanism of Joker Core ensures the synchronous update between the interface and the data state. Any data change will be immediately reflected in the associated template. This mechanism is very effective when dealing with events such as user interactions because users expect to see real - time feedback. However, in some cases, such as frequent data updates inside a method, this immediacy may lead to performance issues because each data change will trigger a rendering update.
+Joker Core's real-time rendering mechanism ensures synchronized updates between the UI and data state. Any changes in data are immediately reflected in the associated templates. This mechanism works well when handling events such as user interactions, where users expect real-time feedback. However, in certain scenarios—such as frequent internal data updates within a method—this immediacy can lead to performance issues, as every small data change triggers a rendering update.  
 
-To solve this problem, we introduced the combined response mechanism. This approach allows all data updates to be completed within a certain logical processing unit (such as a method), and then these changes are collected uniformly and optimized, such as deduplication and merging of updates. In this way, the rendering operation is only actually executed when a real rendering update is needed, thus avoiding multiple rendering updates caused by frequent small - scale data changes during the intermediate process and significantly improving performance. In short, this method achieves efficient page rendering with the minimum performance cost by centrally handling updates at the appropriate time point.
+To address this problem, we introduce the **Combined Reply mechanism**. This approach allows all data updates within a logical processing unit (e.g., a method) to be collected first, optimized (e.g., deduplicated and merged), and rendered only once at the appropriate time. As a result, unnecessary intermediate rendering updates caused by frequent minor data changes are avoided, significantly improving performance. In short, this method centralizes updates at the right moment, achieving efficient page rendering with minimal performance cost.  
 
-### How to Use
+### How to Use  
 
-Its usage is very simple:
+The usage is very simple:  
 
 ```ts
 import { combinedReply } from "@joker.front/core";
@@ -20,22 +20,22 @@ import { combinedReply } from "@joker.front/core";
 combinedReply(() => {
     // Write your code here
 });
-```
+```  
 
-Let's use the change count method to look at an example without using the combined reply:
+Let’s compare the difference with and without `combinedReply` using a **change counter** example:  
 
-!!!demo1!!!
+!!!demo1!!!  
 
-Next, let's see the effect after using the combined reply:
+Now, observe the effect after applying `combinedReply`:  
 
-!!!demo2!!!
+!!!demo2!!!  
 
-As can be seen from the above example, although the page is finally successfully updated to the latest data, without using the combined reply, it actually updated the DOM nodes 5 times in the background.
+The examples above show that while the page ultimately updates to the correct data, without `combinedReply**, the DOM is updated **5 times** in the background.  
 
-Next, let's look at another example, which mainly demonstrates the final result of the combined reply. After the final processing is completed, the data subscriptions are summarized and optimized, and if there is no value change, it will be ignored.
+Next, let’s examine another example demonstrating how `combinedReply` **aggregates and optimizes subscriptions**—changes that ultimately lead to no value updates are ignored.  
 
-!!!demo3!!!
+!!!demo3!!!  
 
-From the above example, we can find that although the `value` is changed frequently, since the final value is still **0**, no change broadcast of data subscription will be made.
+In this example, despite frequent modifications to `value`, since it remains **0** in the end, no data subscription updates are broadcasted.  
 
-> **Note:** Since we do not execute the `Render` operation during the execution of the combined reply, we cannot immediately obtain the latest DOM in the code.
+> **Note:** Since `combinedReply` defers rendering until execution completes, you **cannot immediately obtain the latest DOM** in the code during processing.

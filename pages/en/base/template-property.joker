@@ -1,14 +1,14 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Built-in Attributes</h2>
+        <h2>Built-in Properties</h2>
         <p>
-            This section will focus on some highly efficient built-in functional attributes in the template. These attributes are designed to assist developers in quickly handling common development scenarios and improving development efficiency.
+            This section focuses on the efficient built-in properties in templates. These properties are designed to assist developers in quickly addressing common development scenarios and improving productivity.
         </p>
         <h3>ref (Marker)</h3>
         <p>
-            With these attributes, you can mark tags. Then, when using methods like
+            Using these properties, you can mark tags so that when using methods like
             <code>$getRef</code>
-            in the
+            from the
             <a href="#base/component-api">Component API</a>
             , you can quickly locate these marked tags.
         </p>
@@ -24,15 +24,15 @@
     }
 &lt;/script&gt;
 </code></pre>
-        <h3>keep-alive (State Retention)</h3>
+        <h3>keep-alive (State Preservation)</h3>
         <p>
-            Configure this property to retain the state of a
+            Configure this property to preserve the state of a
             <strong>component</strong>
-            , allowing it to preserve its state during the rendering/destruction switch. This property is generally used in conjunction with the
+            , allowing it to retain its state during render/destruction toggles. This property is typically used in conjunction with the
             <code>if</code>
             directive.
         </p>
-        <p>Let's understand this through the following example:</p>
+        <p>The example below demonstrates its usage:</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo1)">
             <pre><code class="language-html">&lt;template&gt;
     &lt;DemoRow&gt;
@@ -62,32 +62,33 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            This property must act on
+            This property must be applied to
             <strong>component-type</strong>
-            tags. Of course, you can also refer to the above example and use a virtual component to wrap it to achieve the function of state retention.
+            tags. Alternatively, you can use a virtual component wrapper, as shown in the example above, to achieve state preservation.
         </p>
         <p>
-            Since the data is retained, when will the component instance be truly destroyed? Next, let's introduce the destruction mechanism of
+            Since data is retained, when will the component instance actually be destroyed? Let’s explore the destruction mechanism of
             <code>keep-alive</code>
             :
         </p>
         <p>
-            By learning the
-            <code>$destroy</code>
-            method in
-            <a href="/base/component-api" target="_blank">Component Methods</a>
-            , we know that it will only be destroyed when the parameter passed to this method is
+            From the
+            <a href="/base/component-api" target="_blank">
+                <code>$destroy</code>
+                method
+            </a>
+            in Component Methods, we know that destruction only occurs when the method's parameter is set to
             <code>true</code>
             .
         </p>
         <p>
-            In the
+            In our earlier example using the
             <code>if</code>
-            judgment in our previous example, when the condition is not met and the content is destroyed, it is not specified as a forced destruction. Therefore, it supports the ability to retain the state.
+            condition, the content was destroyed under non-matching conditions without forced destruction, which is why state preservation remains active.
         </p>
         <blockquote>
             <p>
-                The sleeping nodes only do not have a DOM tree mounting relationship, but the virtual nodes and component instances still exist.
+                The sleeping node is no longer mounted in the DOM tree, but the virtual node and component instance still exist.
             </p>
         </blockquote>
         <DemoContainer component="@(components.DEMO_JOKER_demo2)">
@@ -134,28 +135,28 @@ button {
         </DemoContainer>
         <div class="warning">
             <p>
-                When the parent component or the component itself is destroyed, if the
+                When the parent or current component is destroyed, if the
                 <code>isKeepalive</code>
                 property is
                 <code>false</code>
-                or there is a requirement for forced destruction, we will destroy all components that retain the state in sequence from top to bottom.
+                or forced destruction is specified, all state-preserved child components will be destroyed in sequence.
             </p>
         </div>
-        <h3>transition-name/transition-type (Animation)</h3>
+        <h3>transition-name/transition-type (Animations)</h3>
         <p>
             <code>transition-name</code>
-            /
-            <code>transition-type</code>
-            are node animation functional attributes provided by Joker Core. This attribute provides two types of state animations,
-            <code>enter</code>
             and
+            <code>transition-type</code>
+            are properties provided by Joker Core for node animation. These properties support
+            <code>enter</code>
+            /
             <code>leave</code>
-            , corresponding to the mounting and destruction of components respectively.
+            state animations corresponding to component mounting and destruction.
         </p>
         <p>
-            Let's first look at an example. This example uses the animations in the
+            First, let's examine an example that uses animations from the
             <code>joker.front/ui</code>
-            component library to demonstrate its working principle:
+            component library to demonstrate how it works:
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo3)">
             <pre><code class="language-html">&lt;template&gt;
@@ -190,27 +191,27 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            We have six CSS classes, which are used to define the enter and leave transition effects. Each transition effect category (
+            There are six CSS classes that define the transition effects for entering and leaving. Each transition type (
             <code>enter</code>
             and
             <code>leave</code>
-            ) has three corresponding style classes. The following are the three style classes corresponding to the enter effect:
+            ) has three associated style classes. Below are the three style classes for the enter effect:
         </p>
         <ul>
             <li>
                 <strong>from</strong>
-                serves as the starting style of the animation start and will be added to the node when the animation starts.
+                : The starting style for the animation, added to the node when the animation begins.
             </li>
             <li>
                 After the
                 <code>from</code>
-                style is added, after waiting for the next-frame animation processing to be completed, the
+                style is applied, the
                 <strong>active</strong>
-                style will be added, the
-                <strong>from</strong>
-                style will be removed, and the
+                style is added in the next animation frame, and the
+                <code>from</code>
+                style is removed. Immediately afterward, the
                 <strong>to</strong>
-                style will be added immediately after the removal.
+                style is applied.
             </li>
         </ul>
         <p>
@@ -228,13 +229,11 @@ export default class extends Component {
         <p>
             The
             <code>transition-type</code>
-            property is
-            <code>transition</code>
-            by default. Of course, we can also specify this property as
-            <code>animation</code>
-            to complete the animation using
-            <code>animation</code>
-            .
+            property defaults to
+            <strong>transition</strong>
+            , but you can also set it to
+            <strong>animation</strong>
+            to use CSS animations.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo4)">
             <pre><code class="language-html">&lt;template&gt;
@@ -302,39 +301,43 @@ export default class extends Component {
         </DemoContainer>
         <blockquote>
             <p>
-                Note that since the Joker template does not limit the number of root nodes, when using the animation property for a component, it will only act on the
-                <strong>first-level &amp;&amp; first</strong>
-                Element element of the component.
+                Note: Since Joker’s template does not restrict the number of root nodes, when animation properties are applied to a component, they will only affect the
+                <strong>first-level</strong>
+                and
+                <strong>first</strong>
+                Element node of that component.
             </p>
         </blockquote>
-        <h3>append-to (Change Output Location) [High-order API]</h3>
+        <h3>append-to (Rendering Location Change) [Advanced API]</h3>
         <p>
-            In component development, it is often necessary to project the node content within a component, such as a dropdown menu or a pop-up window, into a container outside the component. When a component needs to be independently mounted and detached from the original DOM structure, the content can be directly injected into the
+            In component development, it is often necessary to project node content (e.g., dropdown menus or pop-ups) outside the component container. When a component needs to be independently mounted and detached from its original DOM structure, content can be directly injected into the
             <strong>body</strong>
-            . At this time, a specific property can be used to quickly achieve this requirement.
+            using this property to quickly fulfill the requirement.
         </p>
-        <pre><code class="language-html">&lt;div append-to=&quot;body&quot;&gt;I'm a div&lt;/div&gt;
+        <pre><code class="language-html">&lt;div append-to=&quot;body&quot;&gt;I am a div&lt;/div&gt;
 </code></pre>
         <blockquote>
             <p>
-                Here, it should be noted that we only modify the Render rendering relationship of the node, but it will not affect the
+                Note that this only changes the node’s render relationship and does not affect the
                 <a href="/base/vnode" target="_blank">VNode</a>
-                tree structure. The virtual node tree will still exist according to the hierarchical relationship within our component. We can still use the
+                tree structure. The virtual node tree still follows the component’s hierarchy. You can still use the
                 <code>$getRef</code>
-                method to obtain it, and when we use the
+                method to retrieve it, and when using the
                 <strong>outside</strong>
-                event modifier, even if its output structure has changed, it will still be affected by the
+                event modifier, even if the rendering structure changes, it remains influenced by the
                 <a href="/base/vnode" target="_blank">VNode</a>
-                tree structure.
+                tree.
             </p>
         </blockquote>
-        <p>Next, let's use an example to show the working principle:</p>
+        <p>Let’s illustrate how this works with an example:</p>
         <p>
             We use
             <code>append-to</code>
-            to output an
+            to render an
             <strong>absolute</strong>
-            -positioned element block to the body.
+            positioned element block into the
+            <code>body</code>
+            .
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo5)">
             <pre><code class="language-html">&lt;template&gt;
@@ -393,13 +396,11 @@ button {
         <blockquote>
             <p>
                 <code>append-to</code>
-                supports two types of values, namely:
+                supports two types of values:
                 <code>VNode.Node</code>
                 and
                 <code>string</code>
-                . When it is a
-                <code>string</code>
-                , it will obtain the target container according to
+                . When a string is provided, it retrieves the target container via
                 <strong>document.querySelector</strong>
                 .
             </p>

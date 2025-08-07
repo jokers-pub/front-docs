@@ -1,240 +1,240 @@
-## Overview of Joker Templates
+## Joker Template Overview  
 
-This chapter mainly introduces the basic usage of `<template>` in Joker SFC (Single-File Component). Joker uses an HTML-based template syntax, combined with our built-in dynamic directives, to achieve page layout.
+This section introduces the basic usage of the `<template>` in Joker SFC (Single File Component). Joker employs an `HTML`-based template syntax combined with built-in dynamic directives to implement page layouts.  
 
-At the underlying mechanism, Joker compiles the template into highly optimized ( [AST](/base/ast) ) JavaScript code. When rendering, Joker establishes the relationship between virtual nodes and actual rendering nodes to ensure that when the reactive data changes, the node information is updated immediately with the minimum granularity. For knowledge related to virtual DOM and AST, you can further understand it in the subsequent chapter [Virtual Nodes](/base/vnode).
+At its core, Joker compiles templates into highly optimized [AST](/base/ast) JavaScript code. During rendering, Joker establishes a relationship between virtual Nodes and actual rendered DOM nodes to ensure that updates to reactive data trigger minimal and immediate DOM updates. For details on virtual DOM and AST concepts, refer to the later chapter on [Virtual Nodes](/base/vnode).  
 
-In Joker, all dynamic directives start with the `@` symbol. We provide a rich set of directive syntaxes internally, including dynamic text, conditional judgment, loops, etc., which can help developers quickly develop template layouts.
+In Joker, all dynamic directives start with the `@` symbol. The framework provides a rich set of directive syntaxes, including dynamic text interpolation, conditional rendering, loops, and more, enabling developers to quickly build template layouts.  
 
-### Dynamic Text
+### Dynamic Text  
 
-The most basic form of data binding is text interpolation, which uses the syntax of “@('@property')”:
-
-```html
-<span>@value</span>
-```
-
-The dynamic text value points to the property name corresponding to the current component instance. You can learn more by referring to [Component Attributes](/base/component-property).
-
-In addition to directly rendering a value, we also provide complex expressions:
+The most basic form of data binding is text interpolation, achieved using the `@('@property')` syntax:  
 
 ```html
-<span>@(isTrue? 'I'm content 1' : 'I'm content 2')</span>
+<span>@value</span>  
+```  
 
-<span>@(value + 1)</span>
-```
+Here, the dynamic text references a property name corresponding to the current component instance's data. You can learn more about this in the [Component Properties](/base/component-property) section.  
 
-As can be seen from the above code examples, by enclosing with `()`, complex expressions or operations can be implemented inside.
-
-In addition to reading properties and configuring expressions, we can also read `get` properties or display the return value of a `method`. Let's see how to use it in combination with the component instance.
+Beyond rendering a simple value, Joker supports complex expressions:  
 
 ```html
-<template>
-    <span>@name</span>
-</template>
-<script>
-    import { Component } from "@joker.front/core";
-    export default class extends Component {
-        model = {
-            value: 0
-        };
-        get name() {
-            return this.model.value + 1;
-        }
-    }
-</script>
-```
+<span>@(isTrue ? 'Content 1' : 'Content 2')</span>  
 
-!!!demo1!!!
+<span>@(value + 1)</span>  
+```  
 
-> From the above example, it can be seen that if the `get` property depends on reactive data, when the reactive data changes, this property will also be updated and rendered synchronously.
+As shown above, wrapping expressions in `()` allows logic or computations within templates.  
 
-Of course, in some scenarios, although the code depends on reactive data, the value change does not notify the template to update. This may be due to the order of our code. We must access the reactive data to bind the synchronization relationship. If not accessed, the synchronization relationship will not be associated. For example:
+In addition to accessing properties and using expressions, you can also read `getter properties` or display method return values. Let's explore this with a component example:  
+
+```html
+<template>  
+    <span>@name</span>  
+</template>  
+<script>  
+    import { Component } from "@joker.front/core";  
+    export default class extends Component {  
+        model = {  
+            value: 0  
+        };  
+        get name() {  
+            return this.model.value + 1;  
+        }  
+    }  
+</script>  
+```  
+
+!!!demo1!!!  
+
+> **Note**: The example above shows that if a `getter property` depends on reactive data, template updates will automatically reflect changes when the reactive data updates.  
+
+However, in some cases, reactive data changes may not trigger template updates due to dependency tracking mechanism. For instance:  
 
 ```ts
-export default class extends Component {
-    model = {
-        value: 0
-    };
-    get name() {
-        if (false) {
-            // The reactive data is not accessed
-            return this.model.value + 1;
-        }
-        return 1;
-    }
-}
-```
+export default class extends Component {  
+    model = {  
+        value: 0  
+    };  
+    get name() {  
+        if (false) {  
+            // Reactive data is not accessed  
+            return this.model.value + 1;  
+        }  
+        return 1;  
+    }  
+}  
+```  
 
-The purpose of this is to render the template with the minimum associated relationship, avoid ineffective synchronous rendering, and improve rendering performance.
+This design minimizes unnecessary reactive bindings to optimize rendering performance.  
 
-Next, let's look at a scenario of displaying the return value of a method:
-
-```html
-<template>
-    <span>@getName()</span>
-</template>
-<script>
-    import { Component } from "@joker.front/core";
-    export default class extends Component {
-        model = {
-            value: 0
-        };
-        getName() {
-            return this.model.value + 1;
-        }
-    }
-</script>
-```
-
-!!!demo2!!!
-
-As can be seen from the above example, we can directly execute a method in the template and pass parameters. The format is `@('@methodName( param1, param2 )')`.
-
-Excitingly, method calls also support the synchronous rendering mechanism brought about by changes in reactive data.
-
-#### About the Rendered Value Type (Advanced)
-
-If you use `@('@text')` to insert dynamic text in the content of a template tag, during the actual build and run, we will convert it to **createText('text')**. No matter what type of value we get through the property, we will convert it to `String(value?? '')` for return.
-
-!!!demo3!!!
-
-> When we use the `@` symbol in the page to read a string property, in fact, we will convert it to `@('@Text(property)')` for rendering internally. You can use the Text directive to render a property. The Text directive is a built-in function. You can view the list of built-in directives at the end of this article to learn about it.
-
-> When you need to render the `@` symbol and there will be a letter following it, you can use `@('@(\"@\")')xxx` to represent it.
-
-### Render as HTML
-
-If you want to render string content as `HTML`, you can use the internally provided `@Html('<p></p>')` API function for rendering.
-
-> By default, the Html fragment will be rendered using shadow Dom to ensure that the internal style does not affect the outside. Of course, you can pass the second parameter as true to turn off the shadow mode. `@Html('<p></p>', true)`
-> Example:
+Next, let's see an example of displaying a method return value:  
 
 ```html
-<p>@Html('<span>123</span>')</p>
-<p>@Html(propertyName)</p>
-```
+<template>  
+    <span>@getName()</span>  
+</template>  
+<script>  
+    import { Component } from "@joker.front/core";  
+    export default class extends Component {  
+        model = {  
+            value: 0  
+        };  
+        getName() {  
+            return this.model.value + 1;  
+        }  
+    }  
+</script>  
+```  
 
-!!!demo4!!!
+!!!demo2!!!  
 
-### Attributes
+The example demonstrates calling methods in templates, including passing arguments in the format `@('@methodName(param1, param2)')`. Remarkably, method calls also support reactive updates when underlying data changes.  
 
-The `@` dynamic directive can be used anywhere, including the attributes of a tag:
+#### Rendering Value Types (Advanced)  
 
-```html
-<p style="color:@fontColor">I'm content</p>
-<input value="@inputValue" type="text" />
-<input value="I'm already @(age) years old" type="text" />
-```
+When using text interpolation (e.g., `@('@text')`), the runtime converts it to **createText('text')**. All non-string values are automatically coerced to strings via `String(value ?? '')`.  
 
-From the above code, it can be seen that we can insert dynamic attribute values wherever we want to make changes. And it also supports changes in reactive data.
+!!!demo3!!!  
 
-!!!demo5!!!
+> By default, `@property` is internally converted to `@('@Text(property)')` for rendering. The `Text` directive is a built-in function (see the built-in directives list at the end).  
 
-### Component Parameter Passing
+> To render a literal `@` symbol followed by text (e.g., `@xxx`), escape it as `@('@"@"')xxx`.  
 
-We can achieve communication between components through component parameter passing. In addition to the string rendering mentioned above, we can pass any type of property to the component, and the value type depends on the result type returned by the expression.
+### HTML Rendering  
 
-```html
-<my-component
-    message="I'm a fixed string"
-    age="@(12)"
-    user-list="@(['Zhang San', 'Li Si'])"
-    checked="@false"
-    address-info="@({city: 'Jinan'})"
-    post-code="2500@(00)"
-/>
-```
+To render a string as HTML, use the built-in `@Html('<p></p>')` function.  
 
-From the above example, it can be seen that we can use the `@('@()')` method to express complex types. Of course, we can also directly point to the value of a property.
-
-```html
-<template>
-    <my-component age="@numberValue" user-list="@arrayValue" checked="@booleanValue" address-info="@getObjectValue" />
-</template>
-<script>
-    import { Component } from "@joker.front/core";
-    export default class extends Component {
-        numberValue = 12;
-
-        get arrayValue() {
-            return ["Zhang San", "Li Si"];
-        }
-
-        booleanValue = false;
-
-        getObjectValue() {
-            return {
-                city: "Jinan"
-            };
-        }
-    }
-</script>
-```
-
-For **boolean**-type values, we have optimized them. As long as there is an attribute, the attribute is not false and has no value set (no `=`), it is treated as **true**.
+> By default, HTML fragments are rendered inside a **Shadow DOM** to isolate styles. Pass `false` as the second argument to disable Shadow DOM: `@Html('<p></p>', false)`.  
 
 ```html
-<my-component checked />
+<p>@Html('<span>123</span>')</p>  
+<p>@Html(propertyName)</p>  
+```  
 
-👇👇👇 Equivalent to 👇👇👇
+!!!demo4!!!  
 
-<my-component checked="@true" />
-```
+### Attributes  
 
-In addition, we have optimized the `style` and `class` in the HTML Render mode, supporting the form of passing objects/arrays to define the values of these attributes:
-
-```html
-<div
-    style="@({
-    width: '30px',
-    backgroundColor:'red',
-    top: false,
-    height: undefined
-})"
-></div>
-```
-
-We can specify the `style` as an object type, where the key type is [CSSStyleDeclaration](https://developer.mozilla.org/zh-CN/docs/Web/API/CSSStyleDeclaration), and the value is the value you need to configure. When the value is undefined/false, we will remove this style attribute.
+The `@` directive works in any context, including HTML attributes:  
 
 ```html
-<div class="@(['c1', 'c2'])"></div>
+<p style="color:@fontColor">Text content</p>  
+<input value="@inputValue" type="text" />  
+<input value="I am @(age) years old" type="text" />  
+```  
 
-<div class="@({'c1': true, 'c2': false})"></div>
+These examples show dynamic values applied to attributes, all supporting reactive updates.  
 
-<div class="@([c1, c2, { c3: true, c4: false }])"></div>
-```
+!!!demo5!!!  
 
-In addition to strings, the `class` attribute also supports two forms: arrays and objects. When in object mode, the key represents the style name to be set, and the value represents whether to add this style. The style will only be added when the value is true.
+### Component Props  
 
-> This section introduced how to pass attributes/parameters to a component or tag. For how a component receives parameter values, you can refer to the **props/propsOption** content in [Component Attributes](/base/component-property).
-
-### Registering Global Methods
-
-Joker itself has integrated a very rich set of directive methods. Of course, you can also extend some global methods to facilitate the rapid development of the project.
+Props enable communication between components. Beyond strings, props can accept any value type based on expressions:  
 
 ```html
-<span>Total: @Global.sum(1, 2)</span>
-```
+<my-component  
+    message="Static string"  
+    age="@(12)"  
+    user-list="@(['Alice', 'Bob'])"  
+    checked="@false"  
+    address-info="@({ city: 'Jinan' })"  
+    post-code="2500@(00)"  
+/>  
+```  
+
+Complex expressions are supported via `@()`. Alternatively, props can reference component properties directly:  
+
+```html
+<template>  
+    <my-component  
+        age="@numberValue"  
+        user-list="@arrayValue"  
+        checked="@booleanValue"  
+        address-info="@getObjectValue"  
+    />  
+</template>  
+<script>  
+    import { Component } from "@joker.front/core";  
+    export default class extends Component {  
+        numberValue = 12;  
+
+        get arrayValue() {  
+            return ["Alice", "Bob"];  
+        }  
+
+        booleanValue = false;  
+
+        getObjectValue() {  
+            return { city: "Jinan" };  
+        }  
+    }  
+</script>  
+```  
+
+For **boolean** props, Joker optimizes shorthand syntax. An attribute without a value (or `=false`) defaults to `true`:  
+
+```html
+<my-component checked />  
+
+<!-- Equivalent to -->  
+<my-component checked="@true" />  
+```  
+
+Additionally, `style` and `class` attributes support object/array formats:  
+
+```html
+<div  
+    style="@({  
+        width: '30px',  
+        backgroundColor: 'red',  
+        top: false,  
+        height: undefined  
+    })"  
+></div>  
+```  
+
+The `style` object’s keys correspond to [CSSStyleDeclaration](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration). Values set to `undefined/false` are omitted.  
+
+For `class`:  
+```html
+<div class="@(['c1', 'c2'])"></div>  
+
+<div class="@({ 'c1': true, 'c2': false })"></div>  
+
+<div class="@([c1, c2, { c3: true, c4: false }])"></div>  
+```  
+
+Objects in `class` use keys as class names, with `true`/`false` toggling inclusion.  
+
+> This section covers passing props to components/elements. For receiving props, see **props/propsOption** in [Component Properties](/base/component-property).  
+
+### Global Methods  
+
+Joker includes many built-in directives but also allows extending global methods for project efficiency:  
+
+```html
+<span>Total: @Global.sum(1, 2)</span>  
+```  
 
 ```ts
-import { registerGlobalFunction } from "@joker.front/core";
+import { registerGlobalFunction } from "@joker.front/core";  
 
-registerGlobalFunction("sum", (ag1: number, ag2: number) => {
-    return ag1 + ag2;
-});
-```
+registerGlobalFunction("sum", (arg1: number, arg2: number) => {  
+    return arg1 + arg2;  
+});  
+```  
 
-### List of Built-in Directives
+### Built-in Directives  
 
-The following are all the built-in directives of Joker.
+Below is the full list of Joker’s built-in directives.  
 
-| Directive Name | Description                                                                       |
-| -------------- | --------------------------------------------------------------------------------- |
-| Text           | Insert as text                                                                    |
-| Html           | Insert in HTML format                                                             |
-| for            | [List Rendering](/base/template-for)                                              |
-| if             | [Conditional Rendering](/base/template-if)                                        |
-| section        | Used to **specify/mark** block content, [Block Rendering](/base/template-section) |
-| RenderSection  | Used to render block content, [Block Rendering](/base/template-section)           |
-| Global         | Used to call globally registered methods                                          |
+| Directive      | Description                                                                 |  
+|----------------|-----------------------------------------------------------------------------|  
+| Text           | Inserts text content                                                        |  
+| Html           | Renders HTML content                                                        |  
+| for            | [List rendering](/base/template-for)                                        |  
+| if             | [Conditional rendering](/base/template-if)                                  |  
+| section        | Marks a reusable content block ([Block rendering](/base/template-section))  |  
+| RenderSection  | Renders a marked block ([Block rendering](/base/template-section))          |  
+| Global         | Calls globally registered methods                                           |

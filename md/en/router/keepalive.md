@@ -1,20 +1,20 @@
 ## Route State Preservation [keepalive]
 
-This chapter mainly introduces what route state preservation is and how to use it.
+This chapter introduces what route state preservation is and how to use it.
 
 ### What is Route State Preservation
 
-When developing single-page applications (SPAs), we often encounter situations where users switch from a list page to a detail page. When returning to the list page, we hope to maintain the list's query conditions, pagination status, and other interactive features, avoiding re-rendering the entire list page. At this time, we need to preserve the route state of a certain page so that it is not completely destroyed when navigating away.
+When developing Single Page Applications (SPAs), we often encounter scenarios where users navigate from a list page to a detail page. Upon returning to the list page, we want to maintain the list's query conditions, pagination state, and other interactive features without re-rendering the entire list page. In such cases, we need to enable route state preservation for a specific page to prevent it from being completely destroyed upon leaving.
 
 ### How to Use
 
-We can configure the `keepalive` item of the route entry when registering the route. Setting this property to `true`/`'once'` can achieve route state preservation. Different configuration types have different meanings (**default is undefined**):
+We can configure the `keepalive` property of a route during registration by setting it to `true` or `'once'` to achieve route state preservation. Different configuration types have the following meanings (**default: undefined**):
 
-- `true`: The component remains alive all the time. It can be destroyed and refreshed by using the **refresh** property when [navigating](/router/change).
+- `true`: Always keeps the component alive. The cache can be destroyed and refreshed using the **refresh** property during [navigation](/router/change).
 
-- `'once'`: It means the component only lives once. The component will only be rendered from the cache once. The second time it is rendered, it will be executed as a new component. This is generally suitable for route nodes with `high-frequency access + low-frequency updates`.
+- `'once'`: The component is cached only once. The cached version is rendered the first time, but it will be treated as a fresh component from the second rendering onward. This is typically suitable for routes that are *frequently accessed but infrequently updated*.
 
-- `false/undefined`: It means no state preservation is done.
+- `false/undefined`: No state preservation is applied.
 
 ```ts
 new Router({
@@ -30,7 +30,7 @@ new Router({
 
 ### How to Clear the State
 
-When we need to refresh a page with preserved state, we can use **refresh:true** in the `push` method to refresh the cache state of the target route.
+When we need to refresh a page with preserved state, we can use the **refresh: true** option in the `push` method to clear the target route's cached state.
 
 ```ts
 push({
@@ -39,21 +39,23 @@ push({
 });
 ```
 
-> Of course, instead of clearing the cache, you can use the two [lifecycle functions](/base/component-lifecycle) `sleeped` and `wakeup` to achieve data refresh operations within the component. Using `refresh` can destroy and recreate the cached component instance.
+> Alternatively, instead of clearing the cache, you can use the two [lifecycle functions](/base/component-lifecycle) `sleeped` and `wakeup` to implement data refresh operations within the component. Using `refresh` destroys and recreates the cached component instance.
 
-### Scenarios for Using `once`
+### Use Cases for 'once'
 
-First, when we configure `keepalive` to be **once**, the page will only be cached once. We can use `once` to achieve efficient and simple state-preservation functions in the following scenarios:
+When `keepalive` is set to **once**, the page is cached only once. Here are scenarios where `once` can efficiently implement state preservation:
 
-1. If the page is a high-frequency access / low-frequency update page, we can use `once` to reduce the number of page renderings.
-2. If the next-level route can only return to the current page, that is, the current page chain is single, then we can use `once` to achieve state preservation.
+1. **Frequent access with infrequent updates**: Use `once` to reduce rendering overhead for pages that are frequently visited but rarely updated.  
+2. **Single navigation chain**: If the next-level route can only return to the current page (i.e., the navigation chain is linear), `once` can preserve state effectively.  
 
-In the single-chain mode, when using `once`, we can avoid using `refresh` during navigation because when we access the page in sequence again, the page no longer has a cached state.
+For such linear navigation patterns, using `once` eliminates the need for manual `refresh` during navigation, as the page no longer exists in the cache upon subsequent visits in the forward direction.
 
-Of course, you can also explore and discover more application scenarios based on this caching strategy.
+Of course, you can explore and extend this caching strategy for more advanced use cases tailored to your needs.
 
-Some students may wonder why we can't actively clear the cache according to the route-navigation direction. In fact, when the browser handles navigation, it doesn't allow us to obtain the user's interaction history, so we can't determine whether the current navigation is the user going back or going to a new page.
+### Why Not Clear Cache Based on Navigation Direction?
 
-Although we can set a global variable in the `window` object to record each route change, and then judge whether the target address exists in the history record during the next navigation to determine whether it is a backward or forward navigation. However, this method is not advisable because the same address may be both a backward navigation and a new business node. Different pages may navigate to the same address, but the business logic they represent is different. Therefore, we do not recommend managing the route-navigation direction by customizing the history record.
+Some may wonder why the cache cannot be cleared dynamically based on the navigation direction. In reality, browsers do not expose user navigation history during routing, making it impossible to determine whether a navigation is a back action or a forward transition to a new page.
 
-Therefore, when dealing with complex route-navigation scenarios, we recommend using the `refresh` property to decide whether to clear the cache state. This method is more flexible and controllable.
+Though it is technically possible to track route changes using a global variable on the `window` object to infer navigation direction (e.g., by checking if the target route exists in the history), this approach is **not recommended**. The same route might represent either a backward navigation or a new business node in different contexts. For example, multiple pages could navigate to the same route but carry distinct business logic. Hence, custom history tracking for cache management introduces unnecessary complexity and unpredictability.
+
+For handling intricate routing scenarios, we recommend using the **refresh** property to explicitly control cache clearance, as it offers a more flexible and maintainable solution.

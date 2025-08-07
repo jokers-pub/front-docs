@@ -1,20 +1,20 @@
-## Common Configuration
+## Public Configuration
 
-This section mainly introduces the specification and instructions of the configuration file provided by Joker CLI.
+This section primarily introduces the configuration file specifications and instructions provided by Joker CLI.
 
-### How to Use the Configuration File
+### How to Use Configuration Files
 
-In addition to using Joker CLI's command-line parameters (e.g., `--log`) for configuration, you can also set the execution parameters of Joker CLI by creating a dedicated configuration file. Using a configuration file not only meets more complex functional requirements but also provides detailed configuration instructions for `rollup`. This method improves the flexibility and convenience of configuration and helps enhance the usage experience and efficiency.
+In addition to configuring Joker CLI via command-line parameters (e.g., `--log`), you can also set execution parameters by creating dedicated configuration files. Using configuration files not only accommodates more complex functional requirements but also provides detailed configuration directives for `rollup`. This approach enhances flexibility and convenience, improving the overall user experience and efficiency.
 
-We can create a `js` file as the configuration file. The configuration file can be placed anywhere in the project, for example, `build/dev.config.js`. You can also create multiple configuration files, such as:
+You can create `.js` files as configuration files, which can be placed anywhere in your project—for example, `build/dev.config.js`. Additionally, you can create multiple configuration files for different environments, such as:
 
--   `dev.server.js`: Configuration for the development server environment.
--   `dev.build.js`: Configuration for the development build environment.
--   `prod.config.js`: Configuration for the production build.
--   `st.config.js`: Configuration for the security testing environment.
--   And so on.
+-   `dev.server.js`: Development server environment configuration  
+-   `dev.build.js`: Development build environment configuration  
+-   `prod.config.js`: Production build configuration  
+-   `st.config.js`: Security Testing environment configuration  
+-   And more  
 
-We can create multiple execution commands in the `script` section of `package.json` and select different configuration files:
+You can define multiple execution commands in the `scripts` section of `package.json` and select different configuration files:
 
 ```json
 {
@@ -25,9 +25,9 @@ We can create multiple execution commands in the `script` section of `package.js
 }
 ```
 
-We can use the `config` property to specify different configuration files.
+You can specify different configuration files using the `config` property.
 
-The configuration file follows the [CommonJS](https://wiki.commonjs.org/wiki/CommonJS) specification. We can export our configuration information via `module.exports`.
+The configuration file adheres to the [CommonJS](https://wiki.commonjs.org/wiki/CommonJS) specification. You can export configuration information via `module.exports`.
 
 ```js
 module.exports = {
@@ -35,99 +35,99 @@ module.exports = {
 };
 ```
 
-Next, we will introduce the property configurations in the configuration file:
+Below, we will detail the properties available in the configuration file:
 
 ### root
 
--   **Type**: `string`
--   **Default**: `process.cwd()`
+-   Type: `string`  
+-   Default: `process.cwd()`  
 
-When the `root` parameter is specified, it defines the starting directory of the application. This directory can be an absolute path or a relative path relative to the current working directory `process.cwd()`. The application will start executing from this specified root directory, and all paths relative to this directory will be resolved based on it.
+When the `root` parameter is specified, it defines the starting directory of the application. This directory can be either an absolute path or a relative path based on the current working directory (`process.cwd()`). The application will execute from this root directory, and all relative paths will be resolved based on it.
 
 ### base
 
--   **Type**: `string`
--   **Default**: `/`
+-   Type: `string`  
+-   Default: `/`  
 
-In the development or production environment, the following legal values can be used for the service public base path:
+In development or production environments, the service's public base path can accept the following valid values:
 
--   An absolute path name, such as `/base/`, which means the path starts from the root directory of the website.
--   A complete URL, for example, `https://base.com/`. In the development environment, the original URL part will not be used and only serves as a placeholder.
--   An empty string or `./`, which is used for embedded services in the development environment, indicating the current directory.
+-   An absolute pathname, such as `/base/`, indicating the path starts from the root directory of the website.  
+-   A full URL, such as `https://base.com/`. In development, the original URL segment is not used and serves only as a placeholder.  
+-   An empty string or `./`, used for development environments with embedded services, representing the current directory.  
 
 ### mode
 
--   **Type**: `string`
--   **Default**: `development`
+-   Type: `string`  
+-   Default: `development`  
 
-The `mode` parameter is used to specify the running mode of the application and supports being set to `development` or `production`. These two modes correspond to the development environment and the production environment respectively. After the mode is configured, it can be accessed and utilized through environment variables.
+The `mode` parameter specifies the application's runtime mode, supporting `development` or `production`. These two modes correspond to the development and production environments, respectively. Once configured, the mode can be accessed and utilized via environment variables.
 
 ### command
 
--   **Type**: `string`
--   **Default**: `server`
+-   Type: `string`  
+-   Default: `server`  
 
-The `command` **cannot** be configured. It is used to indicate the current command mode. During the startup process of Joker CLI, the value of `command` will be automatically set. For example, `server` indicates starting the development service mode, while `build` represents executing the build mode.
+**`command` cannot be manually configured**. It indicates the current command mode. During Joker CLI startup, the `command` value is automatically set. For example, `server` denotes starting the development service mode, while `build` represents the build mode.
 
 ### server
 
--   **Type**: `ServerOptions`
+-   Type: `ServerOptions`  
 
-> For detailed configuration, please refer to the [Development Service](/cli/setting-server) configuration instructions.
+> For detailed configurations, refer to the [Development Service](/cli/setting-server) documentation.  
 
 ### build
 
--   **Type**: `BuildOptions`
+-   Type: `BuildOptions`  
 
-> For detailed configuration, please refer to the [Production Build](/cli/setting-build) configuration instructions.
+> For detailed configurations, refer to the [Production Build](/cli/setting-build) documentation.  
 
 ### cacheDir
 
--   **Type**: `string`
--   **Default**: `node_modules/.joker`
+-   Type: `string`  
+-   Default: `node_modules/.joker`  
 
-Define the cache directory, which stores files such as dep dependency caches. The default is `node_modules/.joker` under the folder where `package.json` is located. For more details, please refer to [Dependency Pre-building](/cli/dep).
+Defines the cache directory where dependency caches and other files are stored. The default is `.joker` under the `node_modules` folder in the directory containing `package.json`. For more details, see [Dependency Pre-Building](/cli/dep).  
 
 ### publicDir
 
--   **Type**: `string|false`
--   **Default**: `public`
+-   Type: `string | false`  
+-   Default: `public`  
 
-The static resource service folder is used to store resource files that do not need to change during the development and build processes. During the development phase, these files are located at the root directory `/` of the project for direct access. During the build phase, these files will be copied to the root directory of the specified `outDir` and provided to users as they are without any conversion. This path can be an absolute path in the file system or a relative path relative to the project root directory.
+The static assets directory contains files that remain unchanged during development and builds. In development, these files are served from the root directory (`/`). In production builds, they are copied to the root of the `outDir`. The path can be either an absolute path or a relative path from the project root.  
 
-If `publicDir` is set to `false`, this function will be disabled.
+Setting `publicDir` to `false` disables this feature.  
 
 ### logLeve
 
--   **Type**: `"silent" | "error" | "warn" | "info" | "debug"`
--   **Default**: `info`
+-   Type: `"silent" | "error" | "warn" | "info" | "debug"`  
+-   Default: `info`  
 
-The log output level. The default is `info`. If you want to understand the running mechanism of Joker CLI or need to debug Joker CLI, you can configure it to `debug`.
+The logging level, defaulting to `info`. To debug or understand Joker CLI's internal workings, set it to `debug`.  
 
 ### esbuild
 
--   **Type**: `boolean`
--   **Default**: `true`
+-   Type: `boolean`  
+-   Default: `true`  
 
-By default, esbuild will be applied in the compilation process of `ts` files.
+By default, esbuild is used for compiling `.ts` files.  
 
-When you need custom `ts` compilation, you can configure it to `false` to disable the `esbuild` function.
+To use a custom TypeScript compiler, disable esbuild by setting this to `false`.
 
 ### assetsInclude
 
--   **Type**: `string[]`
--   **Default**: `Refer to the following ASSET_TYPES content`
+-   Type: `string[]`  
+-   Default: `See ASSET_TYPES below`  
 
-By configuring additional resource types to be processed, we can achieve the following:
+By configuring additional asset types for processing, you can achieve:  
 
--   When these resources are referenced through HTML or requested via fetch or XHR, they will not be processed by the plugin's transformation pipeline.
--   If you try to import these resources from JavaScript, you will get a resolved URL string as the result. However, if you use a `enforce: 'pre'` plugin to handle different types of assets, this behavior may change. You can view the built-in resource type list for more information.
+-   These resources will bypass the plugin transformation pipeline if referenced in HTML or requested via fetch/XHR.  
+-   If imported in JavaScript, they resolve to a URL string unless transformed by an `enforce: 'pre'` plugin.  
 
-Joker CLI already treats the following types as resource types by default:
+Joker CLI already handles the following asset types by default:  
 
 ```ts
 export const ASSET_TYPES: string[] = [
-    // images
+    // Images
     "png",
     "jpe?g",
     "jfif",
@@ -139,7 +139,7 @@ export const ASSET_TYPES: string[] = [
     "webp",
     "avif",
 
-    // media
+    // Media
     "mp4",
     "webm",
     "ogg",
@@ -148,84 +148,82 @@ export const ASSET_TYPES: string[] = [
     "flac",
     "aac",
 
-    // fonts
+    // Fonts
     "woff2?",
     "eot",
     "ttf",
     "otf",
 
-    // other
+    // Others
     "webmanifest",
     "pdf",
     "txt"
 ];
 ```
 
-In this property, you can define new extension types. Joker CLI will combine these custom extensions with the default extensions to form the resource extension values.
+This property allows defining new extensions, which combine with the defaults.
 
 ### plugins
 
--   **Type**: `Plugin[] | Array<Plugin[]>`
+-   Type: `Plugin[] | Array<Plugin[]>`  
 
-> Joker CLI plugins. For more details, please refer to [Creating Plugins](#cli/plugin-create).
+> Joker CLI plugins. For details, see [Creating Plugins](#cli/plugin-create).  
 
 ### resolve
 
--   **Type**: `ResolveOptions`
--   **Default**: `{}`
+-   Type: `ResolveOptions`  
+-   Default: `{}`  
 
-This property is used to configure the resolver. We can perform resolution configuration by setting the internal `mainFields` and `extensions` properties.
+Configures the resolver by setting `mainFields` and `extensions`.  
 
 #### resolve.mainFields
 
--   **Type**: `string[]`
--   **Default**: `["browser","module", "jsnext:main", "jsnext"]`
+-   Type: `string[]`  
+-   Default: `["browser", "module", "jsnext:main", "jsnext"]`  
 
-In `package.json`, `resolve.mainFields` defines the list of fields to try when resolving the entry point of a package. Note that the priority of this list is lower than that of resolving the entry point from the `exports` field: if the entry point is successfully found through the `exports` field, `resolve.mainFields` will not be considered.
+Defines fields in `package.json` to resolve entry points. Note: `exports` field takes precedence.
 
 #### resolve.extensions
 
--   **Type**: `string[]`
--   **Default**: `[".js", "mjs", "mts", ".ts", ".json"]`
+-   Type: `string[]`  
+-   Default: `[".js", "mjs", "mts", ".ts", ".json"]`  
 
-Be cautious when omitting specific extensions during import, especially for extensions of custom import types. Avoid doing so to prevent affecting the normal functionality of the IDE and type support.
+Customize import extensions carefully to avoid breaking IDE/type support.  
 
 ### define
 
--   **Type**: `Record<string, any>`
--   **Default**: `{}`
+-   Type: `Record<string, any>`  
+-   Default: `{}`  
 
-Environment variable configuration. For more details, please refer to [Variables and Modes](/cli/define).
+Environment variable configuration. See [Variables & Modes](/cli/define).  
 
 ### css
 
--   **Type**: `CSSOptions`
--   **Default**: `{}`
+-   Type: `CSSOptions`  
+-   Default: `{}`  
 
-CSS configuration. You can extend the CSS compilation function by configuring `preprocessorOptions` and `enableSourceMap`.
+CSS configuration. Extend compilation features via `preprocessorOptions` and `enableSourceMap`.  
 
 #### css.preprocessorOptions
 
--   **Type**: `Record<string, any>`
--   **Default**: `{}`
+-   Type: `Record<string, any>`  
+-   Default: `{}`  
 
-When specifying options to be passed to the CSS pre-processor, the file extension will be used as the key for the options. For the specific options supported by each pre-processor, you can find the information in the corresponding official documentation:
+Options passed to CSS preprocessors, keyed by file extension (e.g., Sass/Less).  
 
--   [sass/scss](https://sass-lang.com/documentation/js-api/interfaces/legacystringoptions/)
--   [less](https://lesscss.org/usage/#less-options)
-
+Example:
 ```json
 {
     "sass": {
         "includePaths": ["node_modules"]
-        //...
+        // ...
     }
 }
 ```
 
 #### enableSourceMap
 
--   **Type**: `boolean`
--   **Default**: `false`
+-   Type: `boolean`  
+-   Default: `false`  
 
-Whether to enable sourcemap.
+Whether to enable source maps.

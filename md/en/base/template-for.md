@@ -1,10 +1,10 @@
 ## List Rendering
 
-This chapter will introduce how to implement loop logic in `template`.
+This section will cover how to implement loop logic in `template`.
 
-### for(let.. of..)
+### for(let .. of ..)
 
-Using `for..of` can quickly iterate over all items/values in an array/object. Its usage is the same as that in `javascript`.
+Using `for..of` allows quick iteration over all items/values in an array/object. Its usage is consistent with JavaScript.
 
 ```xml
 <template>
@@ -24,29 +24,30 @@ Using `for..of` can quickly iterate over all items/values in an array/object. It
     export default class extends Component {
         list = ["Zhang San", "Li Si", "Wang Wu",...];
 
-        obj = {
-            userName: "Zhang San",
-            age: 12
-        };
+        obj:{
+            userName:"Zhang San",
+            age:12
+        }
     }
 </script>
 ```
 
 !!!demo1!!!
 
-From the above example, we can see that we defined an **item** property using `let` in the `for` loop, and this property only takes effect within the `for` code block. Let's take a look at the scope of the value definition through the following example:
+From the example above, we can see that we can use `let` to define an **item** property within the for loop, which only takes effect within the `for` code block. 
+Let's look at the scope of value definitions through the following example:
 
 !!!demo2!!!
 
-### for(let.. in..)
+### fro(let .. in ..)
 
-The `for..in` directive is also a loop command. Different from `for..of`, the value it loops through is the **index** of the object/array.
+The `for..in` directive is another looping command. Unlike `for..of`, it iterates over the **indexes** of objects/arrays.
 
-Let's look at the output of **for...in** with the same example:
+Using the same example, let's see the output of **for...in**:
 
 !!!demo3!!!
 
-As can be seen from the above example, the **item** defined by `let` represents the index of each item during the loop. Of course, we can also use expressions in the `for` code block to complete the output of values:
+As shown in the example, the **item** defined by `let` represents the index of each item during iteration. Of course, we can also use expressions within the `for` code block to output values:
 
 ```xml
 @for(let item in list){
@@ -56,7 +57,7 @@ As can be seen from the above example, the **item** defined by `let` represents 
 
 !!!demo4!!!
 
-In addition to the above usage, we also provide a full-parameter loop syntax:
+In addition to the above usage, we also provide a full-parameter looping syntax:
 
 ```xml
 @for(let (index,item) in list){
@@ -64,26 +65,26 @@ In addition to the above usage, we also provide a full-parameter loop syntax:
 }
 ```
 
-When the value of `let` follows the `()` rule, we will use the first parameter as the index key `index` and the second parameter as the item key `item`. This usage can only be used in the `for in` directive.
+When the let value follows the `()` pattern, the first parameter is treated as the index key, and the second parameter as the item key. This syntax can only be used in the `for in` directive.
 
 ### for(..;..;..)
 
-In addition to the above two commonly used loop directives, we also provide a custom expression loop, allowing us to use custom expressions to achieve more complex loops.
+Besides the two commonly used loop directives mentioned above, we also provide custom expression loops, allowing more complex iterations.
 
 For example:
 
 !!!demo5!!!
 
-> We do not recommend modifying values that are not defined in the `for` loop within the expression.
+> We do not recommend modifying values defined outside the for loop within expressions.
 
-### In-depth Principles
+### Deep Dive into Principles
 
-In this section, we mainly introduce the data response mechanism and node update mechanism of the loop list.
+This section mainly explains the data reactivity mechanism and node updating mechanism in list rendering.
 
-Since `Joker`'s data response processing associates the VNode with the actual output node, changes in data will immediately trigger corresponding node change operations. When we modify a certain item, only one DOM node change operation will be executed in the end, and nodes without changes will not perform update operations.
+Since `Joker`'s data reactivity processing associates VNodes with actual output nodes, data changes will immediately trigger corresponding node updates. When modifying a specific item, only the DOM node changes related to that modification will be executed, while unchanged nodes will not undergo updates.
 
 !!!demo6!!!
 
-When the list/object to be looped changes `(in length)`, we will perform a loop from the beginning. The **values** of the loop will be compared with the rendered values. If they are the same, no **Render** rendering will be performed. If there are changes, the rendered nodes will be destroyed and new nodes will be inserted. After the loop ends, the **extra nodes (when the current rendering length is less than the original length)** will be destroyed. It should be noted that the **value comparison** we mentioned earlier refers to the **value of the expression** rather than the virtual DOM comparison, and its response speed is extremely fast.
+When the list/object to be iterated changes **in length**, we perform a full iteration from the beginning. The looped **values** are compared with previously rendered values. If they are the same, no **Render** operation is performed. If there are changes, the rendered nodes are destroyed and new nodes are inserted. After the loop completes, any **excess nodes (when the current rendering length is less than the original length)** are destroyed. It's worth noting that the **value comparison** mentioned here refers to **expression values** rather than virtual DOM comparison, making this process extremely fast.
 
-When changing the value of a property in the list/object **(not a length change)**, it will not trigger the list loop, and the rendering node of the **list item** will be directly updated.
+When modifying property values within a list/object **without changing its length**, the list iteration is not triggered. Instead, only the rendering nodes of the **list items** are updated directly.

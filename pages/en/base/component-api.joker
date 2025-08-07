@@ -2,43 +2,43 @@
     <div ref="container" class="joker-demo-container">
         <h2>Component Methods</h2>
         <p>
-            Our component development is all based on the powerful library
+            Our component development is based on the powerful library
             <code>
                 @("@joker.front/core")
             </code>
-            . It provides developers with a series of tools and APIs, including lifecycle hook functions, API functions, and properties, which can help us complete component development more efficiently and conveniently. In this chapter, we will delve into the composition of a component class and let you know how to use this library to create a component with rich functionality and superior performance.
+            . It provides developers with a range of tools and APIs, including lifecycle hooks, API functions, and properties, which help us develop components more efficiently and conveniently. In this chapter, we will delve into the composition of a component class, allowing you to understand how to leverage this library to create feature-rich and high-performance components.
         </p>
         <h3>Prerequisites</h3>
         <p>Before reading this chapter, you should have a basic understanding of the following:</p>
         <ul>
             <li>
-                <a href="https://www.typescriptlang.org/" target="_blank">TypeScript Programming</a>
+                <p>
+                    <a href="https://www.typescriptlang.org/" target="_blank">TypeScript Programming</a>
+                </p>
             </li>
             <li>
-                <a href="/base/component-lifecycle" target="_blank">Joker Lifecycle</a>
+                <p>
+                    <a href="/base/component-lifecycle" target="_blank">Joker Lifecycle</a>
+                </p>
             </li>
         </ul>
         <p>
             The built-in functions provided by Joker Core all start with
             <code>$</code>
-            , such as
+            , such as:
             <code>this.$watch</code>
             ,
             <code>$destroy</code>
-            , etc. Next, let's learn about the built-in functions provided by Joker Core:
+            , etc. Next, let’s explore the built-in functions Joker Core provides:
         </p>
-        <h3>
-            Component Mounting (
-            <code>$mount</code>
-            )
-        </h3>
-        <p>This function is generally called by the peripheral program to mount the current component.</p>
+        <h3>Component Mounting ($mount)</h3>
+        <p>This function is typically called by external programs to mount the current component.</p>
         <pre><code class="language-ts">import MyComponent from &quot;my-component.joker&quot;;
 
 let myComponent = new MyComponent();
 myComponent.$mounted(document.getElementById(&quot;app&quot;));
 </code></pre>
-        <p>Let's experience the mounting of a component through the following example.</p>
+        <p>Try the example below to experience component mounting.</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo1)">
             <pre><code class="language-html">&lt;template&gt;
     &lt;button @click=&quot;handleClick&quot;&gt;Click me to load the child component&lt;/button&gt;
@@ -68,13 +68,13 @@ export default class extends Component {
                     <th>Parameter</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>Default Value</th>
+                    <th>Default</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>root</td>
-                    <td>The container to be mounted. We often use it to mount a component to a DOM node.</td>
+                    <td>The container to mount to, often used to mount a component to a DOM node</td>
                     <td>Element/VNode.Component</td>
                     <td>-</td>
                 </tr>
@@ -84,18 +84,16 @@ export default class extends Component {
             <p>
                 The
                 <code>root</code>
-                parameter can be omitted. If it is not passed, the template rendering of the component will not be triggered, and it will only exist as an auxiliary function. We can use this mode to mix in some component functions.
+                parameter is optional. If no
+                <code>root</code>
+                is provided, the component's template will not render, allowing it to exist purely as a functional mixin for additional features.
             </p>
         </blockquote>
-        <h3>
-            Component Destruction (
-            <code>$destroy</code>
-            )
-        </h3>
+        <h3>Component Destruction ($destroy)</h3>
         <p>
-            By actively calling the
+            Calling the
             <code>$destroy</code>
-            method of a component instance, the component can be unloaded.
+            method of a component instance actively unloads the component.
         </p>
         <pre><code class="language-ts">import MyComponent from &quot;my-component.joker&quot;;
 
@@ -106,9 +104,9 @@ myComponent.$mounted(document.getElementById(&quot;app&quot;));
 myComponent.$destroy();
 </code></pre>
         <p>
-            Let's understand the
+            Explore
             <code>destroy</code>
-            method through the following example.
+            with the following example:
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo2)">
             <pre><code class="language-html">&lt;template&gt;
@@ -133,13 +131,11 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            For components that have maintained their state, calling the destruction method will not completely destroy the component. The component will maintain its data state in the background. You can pass the parameter
-            <code>force: true</code>
-            to completely destroy the component.
+            For components preserving state, calling the destroy method won't completely destroy the component; it will retain data state in the background. Use the parameter
+            <code>force:true</code>
+            to fully destroy it.
         </p>
-        <p>
-            Let's see how the destruction method works for components that maintain their state through the following example.
-        </p>
+        <p>See how the destroy method works for state-preserving components:</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo3)">
             <pre><code class="language-html">&lt;template&gt;
     &lt;div ref=&quot;container&quot;&gt;&lt;/div&gt;
@@ -202,7 +198,7 @@ button {
 </code></pre>
         </DemoContainer>
         <blockquote>
-            <p>A separate chapter later will provide a detailed introduction to maintaining data state.</p>
+            <p>Detailed explanations on data state preservation will be covered in a later chapter.</p>
         </blockquote>
         <table class="mkd-table">
             <thead>
@@ -210,27 +206,23 @@ button {
                     <th>Parameter</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>Default Value</th>
+                    <th>Default</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>force</td>
-                    <td>Whether to force destruction</td>
+                    <td>Whether to force destroy</td>
                     <td>Boolean</td>
                     <td>-</td>
                 </tr>
             </tbody>
         </table>
-        <h3>
-            Data Observation (
-            <code>$watch</code>
-            )
-        </h3>
+        <h3>Data Observation ($watch)</h3>
         <p>
             The
             <code>$watch</code>
-            method can be used to observe value changes of hijacked properties and respond with the corresponding function after the value changes.
+            method observes changes in hijacked properties and triggers corresponding functions when values change.
         </p>
         <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
 
@@ -243,7 +235,7 @@ export default class extends Component {
         let [val, destroyWatch] = this.$watch(
             () =&gt; this.model.value,
             (nv, ov) =&gt; {
-                // The value has changed. The new value is nv, and the old value is ov.
+                // Value changed, new value is nv, old value is ov
             }
         );
     }
@@ -283,13 +275,13 @@ export default class extends Component {
         </DemoContainer>
         <blockquote>
             <p>
-                It should be noted that the observed value must be a property hijacked by data (the values in the
+                Note: The observed value must be a hijacked property (properties within
                 <code>model</code>
-                property will undergo the
+                are hijacked via
                 <code>observer</code>
-                operation before the component is mounted). Otherwise, its changes cannot be observed. Please refer to
+                operations before component mounting). For details on data hijacking, see
                 <a href="/base/observer" target="_blank">here</a>
-                for detailed information on data hijacking.
+                .
             </p>
         </blockquote>
         <table class="mkd-table">
@@ -298,52 +290,53 @@ export default class extends Component {
                     <th>Parameter</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>Default Value</th>
+                    <th>Default</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>express</td>
-                    <td>The expression to be observed</td>
+                    <td>The expression to observe</td>
                     <td>Function</td>
                     <td>-</td>
                 </tr>
                 <tr>
                     <td>callback</td>
-                    <td>The callback function after the change</td>
+                    <td>Callback function upon change</td>
                     <td>
-                        (nv: any, ov: any) =&gt; void. It has two parameters, representing the
+                        <code>(nv:any, ov:any)=&gt;void</code>
+                        (receives
                         <strong>new value</strong>
-                        and the
+                        and
                         <strong>old value</strong>
-                        respectively.
+                        )
                     </td>
                     <td>-</td>
                 </tr>
                 <tr>
                     <td>forceCallBack</td>
-                    <td>Whether to force the callback (whether to force the callback when the values are the same)</td>
-                    <td>boolean (optional, default is false)</td>
-                    <td></td>
+                    <td>Force callback even if value is unchanged</td>
+                    <td>
+                        boolean (optional, default
+                        <code>false</code>
+                        )
+                    </td>
+                    <td>-</td>
                 </tr>
             </tbody>
         </table>
-        <h3>
-            Node Observation (
-            <code>$watchNode</code>
-            )
-        </h3>
+        <h3>Node Observation ($watchNode)</h3>
+        <p>Node observation tracks virtual node changes, including removal, addition, or updates.</p>
         <p>
-            Node observation can be used to monitor changes in virtual nodes, including node removal, addition, and modification.
-        </p>
-        <p>
-            When learning this method, it is recommended to first understand
-            <a href="/base/vnode" target="_blank">What is a VNode</a>
-            . The virtual node is the bridge between the DOM and the script. It is a virtual node tree that maps the actual DOM tree and is used for data communication between the DOM and the script. Moreover, the VNode can decouple the rendering layer and can be replaced with applet rendering or native mobile rendering (V8 kernel communication). Currently, the
+            Before using this method, it’s recommended to understand
+            <a href="/base/vnode" target="_blank">VNode</a>
+            . Virtual nodes act as bridges between DOM and Script, mapping the actual DOM tree as a virtual node tree to facilitate communication and decouple the rendering layer (e.g., for mini-programs, native mobile rendering). The
             <code>Core</code>
-            provides the H5-Render by default (H5-DOM rendering, responsible for rendering virtual nodes into H5 tag nodes).
+            provides
+            <code>H5-Render</code>
+            by default (rendering virtual nodes to H5 DOM nodes).
         </p>
-        <p>After having a general understanding of virtual nodes, you can continue to learn this API:</p>
+        <p>Example:</p>
         <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
 
 export default class extends Component {
@@ -352,10 +345,10 @@ export default class extends Component {
     };
 
     mounted() {
-        this.$watchNode(&quot;node ref&quot;, (node, type, property) =&gt; {
+        this.$watchNode(&quot;node_ref&quot;, (node, type, property) =&gt; {
             // node: The changed node
-            // type: The type of change
-            // property: If it is a property change, what is the property name?
+            // type: Change type
+            // property: The property name if attributes were changed
         });
     }
 }
@@ -420,69 +413,64 @@ button {
                     <th>Parameter</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>Default Value</th>
+                    <th>Default</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>ref</td>
-                    <td>The ref of the node to be observed</td>
+                    <td>The ref of the node to observe</td>
                     <td>string</td>
                     <td>-</td>
                 </tr>
                 <tr>
                     <td>callback</td>
-                    <td>The callback function after the change</td>
+                    <td>Change callback function</td>
                     <td>
-                        (node: VNode.Node, type: &quot;append&quot; / &quot;remove&quot; / &quot;update&quot; / &quot;after-enter&quot; / &quot;after-leave&quot;, property: string) =&gt; void. It has three parameters, representing the
+                        <code>
+                            (node:VNode.Node, type:&quot;append&quot;/&quot;remove&quot;/&quot;update&quot;/&quot;after-enter&quot;/&quot;after-leave&quot;, property:string)=&gt;void
+                        </code>
+                        (receives
                         <strong>changed node</strong>
-                        , the
-                        <strong>type of change</strong>
-                        , and the
-                        <strong>changed property value</strong>
-                        respectively.
+                        ,
+                        <strong>change type</strong>
+                        , and
+                        <strong>property value</strong>
+                        )
                     </td>
                     <td>-</td>
                 </tr>
             </tbody>
         </table>
-        <h3>
-            Getting Nodes (
-            <code>$getRef</code>
-            and
-            <code>$getRefs</code>
-            )
-        </h3>
+        <h3>Fetching Nodes ($getRef and $getRefs)</h3>
         <p>
-            By configuring the
+            Mark elements with the
             <code>ref</code>
-            attribute for a tag, the tag can be marked. The marked tag can then be retrieved in the script using
-            <strong>$getRef</strong>
+            attribute to fetch them via
+            <code>$getRef</code>
             or
-            <strong>$getRefs</strong>
-            .
-            This method returns virtual nodes. When learning this method, it is recommended to first understand
-            <a href="/base/vnode" target="_blank">What is a VNode</a>
-            .
+            <code>$getRefs</code>
+            . These methods return virtual Nodes (VNodes).
         </p>
-        <pre><code class="language-ts">// Get a single node
+        <pre><code class="language-ts">// Fetch a single node
 this.$getRef&lt;VNode.Element&gt;(&quot;ref&quot;);
 
-// Get multiple nodes
+// Fetch multiple nodes
 this.$getRefs(&quot;ref&quot;);
 </code></pre>
         <p>
             <code>$getRef</code>
-            will return at most one VNode. If there are multiple nodes with the same ref, only the first one will be returned.
-        </p>
-        <p>
+            returns at most one VNode (the first match if multiple refs exist).
+            <br />
             <code>$getRefs</code>
-            will return multiple VNodes. It will return all nodes within the current component (excluding child components) with the same ref value.
+            returns all nodes with the specified
+            <code>ref</code>
+            in the current component (excluding child components).
         </p>
         <p>
-            Both methods support TypeScript generics (default is
+            Both methods support TypeScript generics (default
             <code>VNode.Node</code>
-            ), allowing you to specify the type of the returned node for convenient subsequent value operations.
+            ), allowing specific node type returns for easier manipulation.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo6)">
             <pre><code class="language-html">&lt;template&gt;
@@ -527,13 +515,13 @@ button {
                     <th>Parameter</th>
                     <th>Description</th>
                     <th>Type</th>
-                    <th>Default Value</th>
+                    <th>Default</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>ref</td>
-                    <td>The ref value of the node</td>
+                    <td>Node ref value</td>
                     <td>string</td>
                     <td>-</td>
                 </tr>
@@ -541,51 +529,46 @@ button {
         </table>
         <blockquote>
             <p>
-                Of course, we also provide the
+                Additionally, the
                 <code>$refs</code>
-                property to store all marked nodes. For detailed knowledge, please refer to the introduction of
-                <code>$refs</code>
-                in
-                <a href="/base/component-property" target="_blank">Component Properties</a>
-                .
+                property holds all marked nodes (see
+                <a href="/base/component-property" target="_blank">
+                    <code>$refs</code>
+                    in Component Properties
+                </a>
+                ).
             </p>
         </blockquote>
-        <h3>
-            Events (
-            <code>$on</code>
-            ,
-            <code>$off</code>
-            ,
-            <code>$trigger</code>
-            )
-        </h3>
-        <p>
-            <code>$on</code>
-            ,
-            <code>$off</code>
-            , and
-            <code>$trigger</code>
-            are the core methods of the component event mechanism, representing event registration, event destruction, and event triggering respectively.
-        </p>
-        <p>
-            Among them,
-            <strong>trigger</strong>
-            is used more often, usually for event broadcasting from components to the outside.
-        </p>
-        <p>Next, let's take a look at how to use events:</p>
+        <h3>Events ($on / $off / $trigger)</h3>
+        <p>These methods form the core of component event mechanisms:</p>
+        <ul>
+            <li>
+                <code>$on</code>
+                : Registers an event.
+            </li>
+            <li>
+                <code>$off</code>
+                : Unregisters an event.
+            </li>
+            <li>
+                <code>$trigger</code>
+                : Triggers an event (commonly used for broadcasting events).
+            </li>
+        </ul>
+        <p>Usage example:</p>
         <pre><code class="language-ts">// Event registration
-this.$on(&quot;event name&quot;, (e: VNode.Event, param: any) =&gt; {
-    // Here, e represents the event processing object, responsible for handling event bus flow and data transfer.
-    // param represents the additional parameter of the event.
+this.$on(&quot;eventName&quot;, (e: VNode.Event, param: any) =&gt; {
+    // e: Event object for handling event flow and data
+    // param: Additional event parameters
 });
 
 // Event unregistration
-this.$off(&quot;event name&quot;, event function);
+this.$off(&quot;eventName&quot;, callbackFunction);
 
-// Event triggering. When intercepting and forwarding the event, a third parameter can be passed to maintain the consistency of the event object.
-this.$trigger(&quot;event name&quot;, event parameter, e?: VNode.Event);
+// Event triggering (optionally pass the event object for forwarding)
+this.$trigger(&quot;eventName&quot;, eventParam, e?: VNode.Event);
 </code></pre>
-        <p>Case display:</p>
+        <p>Example:</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo7)">
             <pre><code class="language-html">&lt;template&gt;
     @if(model.hasOn) {
@@ -634,49 +617,39 @@ button {
         </DemoContainer>
         <blockquote>
             <p>
-                When we want to listen to all event triggers of a component, we also provide the
+                To monitor all events from a component, use the
                 <code>*</code>
-                wildcard. You can listen to all event processing of the component by using
+                wildcard (e.g.,
                 <code>$on('*', ...)</code>
-                . This wildcard is only applicable to the
+                ). This works only in
                 <code>$on</code>
-                API method call and not applicable to event registration in the
-                <code>template</code>
-                .
+                , not in template event bindings.
             </p>
         </blockquote>
-        <p>Let's look at a more complex usage example:</p>
+        <p>Advanced usage:</p>
         <pre><code class="language-ts">this.childrenComponent.$on(&quot;*&quot;, (e: VNode.Event) =&gt; {
     if (e.eventName === &quot;click&quot;) {
-        // TODO:...
+        // Handle click
         return;
     }
-
-    // Do not process other events and continue to pass them up.
+    
+    // Forward other events
     this.$trigger(e.eventName, e.data, e);
 });
 </code></pre>
-        <h4>
-            Introduction to
-            <code>VNode.Event</code>
-        </h4>
+        <h4>VNode.Event Overview</h4>
         <p>
             <code>VNode.Event</code>
-            is the event processing object in the Joker front-end. Whether it is an event actively responded to through JS or a native event trigger, this type will be passed as the first parameter to the
+            is the event handling object in Joker, passed as the first parameter in
             <code>$on</code>
-            function.
-        </p>
-        <p>
-            This object has a
+            . Its
             <code>data</code>
-            property, which represents the parameter passed by the event. You can specify the value type through generics for convenient subsequent operations. The default value is
-            <code>undefined</code>
-            .
+            property holds event parameters (generics-supported).
         </p>
         <table class="mkd-table">
             <thead>
                 <tr>
-                    <th>Property Name</th>
+                    <th>Property</th>
                     <th>Description</th>
                     <th>Type</th>
                 </tr>
@@ -684,41 +657,44 @@ button {
             <tbody>
                 <tr>
                     <td>eventName</td>
-                    <td>The name of the event</td>
+                    <td>Event name</td>
                     <td>string</td>
                 </tr>
                 <tr>
                     <td>event</td>
-                    <td>The native event object, depending on the running platform</td>
+                    <td>Native event object (platform-specific)</td>
                     <td>any</td>
                 </tr>
                 <tr>
                     <td>target</td>
-                    <td>The virtual node that responds to the event</td>
-                    <td>VNode.Node/undefined</td>
+                    <td>Target VNode of the event</td>
+                    <td>VNode.Node / undefined</td>
                 </tr>
                 <tr>
                     <td>data</td>
-                    <td>The event parameter</td>
-                    <td>&lt;T&gt;: any</td>
+                    <td>Event parameters</td>
+                    <td>
+                        <code>&lt;T&gt;</code>
+                        : any
+                    </td>
                 </tr>
                 <tr>
                     <td>preventDefault</td>
-                    <td>Prevent the default event</td>
+                    <td>Prevents default event behavior</td>
                     <td>function</td>
                 </tr>
                 <tr>
                     <td>stopPropagation</td>
-                    <td>Prevent event propagation</td>
+                    <td>Stops event propagation</td>
                     <td>function</td>
                 </tr>
             </tbody>
         </table>
-        <p>Event registration and triggering for tags or components</p>
-        <p>Parent component</p>
+        <h3>Event Registration and Triggering</h3>
+        <p>Parent Component:</p>
         <pre><code class="language-html">&lt;template&gt;
-    &lt;button @click=&quot;handleClick('parameter 1', 'parameter 2')&quot;&gt;Button&lt;/button&gt;
-    &lt;MyComponent @click=&quot;handleMyComponentClick('parameter 1', 'parameter 2')&quot;&gt;Button&lt;/MyComponent&gt;
+    &lt;button @click=&quot;handleClick('param1', 'param2')&quot;&gt;Button&lt;/button&gt;
+    &lt;MyComponent @click=&quot;handleMyComponentClick('param1', 'param2')&quot;&gt;&lt;/MyComponent&gt;
 &lt;/template&gt;
 &lt;script&gt;
     import { Component, VNode } from &quot;@joker.front/core&quot;;
@@ -730,36 +706,36 @@ button {
             MyComponent
         };
         handleMyComponentClick(e: VNode.Event&lt;string&gt;, param1: string, param2: string) {
-            // This is the parameter value passed by the event.
+            // Event-passed parameter
             e.data;
-            // These are the extended parameters of the event.
+            // Extended parameters
             param1;
             param2;
         }
 
         handleClick(e: VNode.Event, param1: string, param2: string) {
-            // These are the extended parameters of the event.
+            // Extended parameters
             param1;
             param2;
         }
     }
 &lt;/script&gt;
 </code></pre>
-        <p>Child component</p>
+        <p>Child Component:</p>
         <pre><code class="language-html">&lt;template&gt;
-    &lt;button @click=&quot;handleClick&quot;&gt;I'm a button in the child component&lt;/button&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;Child Button&lt;/button&gt;
 &lt;/template&gt;
 &lt;script&gt;
     import { Component } from &quot;@joker.front/core&quot;;
 
     export default class extends Component {
         handleClick() {
-            this.$trigger(&quot;click&quot;, &quot;I'm the parameter passed by the child component&quot;);
+            this.$trigger(&quot;click&quot;, &quot;Child component parameter&quot;);
         }
     }
 &lt;/script&gt;
 </code></pre>
-        <p>Let's experience it with a real example:</p>
+        <p>Live example:</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo8)">
             <pre><code class="language-html">&lt;template&gt;
     &lt;button @click=&quot;handleClick('param1', 'param2')&quot;&gt;按钮&lt;/button&gt;
@@ -806,152 +782,34 @@ button {
 </code></pre>
         </DemoContainer>
         <p>
-            In the above example, we can observe that
+            In the example above,
             <code>e.data</code>
-            , as a parameter passed by the event, is responsible for carrying cross-component data when the event is passed between components. On the other hand, the parameters passed through the function when registering an event, such as
-            <code>param1</code>
-            and
-            <code>param2</code>
-            in
-            <code>handleClick(param1, param2)</code>
-            , are extended parameters of the event handling function and will not be passed along with the event propagation. They are only used as extended parameters in the event handling function within the current component and will only be passed as extended parameters after
-            <code>e: VNode.Event</code>
-            during the event response.
+            carries cross-component data, while parameters like
+            <code>param1, param2</code>
+            are local to the event handler.
         </p>
+        <h3>Property Synchronization ($syncProp)</h3>
         <p>
-            By calling
-            <code>e.preventDefault()</code>
-            , the default event can be prevented, which is generally used for the response of native events. If you don't understand
-            <code>preventDefault</code>
-            , click
-            <a href="https://www.w3school.com.cn/jsref/event_preventdefault.asp" target="_blank">here</a>
-            to learn more.
-        </p>
-        <pre><code class="language-ts">handleClick(e: VNode.Event) {
-    e.preventDefault();
-}
-</code></pre>
-        <p>
-            By calling
-            <code>e.stopPropagation()</code>
-            , the event can be prevented from continuing to be passed. If you don't understand
-            <code>stopPropagation</code>
-            , click
-            <a href="https://www.w3school.com.cn/htmldom/event_stoppropagation.asp" target="_blank">here</a>
-            to learn more.
-        </p>
-        <pre><code class="language-ts">handleClick(e: VNode.Event) {
-    e.stopPropagation();
-}
-</code></pre>
-        <p>
-            Each Joker component provides some basic events by default. You can actively listen to these events to handle special requirement scenarios if necessary.
-        </p>
-        <table class="mkd-table">
-            <thead>
-                <tr>
-                    <th>Event Name</th>
-                    <th>Description</th>
-                    <th>Parameters</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>created</td>
-                    <td>Triggered before the component is mounted</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>mounted</td>
-                    <td>Triggered after the component is mounted</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>sleeped</td>
-                    <td>Triggered after the component goes to sleep</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>wakeup</td>
-                    <td>Triggered after the component is awakened</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>beforeDestroy</td>
-                    <td>Triggered before the component is destroyed</td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>destroy</td>
-                    <td>Triggered after the component is destroyed</td>
-                    <td>-</td>
-                </tr>
-            </tbody>
-        </table>
-        <blockquote>
-            <p>
-                From the above default events, we can find that these events correspond to the lifecycle hooks. Lifecycle hooks are usually used for periodic expansion within the current component, while these periodic events are mainly used to listen to and track the state changes of the component outside the component.
-            </p>
-        </blockquote>
-        <h3>
-            Property Synchronization (
-            <code>$syncProp</code>
-            )
-        </h3>
-        <p>
-            Before learning this method, please first understand the knowledge of
-            <code>model</code>
-            and
-            <code>props</code>
-            in
-            <a href="/base/component-property" target="_blank">Component Properties</a>
+            Before using this method, familiarize yourself with
+            <a href="/base/component-property" target="_blank">
+                <code>model</code>
+                and
+                <code>props</code>
+            </a>
             .
         </p>
         <p>
             Since
             <code>props</code>
-            can only be read and not set, when you need to transfer the state internally, you must use
+            are read-only, internal state changes require
             <code>model</code>
-            to create properties. However, when
+            . To sync
             <code>props</code>
-            change, they need to be synchronized to
+            to
             <code>model</code>
-            . So, without using the
-            <code>syncProp</code>
-            method, the code looks like this:
-        </p>
-        <pre><code class="language-ts">import { Component } from &quot;@joker.front/core&quot;;
-
-export default class extends Component&lt;{
-    money: number;
-}&gt; {
-    model = {
-        money: 0
-    };
-
-    created() {
-        // Synchronize the value for the first time
-        this.model.money = this.props.money;
-
-        // Listen for changes and synchronize them to the model
-        this.$watch(
-            () =&gt; this.props.money,
-            (nv) =&gt; {
-                this.model.money = nv;
-            }
-        );
-    }
-
-    handleClick() {
-        // Simulate an internal value change
-        this.model.money = 300;
-    }
-}
-</code></pre>
-        <p>
-            As you can see, the code to achieve one-way value synchronization is quite complex. So, we provide the
+            , use
             <code>$syncProp</code>
-            method to help developers quickly achieve one-way data synchronization.
+            :
         </p>
         <pre><code class="language-ts">export default class extends Component&lt;{
     money: number;
@@ -965,59 +823,37 @@ export default class extends Component&lt;{
     }
 
     handleClick() {
-        // Simulate an internal value change
-        this.model.money = 300;
+        this.model.money = 300; // Internal state change
     }
 }
 </code></pre>
-        <p>This method has multiple overloads to meet the needs of most scenarios:</p>
-        <pre><code class="language-ts">/**
- * One-way value synchronization (full parameters)
- * @param propKey The name of the props property to be synchronized
- * @param modelKey The name of the model property to be synchronized to
- * @param convertVal If the value types to be synchronized in props and model are different, you can use this method for conversion.
- */
+        <p>Overloads for different scenarios:</p>
+        <pre><code class="language-ts">// Full signature
 this.$syncProp(propKey: keyof T, modelKey: string, convertVal?: (val: any) =&gt; any);
 
-// Other overloads of this method
-this.$syncProp(propKey: keyof T, convertVal?: (val: any) =&gt; any);
+// Shorthand (same property name, type conversion)
+this.$syncProp('propsValue', (val:string) =&gt; parseInt(val));
 
-// For example
-// If the property names are different and value conversion is required
-this.$syncProp('propsValue','modelValue',(val: string) =&gt; { return parseInt(val); });
-
-// If the property names are the same and value conversion is required
-this.$syncProp('propsValue',(val: string) =&gt; { return parseInt(val); });
-
-// If the property names are the same and the value types are the same
+// Basic (same property name and type)
 this.$syncProp('propsValue');
 </code></pre>
-        <h3>
-            Node Animation (
-            <code>$nodeTransition</code>
-            ) [Advanced API]
-        </h3>
-        <p>
-            In some scenarios, you need to actively start an animation for a node through JS, such as &quot;fade in and fade out&quot;. This method can help developers actively start an animation for a node.
-        </p>
+        <h3>Node Animation ($nodeTransition) [Advanced]</h3>
+        <p>Trigger node animations (e.g., fade-in/out) programmatically:</p>
         <pre><code class="language-ts">this.$nodeTransition(
-    // The node or ref that needs animation
-    nodeOrRef: string | VNode.Node,
-    // The animation cycle type
-    mode: &quot;enter&quot; | &quot;leave&quot;,
-    // The name of the animation, corresponding to the animation class name
-    name?: string,
-    // The callback function after the animation ends
-    callBack?: Function,
-    // The animation type
-    type?: &quot;transition&quot; | &quot;animation&quot;)
+    nodeOrRef: string | VNode.Node, // Node/ref to animate
+    mode: &quot;enter&quot; | &quot;leave&quot;,       // Animation phase
+    name?: string,                 // Animation class name
+    callBack?: Function,           // Post-animation callback
+    type?: &quot;transition&quot; | &quot;animation&quot; // Animation type
+);
 </code></pre>
         <p>
-            Let's look at a simple example. Here, we apply a style animation provided by
+            Example (using
             <code>
-                @("@joker.front/ui")
+                @joker.front
+                /ui
             </code>
-            :
+            animations):
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo9)">
             <pre><code class="language-html">&lt;template&gt;
@@ -1069,33 +905,62 @@ button {
 &lt;/style&gt;
 </code></pre>
         </DemoContainer>
-        <h3>Waiting for the Next Render</h3>
+        <h3>Awaiting Next Render ($nextUpdatedRender)</h3>
         <p>
-            The rendering of the Joker front-end is immediate. When a property changes, it will be immediately updated and rendered on the page. However, when using asynchronous components, you need to use the
+            Joker renders changes instantly. For async components, use
             <code>$nextUpdatedRender</code>
-            function to listen for whether the component has completed the overall rendering update.
+            to wait for completion:
         </p>
-        <pre><code class="language-ts">// 1 Usage 1
+        <pre><code class="language-ts">// Method 1
 this.$nextUpdatedRender(() =&gt; {
-    // TODO: The update is completed.
+    // Rendering complete
 });
 
-// 2 Usage 2
+// Method 2 (async/await)
 await this.$nextUpdatedRender();
-// TODO: The update is completed.
 </code></pre>
-        <h3>
-            Rendering Templates (
-            <code>$render</code>
-            ) [Advanced API]
-        </h3>
+        <h3>Template Rendering ($render) [Advanced]</h3>
         <p>
-            In Joker, you can create view templates through the
-            <code>&lt;template&gt;</code>
-            tag or the
-            <code>template</code>
-            property. Of course, you can also render templates by calling
+            Dynamically change templates via
+            <code>$render</code>
+            (advanced usage):
         </p>
+        <pre><code class="language-ts">/**
+ * Render a template
+ * @param asts New AST nodes
+ * @param keepalive Preserve alive components during re-render (use with caution)
+ */
+this.$render(asts:AST.Node[] | (()=&gt;AST.Node[]), keepalive?: boolean);
+</code></pre>
+        <p>
+            For AST details, see
+            <a href="/base/ast" target="_blank">here</a>
+            .
+        </p>
+        <DemoContainer component="@(components.DEMO_JOKER_demo10)">
+            <pre><code class="language-html">&lt;template&gt;
+    &lt;button @click=&quot;handleClick&quot;&gt;I'm the button from the original template.&lt;/button&gt;
+&lt;/template&gt;
+&lt;script&gt;
+import { Component } from &quot;@joker.front/core&quot;;
+
+export default class extends Component {
+    handleClick() {
+        this.$render((h) =&gt; {
+            return [h.createElement(&quot;div&quot;, undefined, [h.createText(&quot;I'm the newly rendered text.&quot;)])];
+        });
+    }
+}
+&lt;/script&gt;
+</code></pre>
+        </DemoContainer>
+        <blockquote>
+            <p>
+                Template rendering has its own lifecycle—old templates are destroyed (nodes, data, events) before rendering new ones. See
+                <a href="/base/ast" target="_blank">here</a>
+                .
+            </p>
+        </blockquote>
         <BottomNav />
     </div>
 </template>

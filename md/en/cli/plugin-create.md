@@ -1,14 +1,14 @@
 ## Creating Plugins
 
-Joker CLI plugins are built on top of the excellent Rollup plugin architecture and introduce unique configuration options specifically designed for Joker CLI. This means that once a Joker CLI plugin is written, it can work seamlessly in both development and production environments without additional configuration.
+Joker CLI plugins are built on top of the excellent Rollup plugin architecture and introduce unique configuration options specifically designed for Joker CLI. This means once a Joker CLI plugin is written, it can work seamlessly in both development and production environments without requiring additional configuration.
 
-Before reading this section, please first learn about [Rollup plugins](https://rollupjs.org/plugin-development/#plugins-overview). This section mainly introduces some of the Joker CLI's own properties.
+Before reading this section, please first familiarize yourself with [Rollup plugin](https://rollupjs.org/plugin-development/#plugins-overview) concepts. This section primarily introduces Joker CLI's proprietary properties.
 
 ### Naming
 
-We recommend that all Joker CLI plugins be named with the prefix `@('@joker.front/cli-')` to ensure that developers can quickly identify the type of the library by its name when referencing it.
+We recommend that all Joker CLI plugins be prefixed with `@('@joker.front/cli-')` in their names. This ensures developers can quickly identify the library type by its name when referencing it.
 
-### A Simple Example
+### Simple Example
 
 ```js
 const fileRegex = /\.(my-file-ext)$/;
@@ -31,31 +31,32 @@ export default function myPlugin() {
 
 ### enforce
 
--   **Type**: `"pre" | "post"`
+-   Type: `"pre" | "post"`
 
-This can be used to specify the execution order of the plugin.
+Specifies the execution order of the plugin.
 
--   `pre`: Ensures that the plugin is executed before the core plugins of Joker CLI.
--   `default`: The plugin will be executed in sequence after the core plugins of Joker CLI.
--   `post`: The plugin will be executed after the completion of the Joker CLI build process.
+-   `pre`: Ensures the plugin executes before Joker CLI core plugins.
+-   `default`: The plugin will execute in sequence after Joker CLI core plugins.
+-   `post`: The plugin will execute after Joker CLI build process is completed.
 
 ### apply
 
--   **Type**: `"build" | "server"`
+-   Type: `"build" | "server"`
 
-This is used to specify in which environments the plugin takes effect. When not set by default, it means the plugin will be executed in all modes.
+Specifies the environments in which the plugin is effective. When not set, it means the plugin executes in all modes.
 
 ### configureServer
 
--   **Type**: `(server: Server) => void | Promise<void>`
+-   Type: `(server: Server) => void | Promise<void>`
 
-This is a hook for configuring the development server. We can use this hook to implement the storage of the `server` object and other configurations.
+A hook used to configure the development server. You can use this HOOK to store the `server` object and perform other configurations.
 
 ```js
 const myPlugin = () => ({
     name: "configure-server",
     configureServer(server) {
-        // Return a post-hook that is called after the internal middleware is installed
+        // Returns a post hook that is called 
+        // after internal middleware is installed
         return () => {
             server.middlewares.use((req, res, next) => {
                 // Custom request handling...
@@ -73,7 +74,7 @@ const myPlugin = () => {
         },
         transform(code, id) {
             if (server) {
-                // Use server...
+                // Use the server...
             }
         }
     };
@@ -82,13 +83,13 @@ const myPlugin = () => {
 
 ### configTransform
 
--   **Type**: `(config: ResolvedConfig) => Promise<void> | void`
+-   Type: `(config: ResolvedConfig) => Promise<void> | void`
 
-Through this hook, some configurations can be made to the `config`. We can set default values for a certain property within this method, or we can process the incoming `config` for the second time.
+This HOOK allows you to configure the `config`. You can set default values for properties within this function or perform secondary processing on the incoming `config`.
 
 ### indexHtmlTransform
 
-This property is used to extend the transformation of `html`. Its configuration rules are as follows:
+This property is used to extend HTML transformations. Its configuration rules are:
 
 ```ts
 export type IndexHtmlTransformHook = (
@@ -104,13 +105,13 @@ export type IndexHtmlTransform =
       };
 ```
 
-This feature allows for asynchronous operations and can return one of the following forms:
+This feature allows asynchronous operations and can return one of the following:
 
 -   The transformed HTML string.
--   An array of property objects describing tags to be injected into the existing HTML, where each tag can also define its insertion position (by default, before the <head> tag).
+-   An array of attribute objects describing tags to inject into the existing HTML, with each tag optionally specifying its insertion position (default is before the `<head>` tag).
 -   An object containing `{ html, tags }`.
 
-For example: Convert the title to a specified value
+For example, replacing the title with a specified value:
 
 ```js
 const htmlPlugin = () => {
@@ -125,18 +126,18 @@ const htmlPlugin = () => {
 
 ### hmrUpdate
 
-This is the hook function for handling HMR (Hot Module Replacement) hot updates. This function only takes effect in the `server` mode.
+HMR (Hot Module Replacement) update processing hook function. This function only takes effect in `server` mode.
 
 ```ts
     /**
-     * The context for hot-updated module Update.
-     * We can implement the update of properties such as modules through this hook.
+     * HMR update context
+     * Allows updating properties like modules via this hook
      * @param ctx
      */
     hmrUpdate?(ctx: HMRContext, server: Server): ModuleNode[] | void | Promise<ModuleNode[] | void>;
 ```
 
-We can configure this function to listen for and customize the handling of hot updates.
+You can configure this function to listen and customize hot updates.
 
 ```ts
     hmrUpdate(ctx, server) {

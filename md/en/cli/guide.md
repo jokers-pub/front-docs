@@ -1,71 +1,71 @@
-## Quick Start
+## Quick Start  
 
-Joker CLI currently has the functions of development and production build. Users can execute simple commands to quickly utilize its various capabilities.
+Joker CLI currently supports both development and production build capabilities. Users can execute concise commands to quickly utilize its various features.  
 
-We support quickly executing Joker commands through command - line options. We also support more configurations through the `joker.config.js` configuration file. You can refer to the [Configuration File](/cli/setting - public) chapter for details.
+We support running Joker commands quickly via command options, and we also support configurations through the `joker.config.js` file for more advanced settings. For configuration details, refer to the [Configuration File](/cli/setting-public) section.  
 
-### Installation and Usage
+### Installation & Usage  
 
-1. First, install Joker CLI in the project using a package management tool such as `npm` or `pnpm`.
+1. First, install Joker CLI in your project using a package manager like `npm` or `pnpm`.  
 
-```bash
-pnpm add @joker.front/cli
-```
+```bash  
+pnpm add @joker.front/cli  
+```  
 
-2. After the installation is complete, we can configure our commands in `package.json`:
+2. After installation, you can configure commands in your `package.json`:  
 
-```json
-{
-    "scripts": {
-        "dev": "joker",
-        "build": "joker build --config=build.config.js"
-    }
-}
-```
+```json  
+{  
+    "scripts": {  
+        "dev": "joker",  
+        "build": "joker build --config=build.config.js"  
+    }  
+}  
+```  
 
-3. We can start our development service by running `npm run dev` in the project.
+3. Run `npm run dev` in the project to start the development server.  
 
-### server [Command]
+### server [Command]  
 
-The `server` command is our development service. We can directly execute the `joker` command to start the server development service.
+The `server` command launches the development server. Simply run `joker` to start it.  
 
-```bash
-joker [root]
-```
+```bash  
+joker [root]  
+```  
 
-Options
+**Options**  
 
-| Option            | Description                                                                                                  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| `--config <file>` | Use the specified configuration file `(string)`                                                              |
-| `--base <path>`   | Public base path `(default: /)(string)`                                                                      |
-| `--log <leve>`    | Log output level `[silent / error / warn / info / debug]`                                                    |
-| `--mode <mode>`   | Set the environment mode `(string)`                                                                          |
-| `--host [host]`   | Specify the host name `(string)`                                                                             |
-| `--port <port>`   | Specify the port `(number)`                                                                                  |
-| `--open [path]`   | Whether to open the browser by default. You can specify a custom address `(default: true)(boolean / string)` |
+| Option            | Description                                                                 |
+|------------------|---------------------------------------------------------------------------|  
+| `--config <file>` | Specify a configuration file (`string`)                                   |  
+| `--base <path>`   | Public base path (default: `/`) (`string`)                                |  
+| `--log <level>`   | Log level (`[silent / error / warn / info / debug]`)                      |  
+| `--mode <mode>`   | Set the environment mode (`string`)                                       |  
+| `--host [host]`   | Specify the hostname (`string`)                                           |  
+| `--port <port>`   | Specify the port (`number`)                                               |  
+| `--open [path]`   | Automatically open the browser (default: `true`) (`boolean` / `string`)   |  
 
-### build [Build]
+### build [Command]  
 
-```bash
-joker build [root]
-```
+```bash  
+joker build [root]  
+```  
 
-Options
+**Options**  
 
-| Option            | Description                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------- |
-| `--config <file>` | Use the specified configuration file `(string)`                                          |
-| `--base <path>`   | Public base path `(default: /)(string)`                                                  |
-| `--log <leve>`    | Log output level `[silent / error / warn / info / debug]`                                |
-| `--mode <mode>`   | Set the environment mode `(string)`                                                      |
-| `--outDir <dir>`  | Output directory `(default: dist)(string)`                                               |
-| `--sourcemap`     | Output source map files after building `(default: false)(boolean / "inline" / "hidden")` |
+| Option             | Description                                                                 |
+|------------------|---------------------------------------------------------------------------|  
+| `--config <file>`  | Specify a configuration file (`string`)                                   |  
+| `--base <path>`    | Public base path (default: `/`) (`string`)                                |  
+| `--log <level>`    | Log level (`[silent / error / warn / info / debug]`)                      |  
+| `--mode <mode>`    | Set the environment mode (`string`)                                       |  
+| `--outDir <dir>`   | Output directory (default: `dist`) (`string`)                             |  
+| `--sourcemap`      | Generate source map files (default: `false`) (`boolean` / `"inline"` / `"hidden"`) |  
 
-### create [Create a Joker Project]
+### create [Initialize a Joker Project]  
 
-```bash
-joker create [name]
-```
+```bash  
+joker create [name]  
+```  
 
-We can use this command to quickly create a Joker development project.
+Quickly create a new Joker project using this command.

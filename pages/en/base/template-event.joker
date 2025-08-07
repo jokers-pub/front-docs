@@ -1,24 +1,23 @@
 <template>
     <div ref="container" class="joker-demo-container">
         <h2>Event Registration</h2>
-        <p>This chapter mainly introduces how to register interaction events for tags/components in the template.</p>
-        <h3>Listening for Events</h3>
+        <p>This section introduces how to register interactive events for tags/components in the template.</p>
+        <h3>Listening to Events</h3>
         <p>
             We can use the
             <code>
-                @("@eventName")
+                @("@event-name")
             </code>
-            directive to listen for DOM/component events and execute the corresponding JavaScript when the event is triggered.
+            directive to listen to DOM/component events and execute corresponding JavaScript when the event is triggered.
         </p>
         <pre><code class="language-html">&lt;button @click=&quot;handleClick&quot;&gt;Button&lt;/button&gt;
 </code></pre>
         <p>
-            The above code example means that we register a
+            The example above demonstrates registering a
             <code>click</code>
-            event for the
-            <code>button</code>
-            button, and the event handling function is
+            event for a button with the event handler function
             <strong>handleClick</strong>
+            .
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo1)">
             <pre><code class="language-html">&lt;template&gt;
@@ -36,19 +35,21 @@ export default class extends Component {
 &lt;/script&gt;
 </code></pre>
         </DemoContainer>
-        <h3>Passing Parameters in Event Execution</h3>
+        <h3>Passing Event Parameters</h3>
         <p>There are two types of event parameters:</p>
-        <ul>
+        <ol>
             <li>
-                One is the event object parameter, which is passed by
-                <a href="/base/component-api" target="_blank">$trigger</a>
-                . This parameter will flow within the component along with the event.
+                <strong>Event Object Parameter</strong>
+                : This parameter is passed by
+                <a href="/base/component-api" target="_blank"><code>$trigger</code></a>
+                and propagates through components along with the event.
             </li>
             <li>
-                The other is the parameter of the event execution method. This parameter is used as the parameter of this event and will only take effect in the current component and this event.
+                <strong>Execution Event Method Parameter</strong>
+                : This parameter acts as the event argument, applying only to the current component and the ongoing event.
             </li>
-        </ul>
-        <p>Let's see how to pass parameters in event execution:</p>
+        </ol>
+        <p>Here’s how to pass parameters during event execution:</p>
         <pre><code class="language-html">&lt;template&gt;
     &lt;button @click=&quot;handleClick('parameter')&quot;&gt;Button&lt;/button&gt;
 &lt;/template&gt;
@@ -79,62 +80,95 @@ export default class extends Component {
         </DemoContainer>
         <h3>Introduction to VNode.Event</h3>
         <p>
-            VNode.Event is the event handling object in Joker front-end. Whether it is an event actively responded to by JS or a native event trigger, this type will be passed as the first parameter to the event handling function.
+            <code>VNode.Event</code>
+            serves as the event handling object in
+            <strong>Joker Frontend</strong>
+            . Whether the event is actively triggered via JS or originates from a native event, this type is passed as the first parameter to the event handler function.
         </p>
         <p>
-            Among them, this object has a
+            This object includes a
             <code>data</code>
-            property representing the parameter passed by the event. The value type can be specified through generics for convenient subsequent operations, and the default value is
+            property, representing the event parameters. It can be typed using generics for ease of use in subsequent operations (default:
             <code>undefined</code>
-            .
+            ).
         </p>
         <table class="mkd-table">
             <thead>
                 <tr>
-                    <th>Property Name</th>
+                    <th>Property</th>
                     <th>Description</th>
                     <th>Type</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>eventName</td>
+                    <td>
+                        <code>eventName</code>
+                    </td>
                     <td>Event name</td>
-                    <td>string</td>
+                    <td>
+                        <code>string</code>
+                    </td>
                 </tr>
                 <tr>
-                    <td>event</td>
-                    <td>Native event object, depending on the running platform</td>
-                    <td>any</td>
+                    <td>
+                        <code>event</code>
+                    </td>
+                    <td>Native event object (platform-dependent)</td>
+                    <td>
+                        <code>any</code>
+                    </td>
                 </tr>
                 <tr>
-                    <td>target</td>
-                    <td>The virtual node that responds to the event</td>
-                    <td>VNode.Node/undefined</td>
+                    <td>
+                        <code>target</code>
+                    </td>
+                    <td>The virtual node responding to the event</td>
+                    <td>
+                        <code>VNode.Node</code>
+                        /
+                        <code>undefined</code>
+                    </td>
                 </tr>
                 <tr>
-                    <td>data</td>
-                    <td>Event parameter</td>
-                    <td>&lt;T&gt;:any</td>
+                    <td>
+                        <code>data</code>
+                    </td>
+                    <td>Event parameter(s)</td>
+                    <td>
+                        <code>&lt;T&gt;: any</code>
+                    </td>
                 </tr>
                 <tr>
-                    <td>preventDefault</td>
-                    <td>Prevent the default event</td>
-                    <td>function</td>
+                    <td>
+                        <code>preventDefault</code>
+                    </td>
+                    <td>Prevents the default event</td>
+                    <td>
+                        <code>function</code>
+                    </td>
                 </tr>
                 <tr>
-                    <td>stopPropagation</td>
-                    <td>Prevent event propagation</td>
-                    <td>function</td>
+                    <td>
+                        <code>stopPropagation</code>
+                    </td>
+                    <td>Stops event propagation</td>
+                    <td>
+                        <code>function</code>
+                    </td>
                 </tr>
             </tbody>
         </table>
         <h3>Event Modifiers</h3>
         <p>
-            We provide a rich set of event modifiers to help developers handle logic more efficiently without delving into the complex details of DOM events.
+            We provide a rich set of
+            <strong>event modifiers</strong>
+            to help developers handle logic more efficiently without delving into DOM event complexities.
         </p>
         <p>
-            Combined with Joker's VSCODE tool, optional modifiers can be automatically prompted after the event. Currently, the provided modifiers are:
+            With
+            <strong>Joker's VSCODE tool</strong>
+            , suggested modifiers appear automatically when typing an event. The currently available modifiers include:
         </p>
         <table class="mkd-table">
             <thead>
@@ -145,163 +179,223 @@ export default class extends Component {
             </thead>
             <tbody>
                 <tr>
-                    <td>stop</td>
                     <td>
-                        Prevents event bubbling, equivalent to
+                        <code>stop</code>
+                    </td>
+                    <td>
+                        Stops event bubbling (equivalent to
                         <code>event.stopPropagation()</code>
-                        in JavaScript
+                        in JavaScript).
                     </td>
                 </tr>
                 <tr>
-                    <td>prevent</td>
                     <td>
-                        Prevents the default behavior from being executed (if the event is cancelable, cancel the event without stopping the further propagation of the event), equivalent to
+                        <code>prevent</code>
+                    </td>
+                    <td>
+                        Prevents the default behavior (if the event can be canceled, it is canceled without stopping propagation; equivalent to
                         <code>event.preventDefault()</code>
-                        in JavaScript
+                        ).
                     </td>
                 </tr>
                 <tr>
-                    <td>self</td>
                     <td>
-                        Only triggers events within its own scope, excluding child elements. The handler is only triggered when
-                        <code>event.target</code>
-                        is the current element itself, that is, the event is not triggered from an internal element
+                        <code>self</code>
+                    </td>
+                    <td>
+                        Only triggers the event if the current element is the target. The handler does not fire if the event originates from child elements.
                     </td>
                 </tr>
                 <tr>
-                    <td>once</td>
-                    <td>Triggers only once and immediately removes the event after execution</td>
+                    <td>
+                        <code>once</code>
+                    </td>
+                    <td>Ensures the event fires only once and is then automatically removed.</td>
                 </tr>
                 <tr>
-                    <td>passive</td>
                     <td>
-                        It is a parameter used to mark the event handler, telling the browser that the event handler will not be called
+                        <code>passive</code>
+                    </td>
+                    <td>
+                        Signals the browser that the event handler does not call
+                        <code>preventDefault()</code>
+                        , optimizing performance for passive event listeners.
                     </td>
                 </tr>
                 <tr>
-                    <td>outside</td>
                     <td>
-                        The event is triggered only when clicking on an area outside of itself. This event is implemented through global event listening. It is recommended to use
                         <code>outside</code>
-                        in conjunction with
+                    </td>
+                    <td>
+                        Triggers the event only when clicking an area
+                        <strong>outside</strong>
+                        the element. Implemented via global event listeners. Recommended to use with
                         <code>if</code>
-                        to ensure that the element will be destroyed immediately. When the element is destroyed, the global event listening will be removed.
+                        to ensure proper cleanup.
                     </td>
                 </tr>
             </tbody>
         </table>
         <blockquote>
             <p>
-                Regarding the
+                <strong>
+                    Note on
+                    <code>outside</code>
+                </strong>
+                : The
                 <code>outside</code>
-                modifier, the monitoring logic of
-                <code>outside</code>
-                is that the event-triggering object in the actual output DOM is not inside (including containment) the node
-                <code>and</code>
-                is not in a containment relationship in the
+                modifier checks whether the triggered DOM event target is
+                <strong>not</strong>
+                within the node (including nested elements)
+                <strong>and</strong>
+                is also not a contained relationship in the
                 <strong>VNode.Node</strong>
-                structure. For detailed scenarios, please refer to the
+                structure. For details, refer to the
                 <strong>append-to</strong>
                 property in
-                <a href="/base/template-property" target="_blank">Component Built-in Attributes</a>
+                <a href="/base/template-property" target="_blank">Component Built-in Properties</a>
                 .
             </p>
         </blockquote>
-        <p>When the event type is a keyboard event, the following modifiers are provided:</p>
+        <p>
+            For
+            <strong>keyboard events</strong>
+            , the following modifiers are available:
+        </p>
         <table class="mkd-table">
             <thead>
                 <tr>
                     <th>Modifier</th>
-                    <th>Description</th>
+                    <th>Key</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>enter</td>
+                    <td>
+                        <code>enter</code>
+                    </td>
                     <td>Enter key</td>
                 </tr>
                 <tr>
-                    <td>tab</td>
+                    <td>
+                        <code>tab</code>
+                    </td>
                     <td>Tab key</td>
                 </tr>
                 <tr>
-                    <td>delete</td>
-                    <td>Includes delete and backspace keys</td>
+                    <td>
+                        <code>delete</code>
+                    </td>
+                    <td>Delete/Backspace key</td>
                 </tr>
                 <tr>
-                    <td>esc</td>
+                    <td>
+                        <code>esc</code>
+                    </td>
                     <td>Escape key</td>
                 </tr>
                 <tr>
-                    <td>space</td>
-                    <td>Space key</td>
+                    <td>
+                        <code>space</code>
+                    </td>
+                    <td>Spacebar</td>
                 </tr>
                 <tr>
-                    <td>up</td>
+                    <td>
+                        <code>up</code>
+                    </td>
                     <td>Up arrow key</td>
                 </tr>
                 <tr>
-                    <td>down</td>
+                    <td>
+                        <code>down</code>
+                    </td>
                     <td>Down arrow key</td>
                 </tr>
                 <tr>
-                    <td>left</td>
+                    <td>
+                        <code>left</code>
+                    </td>
                     <td>Left arrow key</td>
                 </tr>
                 <tr>
-                    <td>right</td>
+                    <td>
+                        <code>right</code>
+                    </td>
                     <td>Right arrow key</td>
                 </tr>
             </tbody>
         </table>
-        <p>When the event type is a mouse event, we provide the following modifiers:</p>
+        <p>
+            For
+            <strong>mouse events</strong>
+            , we provide these modifiers:
+        </p>
         <table class="mkd-table">
             <thead>
                 <tr>
                     <th>Modifier</th>
-                    <th>Description</th>
+                    <th>Mouse Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>left</td>
+                    <td>
+                        <code>left</code>
+                    </td>
                     <td>Left mouse button</td>
                 </tr>
                 <tr>
-                    <td>right</td>
+                    <td>
+                        <code>right</code>
+                    </td>
                     <td>Right mouse button</td>
                 </tr>
                 <tr>
-                    <td>middle</td>
+                    <td>
+                        <code>middle</code>
+                    </td>
                     <td>Middle mouse wheel</td>
                 </tr>
             </tbody>
         </table>
-        <p>The following are system modifiers provided when the event is of keyboard/mouse type:</p>
+        <p>
+            <strong>System Modifiers</strong>
+            (available for keyboard/mouse events):
+        </p>
         <table class="mkd-table">
             <thead>
                 <tr>
                     <th>Modifier</th>
-                    <th>Description</th>
+                    <th>Key</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>ctrl</td>
+                    <td>
+                        <code>ctrl</code>
+                    </td>
                     <td>Ctrl key</td>
                 </tr>
                 <tr>
-                    <td>alt</td>
+                    <td>
+                        <code>alt</code>
+                    </td>
                     <td>Alt key</td>
                 </tr>
                 <tr>
-                    <td>shift</td>
+                    <td>
+                        <code>shift</code>
+                    </td>
                     <td>Shift key</td>
                 </tr>
             </tbody>
         </table>
         <p>
-            It is worth noting that these modifiers can be used in combination. We can add multiple modifiers to an event to meet different scenario requirements. For example:
+            <strong>Note</strong>
+            : These modifiers can be
+            <strong>chained together</strong>
+            for a single event to accommodate different scenarios:
         </p>
         <pre><code class="language-html">&lt;button @click.ctrl.prevent.stop=&quot;handleClick&quot;&gt;Button&lt;/button&gt;
 </code></pre>

@@ -1,10 +1,10 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Production Build (build) Configuration</h2>
+        <h2>Production Build Configuration</h2>
         <p>
-            This section mainly introduces the configuration instructions for the
+            This section introduces the configuration specifications for the
             <code>build</code>
-            property in the configuration file. The type of this property is
+            property in the configuration file, which is of type
             <code>BuildOptions</code>
             .
         </p>
@@ -17,331 +17,317 @@
         <h3>write</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>boolean</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>true</code>
             </li>
         </ul>
         <p>
-            Whether to output files. The default is
+            Determines whether to output files. Default is
             <code>true</code>
-            . When you are in a debugging or testing scenario, you can set it to
+            . Can be set to
             <code>false</code>
-            .
+            for debugging or testing scenarios.
         </p>
         <h3>target</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>string | string[]</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>
                     [&quot;es2020&quot;, &quot;edge88&quot;, &quot;firefox78&quot;, &quot;chrome87&quot;, &quot;safari13&quot;]
                 </code>
             </li>
         </ul>
-        <p>Specify the browser compatibility target version you want for the final build.</p>
         <p>
-            Note: If your code contains features that esbuild cannot safely compile, the build process will fail. You can refer to the
-            <a href="https://esbuild.github.io/content-types/#javascript" target="_blank">esbuild</a>
-            documentation for more detailed information.
+            Specifies the target browser compatibility versions for the final build.
+            <br />
+            <strong>Note:</strong>
+            If your code contains features that esbuild cannot safely compile, the build process will fail. Refer to the
+            <a href="https://esbuild.github.io/content-types/#javascript" target="_blank">esbuild documentation</a>
+            for more details.
         </p>
         <h3>rollupOptions</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>RollupOptions</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>
                     {}
                 </code>
             </li>
         </ul>
         <p>
-            You can customize the underlying Rollup packaging configuration. These configurations will be the same as the options exported from the Rollup configuration file and will be merged with Joker CLI's internal Rollup options. To learn more about Rollup options, please refer to the
-            <a href="https://rollupjs.org/configuration-options/" target="_blank">Rollup Options Documentation</a>
+            Allows customization of the underlying Rollup bundling configuration. These options will be identical to those exported from a Rollup config file and will be merged with Joker CLI's internal Rollup options. For more information about Rollup options, see the
+            <a href="https://rollupjs.org/configuration-options/" target="_blank">Rollup Configuration Options</a>
             .
         </p>
         <h3>outDir</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>string</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>dist</code>
             </li>
         </ul>
-        <p>Specify the path for output files. This path should be relative to the project's main directory.</p>
+        <p>Specifies the output directory for generated files, relative to the project root directory.</p>
         <h3>sourcemap</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>boolean</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>false</code>
             </li>
         </ul>
         <p>
-            Determine whether to generate source map files after the build is completed. If set to
+            Determines whether to generate source map files after the build. If set to
             <code>true</code>
-            , a separate source map file will be generated. Joker CLI only supports generating source maps by creating an independent source map file and does not support scenarios such as
+            , a separate source map file will be generated. Joker CLI only supports generating standalone source map files (does not support
             <code>inline</code>
-            or
+            ,
             <code>hidden</code>
-            .
+            , etc.).
         </p>
         <h3>assetsDir</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>string</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>assets</code>
             </li>
         </ul>
         <p>
-            Specify the storage path for generated static resources (relative to
+            Specifies the directory for static assets (relative to
             <code>build.outDir</code>
-            ). It cannot be used in
-            <code>Library Mode</code>
-            .
+            ).
+            <strong>
+                Not applicable in
+                <code>library mode</code>
+                .
+            </strong>
         </p>
         <p>
-            If you don't want Joker CLI to create a resource folder, you can configure it as an empty string
+            To prevent Joker CLI from creating an assets directory, set this to an empty string (
             <code>''</code>
-            .
+            ).
         </p>
         <h3>assetsInlineLimit</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>number</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>4096</code>
-                (4Kib)
+                (4 KiB)
             </li>
         </ul>
         <p>
-            Resources imported or referenced below this threshold will be inlined as base64-encoded to reduce unnecessary HTTP requests. If you set this value to
+            Assets smaller than this threshold (in bytes) will be inlined as base64-encoded strings to minimize HTTP requests. Set to
             <code>0</code>
-            , this feature will be disabled.
+            to disable inlining.
         </p>
         <blockquote>
             <p>
-                When the
+                <strong>Note:</strong>
+                When
                 <code>build.lib</code>
-                property is set,
+                is configured,
                 <code>build.assetsInlineLimit</code>
-                will be invalid.
+                is ignored.
             </p>
         </blockquote>
         <h3>minify</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>boolean | &quot;esbuild&quot; | &quot;terser&quot;</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>true</code>
             </li>
         </ul>
         <p>
-            When the option is set to
+            When set to
             <code>true</code>
-            , it means the
+            , the
             <code>esbuild</code>
-            tool will be used for the compression process. Setting this option to
+            minifier is used. If
             <code>false</code>
-            can disable the compression and obfuscation function, or it can be used to specify other obfuscators. By default, Esbuild is used as the obfuscator. It is 20-40 times faster than Terser, and the compression ratio difference is only 1%-2%.
+            , minification is disabled. Alternatively, a specific minifier can be chosen. By default,
+            <code>esbuild</code>
+            is ~20-40x faster than
+            <code>terser</code>
+            with only a 1%-2% difference in compression ratio.
         </p>
         <p>
-            Note that in
+            <strong>Note:</strong>
+            In
             <code>lib</code>
             mode, if
             <code>esbuild</code>
-            is used as the obfuscator, the
+            is used as the minifier,
             <code>build.minify</code>
-            option will not reduce whitespace because doing so will remove the
+            will
+            <strong>not</strong>
+            remove whitespace, as doing so could strip
             <code>pure</code>
-            markers, thus affecting tree-shaking.
+            annotations and affect tree-shaking.
         </p>
         <p>
-            If you choose
+            To use
             <code>terser</code>
-            as the obfuscator, you must first install the Terser tool.
+            , it must be installed first:
         </p>
         <pre><code class="language-bash">pnpm add terser
 </code></pre>
         <h3>lib</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>LibraryOptions | false</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>false</code>
             </li>
         </ul>
         <p>
-            You can enable
-            <code>Library Mode</code>
-            by configuring this property.
+            Enables
+            <strong>library mode</strong>
+            when configured.
         </p>
         <p>
             The
             <code>LibraryOptions</code>
-            type is as follows:
+            type is defined as:
         </p>
         <pre><code class="language-ts">export interface LibraryOptions {
     /**
-     * Entry file
+     * Entry file  
      */
-    entry: string;
+    entry: string;  
     /**
-     * Alias
+     * Alias name  
      */
-    name?: string;
+    name?: string;  
     /**
-     * Output type
-     * @default [es,umd]
+     * Output formats  
+     * @default [es, umd]  
      */
-    formats?: LibraryFormatType[];
+    formats?: LibraryFormatType[];  
 
     /**
-     * Output file name. If not configured, it will be output as the original file.
+     * Output file name (defaults to original filename if not specified)  
      */
-    fileName?: string | ((format: ModuleFormat) =&gt; string);
-}
+    fileName?: string | ((format: ModuleFormat) =&gt; string);  
+}  
 
-export type LibraryFormatType = &quot;es&quot; | &quot;cjs&quot; | &quot;umd&quot; | &quot;iife&quot;;
+export type LibraryFormatType = &quot;es&quot; | &quot;cjs&quot; | &quot;umd&quot; | &quot;iife&quot;;  
 </code></pre>
         <h3>chunkSizeWarningLimit</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>number</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>500</code>
             </li>
         </ul>
         <p>
-            Set a threshold in kilobytes (kB) to trigger a warning prompt. This threshold is used to compare the size of uncompressed code chunks. Since the size of JavaScript code is related to its execution time, this threshold helps identify code chunks that may need optimization.
+            Sets a warning threshold (in kB) for uncompressed chunk sizes. JavaScript chunk size correlates with execution time, so this helps identify potentially oversized chunks requiring optimization.
         </p>
-        <h3>cssTraget</h3>
+        <h3>cssTarget</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>string | string[]</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>
                     [&quot;es2020&quot;, &quot;edge88&quot;, &quot;firefox78&quot;, &quot;chrome87&quot;, &quot;safari13&quot;]
                 </code>
             </li>
         </ul>
+        <p>Allows specifying a separate browser target for CSS minification, distinct from JavaScript transpilation.</p>
         <p>
-            This setting allows users to specify a unique browser target for CSS compression, which is different from the JavaScript transpilation target.
-        </p>
-        <p>
-            This setting should be mainly used for non-mainstream or specific-version browsers. For example, when you need to ensure that your code is compatible with the webview in Android WeChat, which supports most modern JavaScript features but does not support RGBA hexadecimal color values in CSS. In this case, setting
+            Use primarily for non-mainstream or legacy browsers. Example: Android WeChat WebView supports modern JS but not RGBA hex colors in CSS. Setting
             <code>build.cssTarget</code>
             to
             <code>chrome61</code>
-            can prevent Joker CLI from converting RGBA color values to the CSS #RGBA hexadecimal form, thus ensuring compatibility.
+            prevents Joker CLI from converting RGBA to
+            <code>#RGBA</code>
+            hex notation.
         </p>
         <h3>copyPublicDir</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>boolean</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>true</code>
             </li>
         </ul>
         <p>
-            By default, after the build, the
+            By default, the
             <code>publicDir</code>
-            folder will be copied to the
+            folder is copied to
             <code>outDir</code>
-            directory. If you don't need to copy it, you can configure it as
-            <code>false</code>
-            .
+            after building. Set to
+            <strong>false</strong>
+            to disable this behavior.
         </p>
         <h3>publicBaseDir</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>string</code>
             </li>
             <li>
-                <strong>Default</strong>
-                :
+                Default:
                 <code>true</code>
             </li>
         </ul>
         <p>
-            During the build, you can configure this property to control the path of the output static public resources. If not configured,
+            Controls the base path for static public assets in the build output. If unset, defaults to
             <code>config.base</code>
-            will be used to uniformly set the root address.
+            .
         </p>
-        <h3>worker (worker compilation extension information)</h3>
+        <h3>Worker Compilation Extensions</h3>
         <ul>
             <li>
-                <strong>Type</strong>
-                :
+                Type:
                 <code>
                     {rollupOptions?: RollupOptions; plugins?: (input: string) =&gt; Promise&lt;RollupPlugin&gt;}
                 </code>
             </li>
         </ul>
-        <p>You can use this property to implement custom extensions during worker compilation.</p>
+        <p>Enables custom extensions for worker compilation.</p>
         <BottomNav />
     </div>
 </template>

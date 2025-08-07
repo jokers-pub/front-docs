@@ -1,26 +1,22 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Overview of Joker Component Styles</h2>
+        <h2>Joker Component Styling Overview</h2>
         <p>
-            This chapter mainly introduces the rendering styles of the component template. We can use the
+            This section introduces the rendering styles for component templates. We can use the
             <code>style</code>
-            tag to add styles to the template.
+            tag to add styles to template rendering.
         </p>
         <h3>Overview</h3>
         <p>
-            The
-            <code>style</code>
-            tag supports three types of style languages. By default, it is
+            The style tag supports three styling languages by default:
             <code>css</code>
-            , and in addition, it also includes
+            , along with
             <code>scss</code>
             and
             <code>less</code>
-            . We can switch the style language by configuring the
-            <code>lang</code>
-            attribute of the
-            <code>style</code>
-            tag (after switching, the Joker Front Tools VSCODE extension will also automatically switch the corresponding style highlighting and code-checking mechanisms). Now, let's take a look at an example:
+            . We can switch between styling languages by configuring the
+            <strong>lang</strong>
+            attribute of the style tag (after switching, the Joker Front Tools VSCode extension will automatically apply the corresponding syntax highlighting and code inspection). Let's look at an example:
         </p>
         <pre><code class="language-html">&lt;style lang=&quot;scss&quot;&gt;
     div {
@@ -30,19 +26,11 @@
     }
 &lt;/style&gt;
 </code></pre>
-        <h3>Style Scope</h3>
+        <h3>Scoped Styles</h3>
         <p>
-            In addition to the
-            <code>lang</code>
-            attribute, the
-            <code>style</code>
-            tag also provides the
+            In addition to the lang attribute, the style tag also provides the
             <code>scoped</code>
-            style. When the
-            <code>&lt;style&gt;</code>
-            tag has the
-            <code>scoped</code>
-            attribute, its CSS will only affect the elements of the current component, which is similar to the style encapsulation in Shadow DOM. There are some precautions when using it, but the advantage is that no polyfill is required. Its implementation method is through PostCSS to transform the following content:
+            attribute. When a &lt;style&gt; tag has the scoped attribute, its CSS will only affect elements within the current component, similar to style encapsulation in Shadow DOM. There are a few caveats when using it, but the benefit is that it requires no polyfill. The implementation works via PostCSS to transform the following:
         </p>
         <pre><code class="language-html">&lt;template&gt;
     &lt;div class=&quot;example&quot;&gt;Hello&lt;/div&gt;
@@ -56,42 +44,38 @@
         <p>Into:</p>
         <pre><code class="language-html">&lt;template&gt;
     &lt;div class=&quot;example&quot; data-scoped-981d2c8a&gt;Hello&lt;/div&gt;
-&lt;/template&gt;
+&lt;/template&gt;  
 &lt;style&gt;
     .example[data-scoped-981d2c8a] {
         color: red;
     }
 &lt;/style&gt;
 </code></pre>
-        <p>Using the style scope can effectively isolate the styles between components.</p>
-        <h3>Style Penetration</h3>
+        <p>Scoped styles effectively isolate styles between components.</p>
+        <h3>Style Deep Penetration</h3>
         <p>
-            After using
-            <code>scoped</code>
-            , the styles of the parent component will not penetrate into the child component. However, the root node of the child component will be affected by both the scoped styles of the parent component and the scoped styles of the child component. This design allows the parent component to adjust the style of the root element of its child component from a layout perspective.
+            With scoped enabled, parent component styles won't propagate into child components. However, a child component's root node will be affected by both the parent's scoped styles and its own scoped styles. This design allows parents to adjust child root element styles from a layout perspective.
         </p>
         <p>
-            Of course, in some specific scenarios where we need to change the style of a child component with
-            <code>scoped</code>
-            from the parent node, we can use
+            For certain use cases where a parent needs to modify styles of a child component with scoped, we can use
             <code>:deep()</code>
-            to penetrate the style and achieve the style change of the child component. For example:
+            to penetrate styles and alter child component styles. For example:
         </p>
         <pre><code class="language-html">&lt;style scoped&gt;
     .a :deep(.b) {
-        /*... */
+        /* ... */  
     }
 &lt;/style&gt;
 </code></pre>
         <p>The above code will be compiled into:</p>
-        <pre><code class="language-css">.a[data-scoped-981d2c8a].b {
-    /*... */
+        <pre><code class="language-css">.a[data-scoped-981d2c8a] .b {
+    /* ... */
 }
 </code></pre>
         <p>
-            We often use style penetration to control the styles of child components. Of course, we can also use style penetration in the child component to change the style of the
-            <strong>block template of the parent container</strong>
-            .
+            We frequently use style deep penetration to control child component styling. It can also be used in child components to modify
+            <strong>parent container block template</strong>
+            styles.
         </p>
         <BottomNav />
     </div>

@@ -1,17 +1,17 @@
 ## Route Registration
 
-This chapter mainly introduces how to register routes and understand the route configuration rules.
+This section primarily introduces how to register routes and understand the configuration rules for routes.
 
-Currently, there are two ways to register routes: `configuring route rules during initialization` and `dynamic route registration`.
+Currently, two route registration methods are provided: **Initialize Route Configuration** and **Dynamic Route Registration**.
 
-### Configuring Route Rules during Initialization
+### Initialize Route Configuration
 
-We can configure all the known route information of the entire project through `routes` when initializing the router.
+We can configure all known route information for the entire project via the `routes` parameter during route initialization.
 
 ```ts
-import { Router } from "@joker.front/router";
+import { Router } from "@joker.front/rourter";
 
-// My block page
+// My Block Page
 new Router({
     routes: [
         { path: "/", redirect: "/index" },
@@ -22,42 +22,42 @@ new Router({
 
 ### Dynamic Route Registration
 
-We provide a dynamic route registration method, which allows us to dynamically manage the registration of route matching rules based on differences such as environment variables and dynamic variables.
+We provide dynamic route registration methods, which allow us to dynamically manage route matching rules based on environment variables, dynamic variables, and other differences.
 
 ```ts
 let appRouter = new Router({
     routes: [
         { path: "/", redirect: "/index" },
-        { path: "/index", name: "parent", component: MyPage }
+        { path: "/index", name:"parent" component: MyPage }
     ]
 });
 
 appRouter.addRoute({ path: "/index", component: MyPage });
 
-// Add child routes to a known route
-appRouter.addRoute({ path: "/children", component: MyPage }, "parent");
+// Add child route to an existing route
+appRouter.addRoute({ path: "/children", component: MyPage },'parent')
 ```
 
-This method supports passing two parameters:
+This method supports two parameters:
 
-| Parameter Name  | Description                                                                                                                                                                         | Parameter Type                                                                  |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| route           | The route entry to be added                                                                                                                                                         | `RouteRecordRaw`, the same type as the initialization route configuration entry |
-| parentRouteName | The `name` of the parent route node. The parent route needs to be a `named route`. This parameter is **optional**. If not configured, it will be configured as a first-level route. | `RouteRecordName (string/symbol)`                                               |
+| Parameter Name      | Description                                                                                    | Parameter Type                                     |
+| -----------------   | --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| route               | The route item to be added                                                                    | `RouteRecordRaw`, same as the initialization route configuration item |
+| parentRouteName     | The name of the parent route node. This requires the parent route to be a **named route**. **Optional**, if not configured, it will be treated as a first-level route. | `RouteRecordName(string/symbol)`             |
 
-> It should be noted that dynamic route registration does not allow registering the home page address of a project. When Joker Router is **initialized**, it will load the current address/home page address by default. Therefore, when registering routes through this method, **it is necessary to ensure that the registration is completed before rendering the page**.
+> It's worth noting that dynamic route registration does not allow registering the landing page address. When the Joker Router **initializes**, it will load the current address/landing page by default. Therefore, when using this method to register routes, **the registration must be completed before rendering the page**.
 
 ### Route Configuration Item [RouteRecordRaw]
 
-The `route configuration item` is a data type that must be understood when registering routes in Joker Router. Whether it is initializing route registration or dynamic route registration, the route information needs to be configured according to the **RouteRecordRaw** type.
+The **Route Configuration Item** is a crucial data type to understand when registering routes with Joker Router. Whether initializing route items or dynamically registering routes, configuration must follow the **RouteRecordRaw** type.
 
-The following is the description of the relevant properties of `RouteRecordRaw`:
+Below is the detailed attribute description for **RouteRecordRaw**:
 
-### path [Matching Rule]
+### path [Matching Rules]
 
-The `path` property is used to configure the route matching rule. The `path` provides a rich set of configuration rules. It can be a static route address, such as `/home/index`, or a dynamic route address, such as `/user/:id`. Let's take a detailed look at the route matching rules.
+The `path` attribute configures the matching rules for routes. The `path` offers rich configuration rules—it can be a static address like `/home/index` or a dynamic one like `/user/:id`. Let’s explore the matching rules in detail.
 
-First, the `path` property is of the `string` type. We can set the route rules by configuring a fixed static address:
+The `path` attribute is of type `string`. We can configure a fixed static address to set route rules:
 
 ```ts
 new Router({
@@ -72,11 +72,11 @@ new Router({
 });
 ```
 
-In addition, we can also configure dynamic matching rules through expressions:
+Additionally, we can configure dynamic matching rules using expressions:
 
 #### Dynamic Parameters
 
-We can use the `:` method to set our dynamic parameters. The key after **:** represents the name of our dynamic parameter.
+We can set dynamic parameters using `:`. The keyword following `:` represents the name of the dynamic parameter.
 
 ```ts
 new Router({
@@ -95,15 +95,15 @@ new Router({
  */
 ```
 
-After configuring according to the above rules, when we access addresses such as `/user/abc` or `/user/123`, they will be considered to match the current route rule.
+When configured as above, routes like `/user/abc` or `/user/123` will be recognized as matching the current routing rule.
 
-After the actual page is loaded, we will pass the content after `/user/` as a parameter to the parameters in [Route Information](/router/route) and name the parameter **id**.
+Upon page load, content after `/user/` will be passed as a parameter to the [route information](/router/route) under the **id** parameter.
 
-When we access `/user` or `/user/abc/xxx`, this route rule **will not be matched** because the `:` dynamic rule is configured only once and cannot be repeated.
+Accessing `/user` or `/user/abc/xxx` will **not match** the rule, as the `:` dynamic rule is configured only once and is non-repeatable.
 
-#### Regular Constraints
+#### Regex Constraints
 
-We allow adding a regular matching rule for the parameter after the `:` dynamic parameter. You can configure the regular rule for the parameter within `()`. For example:
+We allow adding regex constraints to `:` dynamic parameters by configuring regex rules inside `()`, such as:
 
 ```ts
 new Router({
@@ -122,7 +122,7 @@ new Router({
 
 #### Dynamic Concatenation
 
-Dynamic parameters can be concatenated with static characters to achieve complex address matching rules. For example:
+Dynamic parameters can be combined with static characters to form complex address matching rules, e.g.:
 
 ```ts
 new Router({
@@ -139,11 +139,11 @@ new Router({
  */
 ```
 
-It should be noted that although the `dynamic + static` concatenation is used in the expression, we will correctly disassemble the parameter variables when converting the address parameters. For example, for `/home/12hello`, the disassembled parameter is **id = '12'**.
+It’s important to note that even with `dynamic + static` concatenation in the expression, we will correctly parse the parameter variable during address conversion. For example, `/home/12hello` will parse the parameter as **id='12'**.
 
 #### Optional Parameters
 
-When we need to make a parameter optional, we can add `?` after the variable. **It means the parameter is optional, not a regular expression constraint rule**.
+To make a parameter optional, append `?`. This signifies that the parameter is optional, **not a regex constraint**.
 
 ```ts
 new Router({
@@ -161,7 +161,7 @@ new Router({
  */
 ```
 
-When there are parameters, add **?** after `()`.
+For parameters with constraints, append **?** after `()`.
 
 ```ts
 new Router({
@@ -183,7 +183,7 @@ new Router({
 
 #### Repeatable
 
-We can add `+`/`*` after the dynamic parameter to indicate that the parameter can be repeated multiple times. Here, `+` means it must be repeated at least once, and `*` means it can be repeated and is optional.
+We can append `+`/`*` to dynamic parameters to indicate they can repeat. `+` means at least one repetition, while `*` allows optional repetition.
 
 ```ts
 new Router({
@@ -219,7 +219,7 @@ new Router({
  */
 ```
 
-Here is an example of complex static character concatenation:
+Below is a complex static concatenation example:
 
 ```ts
 new Router({
@@ -231,7 +231,7 @@ new Router({
 });
 
 /**
- * /userabc   => true  The parameter is abc
+ * /userabc   => true  Parameter is abc
  * /user       => false
  */
 ```
@@ -240,20 +240,20 @@ new Router({
 new Router({
     routes: [
         {
-            path: "/:id(\\d+)+user"
+            path: "/:id(d+)+user"
         }
     ]
 });
 
 /**
- * /123user   => true  The parameter is 123
+ * /123user   => true  Parameter is 123
  * /123+user  => false '+' is a variable modifier
  */
 ```
 
-#### Repeatable and Optional [*]
+#### Repeatable + Optional [*]
 
-When we configure the `*` modifier, it means the variable is optional and repeatable.
+When configuring the `*` modifier, it signifies the variable is optional and repeatable.
 
 ```ts
 new Router({
@@ -273,7 +273,7 @@ new Router({
 
 ### redirect [Redirection]
 
-We can achieve route redirection by configuring the `redirect` property.
+We can configure the `redirect` property to implement route redirection.
 
 ```js
 new Router({
@@ -286,10 +286,10 @@ new Router({
 });
 ```
 
-The above code means that when there is no address, it will be redirected to `/home/index`.
-When configuring **redirect**, in addition to supporting string-type values, it also supports method-based redirection and more configurable route configurations.
+The above code means that when no address is specified, it redirects to `/home/index`.  
+**redirect** supports not only string values but also method-based redirection and richer configurations.
 
-More comprehensive configurations:
+More configurations:
 
 ```ts
 new Router({
@@ -297,7 +297,7 @@ new Router({
         {
             path: "/",
             redirect: {
-                name: "Named Route",
+                name: "NamedRoute",
                 params: { value: "1" }
             }
         },
@@ -318,7 +318,7 @@ new Router({
 });
 ```
 
-Custom method. This method will receive the current route information and needs to return a new route. Please refer to the specification format provided in the **More comprehensive configurations** above for the return type:
+Custom method that receives the current route information and returns a new route. The return type follows the format provided in the **richer configurations** above:
 
 ```ts
 new Router({
@@ -327,7 +327,7 @@ new Router({
             path: "/",
             redirect: (to: RouteLocationBase) => {
                 return {
-                    name: "Named Route",
+                    name: "NamedRoute",
                     params: { value: "1" }
                 };
             }
@@ -336,9 +336,9 @@ new Router({
 });
 ```
 
-### name [Named Route]
+### name [Named Routes]
 
-We can add a `name` property to a route configuration item to name it. After naming, the route can be quickly set through the **name** during operations such as navigation and route addition.
+We can add a `name` property to a route configuration to name it. Named routes can be quickly referenced during navigation, route additions, etc., using the **name**.
 
 ```ts
 new Router({
@@ -351,9 +351,9 @@ new Router({
 });
 ```
 
-### alias [Route Matching Alias]
+### alias [Route Alias]
 
-`alias` can be used to supplement the matching address. It can also be understood as an alias for the `path` matching rule. It can be configured as a string or an array of strings. The values follow the `path` type specification.
+`alias` supplements the matching address and can be considered an alias for `path`. It can be a string or a string array, following the `path` type specification.
 
 ```ts
 new Router({
@@ -372,7 +372,7 @@ new Router({
 
 ### meta [Route Metadata]
 
-`meta` is a metadata property of the route, used to store custom data of the route. After configuring the metadata, we can obtain this data in route aspect events and route information for corresponding business operations.
+`meta` serves as the metadata property for routes, storing custom route data. Configured metadata can be accessed in route lifecycle events or route information for business operations.
 
 ```ts
 new Router({
@@ -387,7 +387,7 @@ new Router({
 });
 ```
 
-How to use it:
+Usage example:
 
 ```ts
 let appRouter = new Router({
@@ -401,7 +401,7 @@ appRouter.beforeRouteCallbacks.add((to, from) => {
 });
 ```
 
-Or obtain the value through the `router` information within the component. For details, please refer to [Route Information](/router/route).
+Alternatively, access it via the `router` object in components (see [Route Information](/router/route)).
 
 ```ts
 import { router } from "@joker.front/router";
@@ -413,7 +413,7 @@ if (router.route.value.meta.param === "v1") {
 
 ### children [Child Routes]
 
-By configuring `children`, we can configure the child route entries of the current route. This is what we usually call `nested routes`.
+The `children` property configures child routes for the current route, commonly referred to as **nested routes**.
 
 ```ts
 new Router({
@@ -430,12 +430,12 @@ new Router({
 });
 ```
 
-From the above example, we can see that we have created a `/user` route, and there are two child routes under this route. If their **path** properties do not start with `/`, the child route matching rules will be configured in a concatenated manner (**parent route path/child route path**).
+The above example creates a `/user` route with two child routes. If their `path` does not start with `/`, the child route matching rule is formed by concatenation (**parent path/child path**):
 
--   /user/list
--   /user/info
+- `/user/list`
+- `/user/info`
 
-When the **path** rule of the child route starts with **/**, the parent route `path` configuration will be ignored. For example:
+If the child route `path` starts with **/**, the parent `path` is ignored, e.g.:
 
 ```ts
 new Router({
@@ -452,18 +452,18 @@ new Router({
 });
 ```
 
-The above example will also be parsed into the two routes `/user/list` and `/user/info` in the end.
+This will still resolve to `/user/list` and `/user/info`.  
 
-[Nested Routes](/router/nested-routes) will be introduced in detail in a separate chapter later.
+[Nested Routes](/router/nested-routes) will be covered in a dedicated section.
 
 ### component/components [Route Components]
 
-We can use the `component/components` properties to configure the view components that the current route needs to load. The difference between them is as follows:
+We can use `component` or `components` to configure the view components to be loaded for the current route. The difference is:  
 
--   `component`: The current route only needs to load one component. It can also be understood that there is only one `<router-view>` tag in the layout file.
--   `components`: The current route needs to load multiple components. There are multiple named containers `<router-view>` in the layout file.
+- `component`: The route loads a single component (one `<router-view>` tag in the layout).  
+- `components`: The route loads multiple components (multiple named `<router-view>` containers in the layout).  
 
-For `<router-view>`, you can learn about it by referring to [Dynamic Container](/router/router-view).
+For `<router-view>`, refer to [Dynamic Containers](/router/router-view).  
 
 ```ts
 new Router({
@@ -483,7 +483,7 @@ new Router({
 });
 ```
 
-Of course, `component/components` also support asynchronous lazy-loaded components:
+Both `component` and `components` support lazy loading:  
 
 ```ts
 new Router({
@@ -503,11 +503,11 @@ new Router({
 });
 ```
 
-### props [Component Parameters]
+### props [Component Props]
 
-The `props` property is generally used to configure parameters for the `component/components` components. The parameters configured in **props** will be passed as `props` when the component is initialized. You can learn about it in the `props` of [Component Properties](/base/component-property).
+The `props` property typically configures parameters for `component` or `components`. Parameters defined in **props** are passed as `props` during component initialization (see [Component Properties](/base/component-property)).
 
-The configuration of the `props` property needs to follow different rules according to the difference between `component/components`. When we use a single `component`, our `props` is the type constraint of the `props` in the component:
+Configuration depends on whether `component` or `components` is used. For a single `component`, `props` follows the component's type constraints:  
 
 ```ts
 new Router({
@@ -523,7 +523,7 @@ new Router({
 });
 ```
 
-When we use `components`, `props` should be distinguished by the **key** in `components` so that we can know which component the current `props` is to be passed to at runtime:
+For `components`, `props` must map to the `components` **key** to identify which component the props should be passed to:  
 
 ```ts
 new Router({
@@ -544,7 +544,7 @@ new Router({
 });
 ```
 
-In addition to specifying a static object, `props` can also be defined as a function type, and the value of `props` can be customized according to the address to be rendered during rendering. Both `component/components` support the `props` function in the same way:
+In addition to static objects, `props` can be a function that dynamically generates props based on the rendering address. Both `component` and `components` support this:  
 
 ```ts
 new Router({
@@ -553,7 +553,7 @@ new Router({
             path: "/home/index",
             component: IndexComponent,
             props: (to) => {
-                //TODO: Use to for business judgment
+                //TODO: Use `to` for business logic
                 return {
                     message: "I am a parameter"
                 };
@@ -563,11 +563,11 @@ new Router({
 });
 ```
 
-### beforeEnter [Hook before Entering the Route]
+### beforeEnter [Route Entry Hook]
 
-`beforeEnter` is a **hook** for the current route. When the route is successfully matched and is about to be rendered, this method will be executed.
+`beforeEnter` serves as the **hook** for the current route. It executes when the route matches but before rendering begins.  
 
-Of course, we can also use the global events of `Router` to achieve customized business processing before entering the route. This **hook** provides simple hook capabilities at the route configuration item level.
+Global Router events can also handle pre-rendering business logic. This **hook** provides a simple hook mechanism at the route configuration level.  
 
 ```ts
 new Router({
@@ -584,10 +584,10 @@ new Router({
             component: IndexComponent,
             beforeEnter: [
                 (to, from) => {
-                    //TODO:
+                    //TODO：
                 },
                 (to, from) => {
-                    //TODO:
+                    //TODO：
                 }
             ]
         }
@@ -595,13 +595,13 @@ new Router({
 });
 ```
 
-For the `hook` function type, please refer to [Component Events](/router/event). They all follow the **NavigationCallback** type specification.
+For `hook` function types, refer to [Component Events](/router/event), which adhere to the **NavigationCallback** type.
 
-### beforeLeave [Hook before Leaving the Route]
+### beforeLeave [Route Exit Hook]
 
-`beforeLeave` is a **hook** for the current route. This method will be executed before leaving the route.
+`beforeLeave` serves as the **hook** for the current route. It executes when leaving the route.  
 
-Of course, we can also use the global events of `Router` to achieve customized business processing before entering the route. This **hook** provides simple hook capabilities at the route configuration item level.
+Global Router events can also handle this, but this **hook** provides a simple hook mechanism at the route configuration level.  
 
 ```ts
 new Router({
@@ -629,21 +629,19 @@ new Router({
 });
 ```
 
-About the `hook` function type, refer to [Component Events](/router/event). They all follow the **NavigationCallback** type specification.
+For `hook` function types, refer to [Component Events](/router/event), which adhere to the **NavigationCallback** type.
 
-### keepalive [State Preservation]
+### keepalive [State Retention]
 
-When navigating away from the current route, it determines whether the loaded view component should preserve its state so that it can be restored to the preserved state when returning.
+Whether the loaded view component should retain its state when navigating away, allowing it to restore upon returning.  
 
-It is recommended to understand [Component Lifecycle](/base/component-lifecycle) before dealing with state preservation.
+For state retention, first review [Component Lifecycle](/base/component-lifecycle).  
 
-The `keepalive` property in routes supports multiple configuration types, and different configuration types have different meanings (**the default value is undefined**):
+The `keepalive` property supports various configurations (**default: undefined**):
 
--   `true`: The component remains alive all the time. You can destroy and refresh the cache by using the **refresh** property when [navigating](/router/change).
-
--   `'once'`: It means the component only lives once. The component will only be rendered from the cache once. The second time it is rendered, it will be executed as a new component. This is generally suitable for route nodes with `high-frequency access + low-frequency updates`.
-
--   `false/undefined`: It means no state preservation is done.
+- `true`: Always retains state. Cache can be destroyed and refreshed using the **refresh** property during [navigation](/router/change).  
+- `'once'`: Retains state only once. The component renders from cache only the first time; subsequent renders treat it as a new component. Suitable for **high-frequency access, low-frequency update** routes.  
+- `false/undefined`: No state retention.  
 
 ```ts
 new Router({
@@ -657,4 +655,4 @@ new Router({
 });
 ```
 
-For more usage methods, you can learn from [State Preservation](/router/keepalive).
+For more details, see [State Retention](/router/keepalive).

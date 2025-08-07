@@ -1,87 +1,88 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Data Subscription-Watcher</h2>
+        <h2>Data Subscription Watcher</h2>
         <p>
-            This chapter mainly introduces how to subscribe to data changes. Before reading this chapter, it is recommended to first learn about
+            This chapter introduces how to subscribe to data changes. Before reading this section, it is recommended to first learn about
             <a href="/base/observer" target="_blank">Data Proxy</a>
             .
         </p>
-        <h3>What is Data Subscription</h3>
+        <h3>What is Data Subscription?</h3>
         <p>
-            Data subscription is a data management mechanism that allows us to monitor specific data sets in real-time and respond dynamically. Through subscription, we can actively register for data change notifications. Whenever the data changes, the Core underlying layer will automatically send us a notification. This mechanism not only informs us that the data has changed but also conveys the specific content of the data change in detail, including changes in data values.
+            Data subscription is a data management mechanism that allows real-time monitoring and dynamic responses to changes in specific datasets. By subscribing, we can proactively register for notifications of data changes. Whenever the data is modified, the Core layer will automatically send notifications. This mechanism not only informs us that the data has changed but also provides detailed information about the specific changes, including modifications to data values.
         </p>
         <p>
-            In this way, we can respond promptly to data changes, which benefits real-time template rendering, real-time analysis, or decision-making support.
+            This approach enables timely reactions to data changes, benefiting real-time template rendering, real-time analysis, decision support, and more.
         </p>
-        <pre><code class="language-ts">import { observer, Watcher } from &quot;@joker.front/core&quot;;
+        <pre><code class="language-ts">import { observer, Watcher } from &quot;@joker.front/core&quot;;  
 
-// Define data proxy
-let ob = observer({
-    userName: &quot;Zhang San&quot;
-});
+// Define a data proxy  
+let ob = observer({  
+    userName: &quot;Zhang San&quot;  
+});  
 
-// Data subscription
-let watcher = new Watcher(ob, &quot;userName&quot;, (newValue, oldValue) =&gt; {
-    console.log(&quot;Data has changed&quot;);
-});
+// Subscribe to data changes  
+let watcher = new Watcher(ob, &quot;userName&quot;, (newValue, oldValue) =&gt; {  
+    console.log(&quot;Data has changed&quot;);  
+});  
 
-// Change the value, which will trigger the subscribed listening function
-ob.username = &quot;Li Si&quot;;
+// Modify the value, triggering the subscribed callback  
+ob.username = &quot;Li Si&quot;;  
 </code></pre>
         <p>
-            We can also customize the
+            We can customize a
             <code>Watcher</code>
-            to achieve subscription to proxy data. When using a custom
+            to subscribe to proxy data changes. If using a custom
             <code>Watcher</code>
-            for listening, ensure that it is destroyed when it is no longer needed to avoid unnecessary waste of data subscription resources.
+            , ensure it is destroyed when no longer needed to avoid unnecessary resource consumption.
         </p>
         <p>
-            In a component, you can use the
+            In components, you can use the
             <code>$watch</code>
-            function in
-            <a href="/base/component-api" target="_blank">Component</a>
-            to achieve data subscription. Using this method, you don't need to consider the destruction of data subscription. It will be cleaned up when the component is destroyed. Of course, you can also actively call
+            function from the
+            <a href="/base/component-api" target="_blank">Component API</a>
+            to implement data subscriptions. This approach eliminates the need to handle destruction manually, as it is automatically cleaned up when the component is destroyed. Alternatively, you can manually call
             <code>destroy()</code>
-            to destroy a certain data subscription rule before destruction.
+            to unsubscribe before the component is destroyed.
         </p>
         <h3>Watcher</h3>
         <p>
+            The
             <code>Watcher</code>
-            is a data subscription class within Core. It not only provides the subscription of reactive data relationships within components but also allows developers to customize data subscription rules outside components.
+            class in Core provides reactive data subscriptions both inside and outside components, allowing developers to define custom subscription rules.
         </p>
         <p>
-            Next, let's take a look at several calling methods (overloads) of
+            Let's examine the different ways (overloads) to invoke
             <code>Watcher</code>
             :
         </p>
-        <h4>The First One</h4>
-        <pre><code class="language-ts">new Watcher(
-    dataProxyObject/expressionFunction,
-    propertyNameToAccess [can be separated by &quot;,&quot;],
-    changeNotificationFunction,
-    whetherToForceNotification (notify even if the data value changes but remains the same, default is false)
-)
+        <h4>First Method</h4>
+        <pre><code class="language-ts">new Watcher(  
+    Proxy Object / Expression Function,  
+    Property Name(s) [separated by &quot;,&quot;],  
+    Change Notification Function,  
+    Force Execution (notify even if the value remains the same, default: false)  
+);  
 
-// For example
-new Wathcer(ob, 'userInfo.userName', (nv) =&gt; {}, false)
-new Wathcer(() =&gt; ob, 'userInfo.userName', (nv) =&gt; {}, false)
+// Example:  
+new Watcher(ob, 'userInfo.userName', (nv) =&gt; {}, false);  
+new Watcher(() =&gt; ob, 'userInfo.userName', (nv) =&gt; {}, false);  
 </code></pre>
-        <h4>The Second One (Recommended)</h4>
-        <pre><code class="language-ts">new Watcher(dataAccessExpressionFunction, changeNotificationFunction);
+        <h4>Second Method (Recommended)</h4>
+        <pre><code class="language-ts">new Watcher(Data Access Expression Function, Change Notification Function);  
 
-// For example:
-new Watcher(
-    () =&gt; ob.userInfo.userName,
-    (nv) =&gt; {}
-);
+// Example:  
+new Watcher(  
+    () =&gt; ob.userInfo.userName,  
+    (nv) =&gt; {}  
+);  
 
-// If you want to subscribe to changes in multiple values
-new Watcher(
-    () =&gt; [ob.userInfo.userName, ob.userInfo.age],
-    (nv) =&gt; {}
-);
+// To subscribe to multiple value changes:  
+new Watcher(  
+    () =&gt; [ob.userInfo.userName, ob.userInfo.age],  
+    (nv) =&gt; {}  
+);  
 </code></pre>
-        <p>Next, let's take a look at the running effect through an example:</p>
+        <p>Let's observe the behavior with an example:</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo1)">
             <pre><code class="language-html">&lt;template&gt;
     &lt;DemoRow&gt;
@@ -118,68 +119,67 @@ export default class extends Component {
         </DemoContainer>
         <blockquote>
             <p>
-                It should be noted that when
-                <code>forceCallBack whether to force notification</code>
+                <strong>Note:</strong>
+                When
+                <code>forceCallBack</code>
                 is
-                <strong>false</strong>
-                (the default is false), if the expression returns an array/object, as long as each item in the object is equal, regardless of whether the pointer (reference type) is the same, it is
-                <strong>not considered a change</strong>
-                . This can effectively reduce unnecessary data subscription notifications.
+                <code>false</code>
+                (default), if the expression returns an array/object, changes are only detected if the contents differ. Even if the reference changes but the contents remain identical, it
+                <strong>does not count as a change</strong>
+                , effectively reducing unnecessary notifications.
             </p>
         </blockquote>
-        <h3>Attributes/Methods</h3>
+        <h3>Properties/Methods</h3>
         <p>
-            By creating a
-            <code>Wathcer</code>
-            , we get a data subscription object (the
-            <code>$watch</code>
-            function in a component also returns a
+            Creating a
             <code>Watcher</code>
-            -type result), and we can use this subscription object to perform more complex operations:
+            instance provides a subscription object (the
+            <code>$watch</code>
+            function in components also returns a
+            <code>Watcher</code>
+            instance). We can perform advanced operations using this object:
         </p>
         <h4>value</h4>
         <p>
-            The data subscription provides us with the
+            The
             <code>value</code>
-            attribute, which allows us to immediately obtain the value of the current expression when creating the data subscription, and this value will be updated synchronously when the data changes:
+            property allows us to retrieve the current value of the expression immediately and keeps it synchronized upon changes:
         </p>
-        <pre><code class="language-ts">let watcher = new Watcher(
-    () =&gt; ob.userName,
-    () =&gt; {}
-);
+        <pre><code class="language-ts">let watcher = new Watcher(  
+    () =&gt; ob.userName,  
+    () =&gt; {}  
+);  
 
-// You can immediately get the current value through value
-watcher.value;
+// Get the current value via `value`  
+watcher.value;  
 </code></pre>
         <h4>destroy()</h4>
         <p>
-            By calling the
+            Invoke
             <code>destroy()</code>
-            method, we can destroy this data subscription object.
+            to unsubscribe and release the subscription resources:
         </p>
-        <pre><code class="language-ts">let watcher = new Watcher(
-    () =&gt; ob.userName,
-    () =&gt; {}
-);
+        <pre><code class="language-ts">let watcher = new Watcher(  
+    () =&gt; ob.userName,  
+    () =&gt; {}  
+);  
 
-// Destroy
-watcher.destroy();
+// Destroy  
+watcher.destroy();  
 </code></pre>
         <h4>isDestroy</h4>
-        <p>
-            Through this attribute, we can view the current state of data subscription to determine whether it has been destroyed.
-        </p>
-        <pre><code class="language-ts">let watcher = new Watcher(
-    () =&gt; ob.userName,
-    () =&gt; {}
-);
+        <p>This property indicates whether the subscription has been destroyed:</p>
+        <pre><code class="language-ts">let watcher = new Watcher(  
+    () =&gt; ob.userName,  
+    () =&gt; {}  
+);  
 
-// watcher.isDestroy =&gt; false
+// watcher.isDestroy =&gt; false  
 
-// Destroy
-watcher.destroy();
+// Destroy  
+watcher.destroy();  
 
-// watcher.isDestroy =&gt; true
+// watcher.isDestroy =&gt; true  
 </code></pre>
         <BottomNav />
     </div>

@@ -1,10 +1,10 @@
 ## Initializing the Router
 
-This chapter mainly introduces how to initialize `Joker Router` and the relevant parameters that can be configured during initialization.
+This chapter mainly introduces how to initialize `Joker Router` and explains the configurable parameters available during initialization.
 
 ### Initialization
 
-`Joker Router` provides the **Router** class for initializing the router.
+`Joker Router` provides the **Router** class for router initialization.
 
 ```ts
 import { Router } from "@joker.front/rourter";
@@ -13,9 +13,9 @@ new Router({
     history: new WebHashHistory(),
     base: "",
     scrollBehavior: (to, from, savePosition) => {
-        // Custom operation method for the scrollbar after route navigation
+        // Custom scroll behavior after route navigation
     },
-    loggerLeve: "warn",
+    loggerLeve:"warn"
     routes: [
         { path: "/", redirect: "/index" },
         { path: "/index", component: MyPage }
@@ -25,7 +25,7 @@ new Router({
 
 ### history [History Mode]
 
-The `history` property allows us to customize the route history mode. Currently, it supports two modes: `HTML history` and `Hash history`. By default, we use the `Hash` mode to manage our route history.
+The `history` property allows customizing the history mode for routing. Currently, it supports both `HTML history` and `Hash history` modes, with `Hash` mode being the default for managing route history.
 
 ```ts
 import { WebHistory, WebHashHistory } from "@joker.front/rourter";
@@ -38,13 +38,13 @@ new Router({
 });
 ```
 
-For detailed information about the `HTML history` and `Hash history` modes, please refer to [History Modes](/router/history).
+Detailed information about `HTML history` and `Hash history` modes can be found in the [History Mode](/router/history) section.
 
 ### base [Route Root]
 
-With this property, we can add a root node to all route configurations. By default, `base` is an empty string.
+This property allows adding a root path for all configured routes. By default, `base` is empty.
 
-For example, if we define a route address of `/index`:
+For example, when defining a `/index` route:
 
 ```ts
 new Router({
@@ -52,24 +52,24 @@ new Router({
 });
 ```
 
-When we don't configure the `base` property, we can access this route page by visiting `#/index`.
+Without configuring the `base` property, this route can be accessed via `#/index`.
 
 ```ts
 new Router({
-    base: "demo",
+    base:"demo"
     routes: [{ path: "/index", component: MyPage }]
 });
 ```
 
-After we configure the `base` property to **demo**, we can access the route by visiting `#/demo/index`.
+When the `base` property is set to **demo**, the route becomes accessible via `#/demo/index`.
 
-Once the `base` is configured, it will take effect for all registered routes, and the route root will be added to the beginning of each route.
+The `base` configuration applies to all registered routes by prepending the root path.
 
 ### scrollBehavior [Scroll Behavior]
 
-The `scrollBehavior` property allows us to handle the scrollbar behavior after route navigation. This property is of function type and provides the `source`, `destination`, and `previously stored scrollbar position of the target route`.
+The `scrollBehavior` property allows defining custom scroll behavior after route navigation. This method-type property provides access to `source route`, `target route`, and `previously saved scroll position`.
 
-We can use this method to customize the scrollbar behavior:
+Custom scroll behavior can be implemented like this:
 
 ```ts
 new Router({
@@ -79,11 +79,11 @@ new Router({
 });
 ```
 
-For detailed parameter types and usage methods, please refer to [Scroll Behavior](/router/scroll).
+Detailed parameter types and usage can be found in the [Scroll Behavior](/router/scroll) section.
 
-### loggerLeve [Log Level]
+### loggerLeve [Logging Level]
 
-The `loggerLeve` property allows us to configure the route output level of Joker Router.
+The `loggerLeve` property configures the logging level for Joker Router output.
 
 ```ts
 new Router({
@@ -91,24 +91,24 @@ new Router({
 });
 ```
 
-By configuring different levels, we can meet requirements such as `debugging` and `silence in production`. The default log level is `warn`, and logs are only output when there are warnings or errors.
+Different levels enable scenarios like `debugging` or `production silent mode`. The default logging level is `warn`, where only warnings and errors are output.
 
-The weight of the configured levels is as follows:
+The level hierarchy is as follows:
 
 `silent < error < warn < info`
 
-| Optional Value | Description                                                            |
-| -------------- | ---------------------------------------------------------------------- |
-| silent         | Silent mode, no log output                                             |
-| error          | Only output error logs                                                 |
-| warn           | Output error and warning logs                                          |
-| info           | Output all logs, generally used for internal debugging of Joker Router |
+| Value   | Description                                          |
+| ------- | ---------------------------------------------------- |
+| silent  | Silent mode - no log output                          |
+| error   | Only error logs                                      |
+| warn    | Error and warning logs                               |
+| info    | Full logs - typically used for internal Joker Router debugging |
 
 ### routes [Route Registration Configuration]
 
-`routes` should be the most important property when using Joker Router. It is responsible for registering all known (static) route information in the current project.
+The `routes` property is arguably the most important when working with Joker Router, as it registers all known (static) route information for your project.
 
-Through this property, you can also clearly view all route page addresses and configuration information in the project.
+This property also provides clear visibility of all route paths and configurations in the project.
 
 ```ts
 new Router({
@@ -119,4 +119,4 @@ new Router({
 });
 ```
 
-The configuration rules for `routes` are very rich. You can learn more about them in the [Register Routes](/router/registry) chapter.
+The `routes` configuration offers extensive flexibility. You can learn more in the [Route Registration](/router/registry) section.

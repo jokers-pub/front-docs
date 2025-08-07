@@ -1,147 +1,149 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Nested Routes</h2>
-        <p>This chapter mainly introduces what nested routes are and what requirements we can fulfill using them.</p>
-        <h3>What are Nested Routes</h3>
+        <h2>Nested Routing</h2>
+        <p>This chapter mainly introduces what nested routing is and the requirements it can help us fulfill.</p>
+        <h3>What is Nested Routing?</h3>
         <p>
-            In complex projects, we may design a hierarchical structure for our project and conduct in-depth encapsulation of the same blocks. At this time, we need to use nested routes to plan dynamic view containers.
+            In complex projects, we may need to design hierarchical structures and perform deep encapsulation for the same sections, which requires us to use nested routing to plan dynamic view containers.
         </p>
         <p>
             <img src="/router/nested-router.png" alt="nested-router" />
         </p>
         <p>
-            In the above example diagram, the part within the orange dotted line represents our dynamic view container (
+            In the example above, the orange dashed section represents our dynamic view container (
             <a href="/router/router-view" target="_blank">router-view</a>
-            ). It can be nested. We can use the outermost container as a component container, or we can load a layout file (layout) and use nested routes to achieve complex scenarios.
+            ), which can be used in a nested manner. We can use the outermost container as a component container or load a layout file to implement complex scenarios using nested routing.
         </p>
         <h3>How to Use</h3>
         <p>
-            Nested routes require us to plan and manage our page layout reasonably. Next, we will learn through a simple example step-by-step.
+            Nested routing requires us to plan and manage our page layouts logically. Here, we'll walk through the steps with a simple example.
         </p>
         <p>
-            Our goal is to achieve the following layout structure (the CSS part will not be shown, only the tag structure will be demonstrated).
+            Our goal is to implement the following layout structure (CSS will not be displayed; only the HTML structure will be demonstrated).
         </p>
         <p>
             <img src="/router/nested-router.png" alt="nested-router" />
         </p>
         <ol>
-            <li>First, create a view container in the main layout file (App.joker).</li>
+            <li>
+                First, create a view container in the main layout file (
+                <code>App.joker</code>
+                ).
+            </li>
         </ol>
-        <pre><code class="language-html">&lt;template&gt;
-    &lt;div class=&quot;top&quot;&gt;&lt;/div&gt;
-    &lt;div class=&quot;container&quot;&gt;
-        &lt;router-view&gt;&lt;/router-view&gt;
-    &lt;/div&gt;
-&lt;/template&gt;
+        <pre><code class="language-html">&lt;template&gt;  
+    &lt;div class=&quot;top&quot;&gt;&lt;/div&gt;  
+    &lt;div class=&quot;container&quot;&gt;  
+        &lt;router-view&gt;&lt;/router-view&gt;  
+    &lt;/div&gt;  
+&lt;/template&gt;  
 </code></pre>
         <ol start="2">
             <li>
-                Next, we create a secondary layout file. Create a
+                Next, create a second-level layout file. We'll create a
                 <code>layout.joker</code>
                 file to manage the layout of our secondary pages.
             </li>
         </ol>
-        <pre><code class="language-html">&lt;template&gt;
-    &lt;div class=&quot;aside&quot;&gt;&lt;/div&gt;
-    &lt;div class=&quot;content&quot;&gt;
-        &lt;router-view&gt;&lt;/router-view&gt;
-    &lt;/div&gt;
-&lt;/template&gt;
+        <pre><code class="language-html">&lt;template&gt;  
+    &lt;div class=&quot;aside&quot;&gt;&lt;/div&gt;  
+    &lt;div class=&quot;content&quot;&gt;  
+        &lt;router-view&gt;&lt;/router-view&gt;  
+    &lt;/div&gt;  
+&lt;/template&gt;  
 </code></pre>
         <ol start="3">
-            <li>Then, corresponding route configuration is required.</li>
+            <li>Now, we need to configure the corresponding routes.</li>
         </ol>
-        <pre><code class="language-ts">// Main entry layout
-import App from &quot;./app.joker&quot;;
+        <pre><code class="language-ts">// Main entry layout  
+import App from &quot;./app.joker&quot;;  
 
-// Our secondary layout file
-import ChildrenLayout from &quot;./layout.joker&quot;;
+// Our secondary layout file  
+import ChildrenLayout from &quot;./layout.joker&quot;;  
 
-new Router({
-    routes: [
-        {
-            path: &quot;/base&quot;,
-            component: ChildrenLayout,
-            children: [
-                { path: &quot;page1&quot;, component: () =&gt; import(&quot;./page1.joker&quot;) },
-                { path: &quot;page2&quot;, component: () =&gt; import(&quot;./page2.joker&quot;) }
-            ]
-        }
-    ]
-});
+new Router({  
+    routes: [  
+        {  
+            path: &quot;/base&quot;,  
+            component: ChildrenLayout,  
+            childrens: [  
+                { path: &quot;page1&quot;, component: () =&gt; import(&quot;./page1.joker&quot;) },  
+                { path: &quot;page2&quot;, component: () =&gt; import(&quot;./page2.joker&quot;) }  
+            ]  
+        }  
+    ]  
+});  
 
-// Initialize the main entry layout
-new App().$mount(document.getElementById(&quot;app&quot;));
+// Initialize the main entry layout  
+new App().$mount(document.getElementById(&quot;app&quot;));  
 </code></pre>
         <p>
-            It should be noted that when switching between
+            Note that when switching between
             <code>/base/page1</code>
             and
             <code>/base/page2</code>
-            , only the second-level view container will be rendered and updated. The
-            <strong>peripheral components</strong>
-            will not be redrawn and refreshed. The components under the first-level route will not be destroyed until the first-level view container changes.
+            , only the second-level view container will be re-rendered.
+            <strong>Outer components</strong>
+            will not be refreshed or repainted. The top-level components will only be destroyed or re-rendered when the first-level view container changes.
         </p>
         <p>
-            Of course, the
-            <code>router-view</code>
-            and nested routes can support more than two levels. You can plan the nesting depth of your routes in more detail.
+            Of course, router-view and nested routing are not limited to two levels. You can plan deeper nesting as needed.
         </p>
         <h3>Event Supplement [updated]</h3>
         <p>
-            Before reading this section, please first understand the
+            Before reading this section, please familiarize yourself with the
             <code>updated</code>
-            event in the
-            <a href="/router/router-view" target="_blank">view container</a>
-            . This section is a supplementary explanation of this event.
+            event in
+            <a href="/router/router-view" target="_blank">View Container</a>
+            . This section provides supplementary explanations for this event.
         </p>
         <p>
-            Let's take a look at the parameters of the
+            Let’s examine the parameters of the
             <code>updated</code>
-            event in combination with route nesting:
+            event in the context of nested routing:
         </p>
         <ul>
             <li>
                 <code>deep</code>
-                : The level of the view container, used to represent the current level of the view container, corresponding to the nesting level of our routes.
+                : Indicates the hierarchy level of the current view container, corresponding to the nesting level of the route.
             </li>
             <li>
                 <code>isLeaf</code>
-                : Whether it is a leaf node.
+                : Indicates whether it is a leaf node.
             </li>
         </ul>
-        <p>We can use these two properties to make some complex judgments. For example:</p>
+        <p>We can use these properties for complex conditional logic. For example:</p>
         <p>
-            Since we don't know if there are other view containers embedded under the current view container, but we want to hide the loading after the current view is rendered. Here, we need to judge
+            Since we may not know whether the current view container contains nested view containers, but we want to hide the loading spinner after the current view finishes rendering, we can use
             <code>isLeaf</code>
-            . Only when it is a leaf node, we handle hiding the loading. Otherwise, it is handed over to the lower-level for processing.
+            to determine this. We'll only hide the loading spinner if it's a leaf node; otherwise, the responsibility is passed to the lower-level container.
         </p>
-        <pre><code class="language-html">&lt;template&gt;
-    &lt;div class=&quot;container&quot;&gt;
-        &lt;TopBar&gt;&lt;/TopBar&gt;
-        &lt;div class=&quot;middle&quot;&gt;
-            &lt;router-view @updated=&quot;routerViewUpdated&quot;&gt;&lt;/router-view&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/template&gt;
-&lt;script&gt;
-    import { Component, VNode } from &quot;@joker.front/core&quot;;
-    import TopBar from &quot;./common/components/topbar.joker&quot;;
-    import { hideLoading } from &quot;./common/loading&quot;;
+        <pre><code class="language-html">&lt;template&gt;  
+    &lt;div class=&quot;container&quot;&gt;  
+        &lt;TopBar&gt;&lt;/TopBar&gt;  
+        &lt;div class=&quot;middle&quot;&gt;  
+            &lt;router-view @updated=&quot;routerViewUpdated&quot;&gt;&lt;/router-view&gt;  
+        &lt;/div&gt;  
+    &lt;/div&gt;  
+&lt;/template&gt;  
+&lt;script&gt;  
+    import { Component, VNode } from &quot;@joker.front/core&quot;;  
+    import TopBar from &quot;./common/components/topbar.joker&quot;;  
+    import { hideLoading } from &quot;./common/loading&quot;;  
 
-    export default class extends Component {
-        components = {
-            TopBar
-        };
+    export default class extends Component {  
+        components = {  
+            TopBar  
+        };  
 
-        routerViewUpdated(e: VNode.Event&lt;{ isLeaf: boolean }&gt;) {
-            // Only hide when it is a leaf node, otherwise hand over the loading handling to the lower-level
-            if (e.data.isLeaf) {
-                hideLoading();
-            }
-        }
-    }
-&lt;/script&gt;
+        routerViewUpdated(e: VNode.Event&lt;{ isLeaf: boolean }&gt;) {  
+            // Only hide loading if it's a leaf node; otherwise, let the lower level handle it  
+            if (e.data.isLeaf) {  
+                hideLoading();  
+            }  
+        }  
+    }  
+&lt;/script&gt;  
 </code></pre>
         <BottomNav />
     </div>

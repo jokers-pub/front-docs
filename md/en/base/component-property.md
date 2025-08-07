@@ -1,12 +1,12 @@
-## Component Attributes
+## Component Properties  
 
-Our component development is based on the powerful library `@('@joker.front/core')`. It provides developers with a series of tools and APIs, including lifecycle hook functions, API functions, and attributes, which can help us complete component development more efficiently and conveniently. In this chapter, we will delve into the composition of a component class, enabling you to understand how to utilize this library to create a component with rich functionality and superior performance.
+Our component development is based on the powerful library `@('@joker.front/core')`. It provides developers with a series of tools and APIs, including lifecycle hooks, API functions, and properties, which help us develop components more efficiently and conveniently. In this section, we will delve into the composition of a component class, allowing you to understand how to leverage this library to create feature-rich, high-performance components.  
 
-Joker provides some default attributes and attribute specification standards by default. This chapter mainly introduces these attributes to facilitate our better use of them during the development process.
+Joker provides some default properties and property specification standards. This section mainly introduces these properties to help us better utilize them during development.  
 
-### Component Parameters (props / propsOption)
+### Component Props (props / propsOption)  
 
-Parameters can be passed from the parent component to the child component. The child component uses TypeScript generics to specify the parameter types for the component, and `propsOption` can be used to set some constraints or default values for the parameters.
+In parent components, parameters can be passed to child components. Child components specify parameter types using TypeScript generics and can use `propsOption` to set constraints or default values for these parameters.  
 
 ```ts
 import { Component } from "@joker.front/core";
@@ -16,13 +16,13 @@ export default class extends Component<{
     checked: boolean;
     money: number;
 }> {}
-```
+```  
 
-As can be seen from the above code example, the current component will receive three parameters and specify the types of the three parameters.
+The above code example shows that the current component will receive three parameters with their types specified.  
 
-> It should be noted that, in order to maintain maximum flexibility, Joker has weak constraints on component parameters. The defined generic types only exist as quick hints within the component and will not perform operations such as value conversion or non-null judgment.
+> It is worth noting that Joker imposes weak constraints on component parameters to maintain maximum flexibility. The generic types defined serve only as quick hints within the component and do not perform value conversion, null checks, or other operations.  
 
-Of course, if your component has requirements for parameter constraints, default values, and type enforcement, we also provide `propsOption` for configuration.
+However, if your component requires constraints, default values, or type enforcement for parameters, we also provide `propsOption` for configuration.  
 
 ```ts
 import { Component } from "@joker.front/core";
@@ -35,317 +35,313 @@ export default class extends Component<{
 }> {
     propsOption = {
         money: {
-            // Required parameter
-            required: true,
-            // Type
-            type: [String, Number],
-            // Validation
-            validate(val: any) {
-                let value = parseInt(val);
-                if (isNaN(value)) {
-                    console.error("money should be of the correct type");
-                    return false;
-                }
-                return true;
-            }
-        },
-        message: "This is the default prompt",
-        age: Boolean,
-        zIndex: 1
-    };
-}
-```
+            //Required parameter  
+            required: true,  
+            //Type  
+            type: [String, Number],  
+            //Validation  
+            validate(val: any) {  
+                let value = parseInt(val);  
+                if (isNaN(value)) {  
+                    console.error("Please enter a valid type for 'money'");  
+                    return false;  
+                }  
+                return true;  
+            }  
+        },  
+        message: "I am the default message",  
+        age: Boolean,  
+        zIndex: 1  
+    };  
+}  
+```  
 
-From the above example, it can be seen that `propsOption` supports rich usage. Its rules are as follows:
+The example above demonstrates the rich capabilities of `propsOption`. Its rules are as follows:  
 
-1. If it is `String | ArrayConstructor | Number | Object | Function | Boolean` or `Array<above types>`, it represents constraining the type of the value, and when retrieving the value, it will attempt to convert it according to the first default type. An error will be reported if the conversion fails.
+1. If the value is `String | ArrayConstructor | Number | Object | Function | Boolean` or an array of these types, it enforces the parameter's type. When retrieving the value, it attempts conversion to the first default type and logs an error if the conversion fails.  
 
-2. If it is an object, and the object includes any of the properties `type`/`required`/`default`/`validate`, then the entire set of properties is used as parameter constraints.
-   Explanation of full-type parameters (all properties are optional):
-   | Property Name | Description | Type |
-   |-|-|-|
-   | type | Value type | `String / Array/ Number / Object / Function / Boolean` or an array of the above types `[above types]` |
-   | required | Whether it is a required item | `boolean` |
-   | default | Default value | `any` |
-   | validate | Value validation method | `(val:any)=>boolean` |
+2. If the value is an object containing any of the properties `type`, `required`, `default`, or `validate`, it treats all properties as parameter constraints.  
+   Full property specifications (all optional):  
+   | Property | Description | Type |  
+   |-|-|-|  
+   | type | Value type | String / Array / Number / Object / Function / Boolean, or an array of these types |  
+   | required | Whether the parameter is required | boolean |  
+   | default | Default value | any |  
+   | validate | Value validation method | (val: any) => boolean |  
 
-3. If it does not meet the above conditions, then the value is used as the default value of the parameter. When the parameter is **undefined**, this default value is returned.
+3. If none of the above conditions are met, the value is treated as the default parameter value. When the parameter is **undefined**, this default value is returned.  
 
-From the above content, we can understand how to define the parameters of the current component and their constraints. Next, let's take a look at how to read the parameters.
+The above content explains how to define a component's parameters and their constraints. Next, let's see how to read these parameters.  
 
 ```ts
-let money = this.props.money;
-```
+let money = this.props.money;  
+```  
 
-The parameters we defined can be obtained through the `props` object. It should be noted that this property is a read-only property and does not allow re-definition or setting of a new value.
+The defined parameters can be accessed via the `props` object. Note that this property is read-only and cannot be redefined or assigned new values.  
 
-When handling parameter passing, we usually operate based on element tags. To maintain naming consistency and standardization, attribute names may use `camelCase` or be separated by `-`. To better accommodate multiple parameter naming standards, when reading parameters, we will adopt the following strategy: First, try to obtain the parameter directly using the original key name. If that fails, then we will try to convert each word to lowercase after capitalizing the first letter, split them, and connect them with `-` as the key, and then try to obtain the parameter again. This processing method ensures that we can flexibly adapt to different naming rules.
-
-For example:
+When handling parameter passing, we typically operate based on element tags. To maintain naming consistency and standardization, property names may use **camelCase** or **hyphen-separated** formats. To better accommodate different parameter naming conventions, we adopt the following strategy when reading parameters: First, attempt to retrieve the parameter using the original key name. If unsuccessful, attempt to convert the **first letter of each word to uppercase**, then to lowercase, and concatenate them with `-` as the key. For example:  
 
 ```html
-<my-component success-message="This is the success prompt" errorMessage="This is the error prompt" />
-```
+<my-component success-message="I am a success message" errorMessage="I am an error message" />  
+```  
 
-Then, in the component, the values can be retrieved in the following ways, all of which are allowed.
+In the component, these values can be accessed in the following ways, all of which are valid:  
 
 ```ts
-this.props.successMessage;
-this.props["success-message"];
-this.props.errorMessage;
-```
+this.props.successMessage;  
+this.props["success-message"];  
+this.props.errorMessage;  
+```  
 
-Joker has further optimized for booleans internally. To avoid redundant operations like `checked="@('@true')"` in the tag, when we encounter an attribute that is defined but has no configured value (note that it is not `undefined`, but there is no `=`), it is treated as `true` by default. For example:
+Joker further optimizes boolean handling internally. To avoid redundant operations like `checked="@('@true')"` in tags, when a property is defined but not assigned a value (note: not **undefined**, but without `=`), it is treated as **true**. For example:  
 
 ```html
-<my-component checked />
-```
+<my-component checked />  
+```  
 
-For more template syntax, you can have an in-depth understanding by reading [Template](/base/template).
+For more template syntax, refer to the [Template](/base/template) section.  
 
-The data in `props` is reactive data. When the external value changes, a synchronous notification will also be sent:
+`props` data is reactive. When external values change, corresponding notifications are triggered:  
 
-!!!demo1!!!
+!!!demo1!!!  
 
-Code of the child component:
-
-```html
-<template>I'm the child component, the content you entered currently: @props.message</template>
-<script>
-    import { Component } from "@joker.front/core";
-
-    export default class extends Component<{
-        message: string
-    }> {}
-</script>
-```
-
-### Reactive Data (model)
-
-Joker internally provides a data hijacking method [observer](/base/observer). However, to facilitate developers to quickly define reactive data within components, we provide the `model` attribute by default. This attribute will be hijacked before the loading starts and provides the ability for data reactivity.
-
-```ts
-export default class extends Component {
-    model = {
-        value: ""
-    };
-}
-```
-
-Of course, you can also use the `observer` method to define a reactive data.
-
-```ts
-export default class extends Component {
-    list = observer({
-        value: ""
-    });
-
-    created() {
-        this.$watch(
-            () => this.list,
-            () => {
-                // The value has changed
-            }
-        );
-    }
-}
-```
-
-Since we are using the `TypeScript` standard, when the type of the `model` attribute is too complex, we can use the `as` method to specify the type for a certain attribute. For example:
-
-```ts
-export default class extends Component {
-    model: {
-        value?: { key: string; value: number };
-    } = {
-        value: undefined
-    };
-}
-// Equivalent to👇👇👇 which is more convenient for complex attributes or multiple attributes
-export default class extends Component {
-    model = {
-        value: undefined as { key: string; value: number } | undefined,
-        message: ""
-    };
-}
-```
-
-> Note that we recommend storing only the reactive observable data in `model`. For temporary data, it can be directly configured as an attribute within the component class to reduce the overhead of reactive data.
-
-### Render Template (template)
-
-In addition to using the `template` tag in the `SFC` mode to define the template, we can also define the template through the `template` attribute. The advantage of this is that we can create a more complex render template through JavaScript judgment.
+Child component code:  
 
 ```html
-<script>
-    import { Component, createElement, createText } from "@joker.front/core";
-    export default class extends Component {
-        template = function () {
-            let children = [];
-            if (__DEV__) {
-                children.push(createText("This is the content created by createText"));
-            }
-            return [createElement("div", undefined, children)];
-        };
-    }
-</script>
-```
+<template> I am the child component. Your current input: @props.message </template>  
+<script>  
+    import { Component } from "@joker.front/core";  
 
-!!!demo2!!!
+    export default class extends Component<{  
+        message: string  
+    }> {}  
+</script>  
+```  
 
-### Private Components (component)
+### Reactive Data (model)  
 
-Configure the private components within the current component by configuring the `component` attribute. For the component registration mechanism, please refer to [Component Registration](/base/component-register).
-
-```html
-<template>
-    <MyComponent />
-    <MyAsyncComponent />
-</template>
-<script>
-    import { Component } from "@joker.front/core";
-    import MyComponent from "./children.joker";
-    export default class extends Component {
-        component = {
-            MyComponent,
-            MyAsyncComponent: () => import("./async-children.joker")
-        };
-    }
-</script>
-```
-
-!!!demo3!!!
-
-Component registration supports asynchronous operations. You can use the method `()=>import('component.joker')` for asynchronous component references. Asynchronous reference components will not be loaded along with the initialization of the parent component, but will be loaded only when the component needs to be rendered. For example:
-
-```html
-<template>
-    @if(false){
-    <MyAsyncComponent />
-    }
-</template>
-<script>
-    import { Component } from "@joker.front/core";
-
-    export default class extends Component {
-        component = {
-            MyAsyncComponent: () => import("./async-children.joker")
-        };
-    }
-</script>
-```
-
-!!!demo4!!!
-
-From the above code and the console output (network), it can be seen that the asynchronous component will be loaded only when it is required to be loaded.
-
-### Root Node ($root / $rootVNode)
-
-During rendering, every tag/component/directive exists in a tree-like structure, and components are no exception. We can obtain the mounting container/root node of a component by calling the two attributes `$root` and `$rootVNode`.
-
-So how do we distinguish between `$root` and `$rootVNode`?
-
--   `$root` represents the mounting container of the current component. It is passed as a parameter and specified when the container is mounted ($mount). It can be an HTML `Element` or a `VNode.Component`.
-
--   `$rootVNode` is the top-level node of the current component, and its type must be `VNode.Root`. Since our render template does not limit the number of top-level tags, it must be wrapped by a `VNode.Root`. Through this property, we can perform operations such as looking up nodes downward. The value of this property will be created only when the template is rendered, so the value of this property cannot be obtained within the `created` lifecycle.
-
-For example, if we want to obtain all `Element` nodes of the current component
-
-```html
-<template>
-    <div>1</div>
-    <div>2</div>
-    <div>3</div>
-</template>
-
-<script>
-    //...
-    // Get all element nodes
-    this.$rootVNode?.find((n) => n instanceof VNode.Element);
-
-    // Look up and find the nearest element node
-    this.$rootVNode?.closest((n) => n instanceof VNode.Element);
-
-    //...
-</script>
-```
-
-For knowledge related to `VNode.Root`, you can click [Virtual Node](/base/vnode) to learn more.
-
-### All Marked Nodes ($refs)
-
-This property stores all marked nodes. This property is a read-only property. When nodes are added or destroyed, the value of this property will be synchronized accordingly (value synchronization, not reactive data. If you want to observe, it is recommended to use the `$watchNode` API).
+Joker provides the [observer](/base/observer) method for data interception. However, to help developers quickly define reactive data within components, we offer the `model` property by default. This property is intercepted before mounting and provides reactive data capabilities.  
 
 ```ts
-let count = this.$refs.refName?.count;
-```
+export default class extends Component {  
+    model = {  
+        value: ""  
+    };  
+}  
+```  
 
-Of course, you can also call the `$getRef` and `$getRefs` methods to find marked nodes. These two methods can use TypeScript generic classes to specify the output type, which is more convenient for operation. [Component Built-in Methods](/base/component-api)
+Alternatively, you can use the `observer` method to define reactive data:  
 
-### Whether to Maintain State (isKeepAlive)
+```ts
+export default class extends Component {  
+    list = observer({  
+        value: ""  
+    });  
 
-We can determine whether a component is required to maintain its state through this property. For components that are required to maintain their state, only the mounted element nodes will be destroyed during `$destroy`, rather than the entire component instance. For details, you can refer to [Component Lifecycle](/base/component-lifecycle).
+    created() {  
+        this.$watch(  
+            () => this.list,  
+            () => {  
+                //Value changed  
+            }  
+        );  
+    }  
+}  
+```  
 
-Call the component and configure `keep-alive`:
+Since we use TypeScript standards, when the `model` property's type is complex, we can use `as` to specify the type for a property. For example:  
+
+```ts
+export default class extends Component {  
+    model: {  
+        value?: { key: string; value: number };  
+    } = {  
+        value: undefined  
+    };  
+}  
+//Equivalent to 👇👇👇 More convenient for complex or multiple properties  
+export default class extends Component {  
+    model = {  
+        value: undefined as { key: string; value: number } | undefined,  
+        message: ""  
+    };  
+}  
+```  
+
+> Note: We recommend storing only reactive, observable data in `model`. Temporary data can be directly defined as properties within the component class to reduce reactive data overhead.  
+
+### Rendering Template (template)  
+
+In addition to defining templates using the `template` tag in SFC mode, we can also use the `template` property to define templates. This allows us to create more complex rendering templates using JavaScript logic.  
 
 ```html
-<template>
-    <MyComponent keep-alive />
-</template>
-```
+<script>  
+    import { Component, createElement, createText } from "@joker.front/core";  
+    export default class extends Component {  
+        template = function () {  
+            let children = [];  
+            if (__DEV__) {  
+                children.push(createText("Content created via createText"));  
+            }  
+            return [createElement("div", undefined, children)];  
+        };  
+    }  
+</script>  
+```  
 
-In the child component, we can determine whether the current component rendering requires state maintenance through **isKeepAlive**.
+!!!demo2!!!  
+
+### Private Components (component)  
+
+Use the `component` property to configure private components within the current component. For component registration mechanisms, see [Component Registration](/base/component-register).  
+
+```html
+<template>  
+    <MyComponent />  
+    <MyAsyncComponent />  
+</template>  
+<script>  
+    import { Component } from "@joker.front/core";  
+    import MyComponent from "./children.joker";  
+    export default class extends Component {  
+        component = {  
+            MyComponent,  
+            MyAsyncComponent: () => import("./async-children.joker")  
+        };  
+    }  
+</script>  
+```  
+
+!!!demo3!!!  
+
+Component registration supports asynchronous loading. Use `() => import('component.joker')` for asynchronous component references. Asynchronous components are not loaded during parent component initialization but are loaded only when the component needs to be rendered. For example:  
+
+```html
+<template>  
+    @if(false){  
+    <MyAsyncComponent />  
+    }  
+</template>  
+<script>  
+    import { Component } from "@joker.front/core";  
+
+    export default class extends Component {  
+        component = {  
+            MyAsyncComponent: () => import("./async-children.joker")  
+        };  
+    }  
+</script>  
+```  
+
+!!!demo4!!!  
+
+From the above code and console output (network), you can see that asynchronous components are loaded only when required.  
+
+### Root Node ($root / $rootVNode)  
+
+During rendering, every tag/component/directive exists as a tree structure, and components are no exception. We can use `$root` and `$rootVNode` to access a component's container or root node.  
+
+- `$root`: Represents the component's mounting container. It is specified when the container is mounted (`$mount`) and can be an HTML `Element` or a `VNode.Component`.  
+
+- `$rootVNode`: Represents the component's top-level node, always of type `VNode.Root`. Since rendering templates can have multiple top-level tags, they must be wrapped by a `VNode.Root`. This property is created during template rendering and is not available in the `created` lifecycle hook.  
+
+For example, to retrieve all `Element` nodes in the current component:  
+
+```html
+<template>  
+    <div>1</div>  
+    <div>2</div>  
+    <div>3</div>  
+</template>  
+
+<script>  
+    //...  
+    //Get all Element nodes  
+    this.$rootVNode?.find((n) => n instanceof VNode.Element);  
+
+    //Search upward for the nearest Element node  
+    this.$rootVNode?.closest((n) => n instanceof VNode.Element);  
+
+    //...  
+</script>  
+```  
+
+For more details on `VNode.Root`, refer to [Virtual Nodes](/base/vnode).  
+
+### All Tagged Nodes ($refs)  
+
+This read-only property stores all tagged nodes. Its values synchronize when nodes are added or destroyed (value synchronization, not reactive data; use `$watchNode` API for observation).  
 
 ```ts
-export class extends Component {
-    created() {
-        if (this.isKeepAlive) {
-            //TODO:...
-        }
-    }
-}
-```
+let count = this.$refs.refName?.count;  
+```  
 
-### Whether it is in Sleep State (isSleeped)
+Alternatively, use `$getRef` and `$getRefs` methods to locate tagged nodes. These methods support TypeScript generics to specify output types for easier manipulation. Refer to [Component Built-in Methods](/base/component-api).  
 
-When a component is required to maintain its state, only the mounted element nodes will be destroyed during `$destroy`, rather than the entire component instance. For details, you can refer to [Component Lifecycle](/base/component-lifecycle).
-We can use this property to determine the current state of the component. For example:
+### Is Keep Alive (isKeepAlive)  
 
-```ts
-export class extends Component {
-    // Timed task trigger function
-    testMethod() {
-        // Ignore the timed execution when the component is asleep.
-        if (this.isSleeped) return;
+This property determines whether the component should maintain its state. Components marked for keep-alive will only destroy their mounted element nodes during `$destroy`, not the entire component instance. For details, see [Component Lifecycle](/base/component-lifecycle).  
 
-        MessageBox.alert("The timer has been triggered.");
-    }
-}
-```
+Component call with `keep-alive`:  
 
-### Render Sections ($sections)
+```html
+<template>  
+    <MyComponent keep-alive />  
+</template>  
+```  
 
-This property is a read-only property representing the sections to be rendered passed into the current component. For usage, please refer to [Section Rendering](/base/template-section).
+In the child component, use **isKeepAlive** to determine whether the component should maintain its state during rendering.  
 
 ```ts
-class extends Component {
-    myFunction() {
-        if (this.$sections.top) {
-            // The top section template has been passed in
-        } else {
-            // The top section template has not been passed in
-        }
-    }
-}
-```
+export class extends Component {  
+    created() {  
+        if (this.isKeepAlive) {  
+            //TODO:...  
+        }  
+    }  
+}  
+```  
 
-The type of this property is an object type, where the `key` represents the section name, and the `value` represents the object data of the section to be rendered. Its detailed type is as follows (`SectionType`):
+### Is Sleeping (isSleeped)  
 
-| Property Name | Description                                                                                                                                                                                               | Type             |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| asts          | AST tree, which can be understood by referring to [AST](/base/ast)                                                                                                                                        | `AST.Node[]`     |
-| ob            | The data object (ob) required for rendering this template                                                                                                                                                 | `Object`         |
-| parser        | The parser object where this template is rendered                                                                                                                                                         | `ParserTemplate` |
-| params        | Parameters, which can be referred to in the section parameter chapter of [Section Rendering](/base/template-section). This property **does not represent the parameter value** but **the parameter name** | `string[]`       |
+When a component is marked for keep-alive, only the mounted element nodes are destroyed during `$destroy`, not the entire component instance. For details, see [Component Lifecycle](/base/component-lifecycle).  
+Use this property to check the component's current state, for example:  
 
-> This property is a read-only property. It is not recommended to modify the value of this property. The property value is generated internally by Core.
+```ts
+export class extends Component {  
+    //Timer trigger function  
+    testMethod() {  
+        //Ignore execution if the component is sleeping.  
+        if (this.isSleeped) return;  
+
+        MessageBox.alert("Timer triggered.");  
+    }  
+}  
+```  
+
+### Rendering Sections ($sections)  
+
+This read-only property represents the sections to be rendered within the component. For usage, see [Section Rendering](/base/template-section).  
+
+```ts
+class extends Component {  
+    myFunction() {  
+        if (this.$sections.top) {  
+            //A top section template was passed  
+        } else {  
+            //No top section template was passed  
+        }  
+    }  
+}  
+```  
+
+This property is of object type, where `key` represents the section name and `value` represents the section data object. Its detailed type (`SectionType`) is as follows:  
+
+| Property | Description                                                                                                     | Type           |  
+|----------|-----------------------------------------------------------------------------------------------------------------|----------------|  
+| asts     | AST tree. See [AST](/base/ast) for details.                                                                     | AST.Node[]     |  
+| ob       | The data object (`ob`) required for rendering the template.                                                     | Object         |  
+| parser   | The parser object (`ParserTemplate`) where the template is rendered.                                            | ParserTemplate |  
+| params   | Parameters. Refer to the section parameters in [Section Rendering](/base/template-section). This property refers to **parameter names**, not **values**. | string[]       |  
+
+> This property is read-only. Modifying its values is not recommended, as they are generated internally by Core.

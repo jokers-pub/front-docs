@@ -1,79 +1,68 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Quick Start</h2>
+        <h2>Quick Start Guide</h2>
         <p>
-            This guide explains how to use the Joker CLI tool to set up your Joker development environment. It includes prerequisite conditions, installing the CLI, creating an initial workspace and a starter application, and running the application locally to verify your setup.
+            This guide explains how to set up your Joker development environment using the Joker CLI tool. It includes prerequisites, CLI installation, creating an initial workspace and starter application, and running the application locally to verify your setup.
         </p>
         <p>
             <strong>We offer two development modes:</strong>
         </p>
         <ol>
             <li>
-                Official website visual development platform (
+                Official Visual Development Platform (
                 <a href="https://viscode.jokers.pub" target="_blank">Visual Platform</a>
                 )
                 <strong>Recommended</strong>
             </li>
-            <li>Local code development</li>
+            <li>Local Code Development</li>
         </ol>
-        <p>The following is the tutorial for the local development mode:</p>
-        <h3>Prerequisite Conditions</h3>
-        <p>To use the Joker framework, you need to be familiar with the following technologies:</p>
+        <p>Below is the tutorial for the local development mode:</p>
+        <h3>Prerequisites</h3>
+        <p>To use the Joker framework, you should be familiar with the following technologies:</p>
         <ul>
             <li>
-                <p>
-                    <a
-                        href="https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript"
-                        target="_blank">
-                        JavaScript
-                    </a>
-                </p>
+                <a
+                    href="https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript"
+                    target="_blank">
+                    JavaScript
+                </a>
             </li>
             <li>
-                <p>
-                    <a href="https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML" target="_blank">
-                        HTML
-                    </a>
-                </p>
+                <a href="https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML" target="_blank">HTML</a>
             </li>
             <li>
-                <p>
-                    <a href="https://developer.mozilla.org/docs/Learn/CSS/First_steps" target="_blank">CSS</a>
-                </p>
+                <a href="https://developer.mozilla.org/docs/Learn/CSS/First_steps" target="_blank">CSS</a>
             </li>
             <li>
-                <p>
-                    <a href="https://www.typescriptlang.org/" target="_blank">Typescript</a>
-                </p>
+                <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
             </li>
         </ul>
         <p>
-            TypeScript is a superset of JavaScript. Through type inference, type annotations can be added to enhance the static verification of code. Type definitions help clarify the interfaces between software components and understand the behavior of existing JavaScript libraries.
+            TypeScript is a superset of JavaScript that enhances static validation through type inference and annotations. Type definitions help clarify interfaces between software components and improve understanding of existing JavaScript library behaviors.
         </p>
-        <p>To install Joker on your local system, the following steps are required:</p>
+        <p>To install Joker on your local system, follow these steps:</p>
         <table class="mkd-table">
             <thead>
                 <tr>
                     <th>Requirement</th>
-                    <th>Introduction</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Node.js</td>
                     <td>
-                        Joker requires the
-                        <a href="https://nodejs.org/en" target="_blank">
-                            Active LTS or Maintenance LTS version of Node.js
-                        </a>
+                        Joker requires Node.js
+                        <a href="https://nodejs.org/en" target="_blank">Active LTS or Maintenance LTS version</a>
+                        .
                     </td>
                 </tr>
                 <tr>
                     <td>npm Package Manager</td>
                     <td>
-                        Joker, Joker CLI, and Joker applications all rely on npm packages to implement various features and functions. To download and install npm packages, you need an npm package manager. This guide uses the npm client command-line interface, which is usually installed by default along with Node.js. To check if you have installed the npm client, run
+                        Joker, Joker CLI, and Joker applications rely on npm packages for various features and functionalities. To download and install npm packages, you need an npm package manager. This guide uses the npm client CLI, which is typically installed by default with Node.js. To check if you have the npm client installed, run
                         <code>npm -v</code>
-                        in the terminal window
+                        in a terminal window.
                     </td>
                 </tr>
             </tbody>
@@ -81,124 +70,130 @@
         <p>
             For package management, we recommend using
             <a href="https://pnpm.js.org/" target="_blank">pnpm</a>
-            to manage the packages of the current project. The installation is very simple:
+            for managing packages in the current project. Installation is simple:
         </p>
         <pre><code>npm i -g pnpm
 </code></pre>
-        <h3>Installing Joker CLI</h3>
+        <h3>Installing the Joker CLI</h3>
         <p>
-            If you are an experienced developer, the project framework must depend on at least the following two packages:
+            If you are an experienced developer, the project framework must include at least the following two packages:
         </p>
-        <pre><code>//CLI Scaffolding
-pnpm add @joker.front/cli
+        <pre><code>// CLI Scaffolding  
+pnpm add @joker.front/cli  
 
-//Core Kernel
-pnpm add @joker.front/core
+// Core Package  
+pnpm add @joker.front/core  
 </code></pre>
-        <p>After installing the above two packages, the framework setup is completed.</p>
-        <p>If you are a novice, we recommend following the steps below to quickly learn how to use it:</p>
+        <p>After installing these two packages, the framework setup is complete.</p>
+        <p>For beginners, we recommend following the steps below to quickly learn how to use the framework:</p>
         <p>
-            You can use the Joker CLI to create projects, generate application and library code, and perform various continuous development tasks such as testing, packaging, and deployment.
+            You can use the Joker CLI to create projects, generate application and library code, and perform various continuous development tasks such as testing, building, and deployment.
         </p>
         <p>To install the Joker CLI, open a terminal/console window and run the following command:</p>
-        <pre><code>pnpm i -g @joker.front/cli
+        <pre><code>pnpm i -g @joker.front/cli  
 </code></pre>
         <blockquote>
             <p>
-                On Windows client computers, the execution of PowerShell scripts is disabled by default. To allow the execution of PowerShell scripts required by npm global binaries, you must set the following [execution policy](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view = powershell-7.4)
+                On Windows client machines, PowerShell script execution is disabled by default. To allow execution of PowerShell scripts required for npm global binaries, you must set the following
+                <a
+                    href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4"
+                    target="_blank">
+                    Execution Policy
+                </a>
+                :
             </p>
         </blockquote>
         <p>
-            <strong>Set-ExecutionPolicy-Scope CurrentUser-ExecutionPolicy RemoteSigned</strong>
+            <strong>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</strong>
         </p>
-        <h3>Creating a Workspace and an Initial Application</h3>
-        <p>You need to develop applications in the context of a Joker workspace.</p>
-        <p>To create a new workspace and an initial starter application:</p>
+        <h3>Creating a Workspace and Initial Application</h3>
+        <p>You will develop your application within the context of a Joker workspace.</p>
+        <p>To create a new workspace and initial starter application:</p>
         <ol>
             <li>
                 Run the CLI command
-                <strong>joker create</strong>
+                <code>joker create</code>
                 and provide the name
                 <code>my-app</code>
-                as a parameter, as shown below:
+                as an argument, as shown below:
             </li>
         </ol>
-        <pre><code>joker create my-app
+        <pre><code>joker create my-app  
 </code></pre>
         <ol start="2">
             <li>
-                In the
+                Install dependencies in the
                 <code>my-app</code>
-                working directory, install dependencies
+                workspace directory:
             </li>
         </ol>
-        <pre><code>cd my-app
+        <pre><code>cd my-app  
 
-pnpm i
+pnpm i  
 </code></pre>
         <p>The CLI will create a new workspace and a simple welcome application that you can run at any time.</p>
         <h3>Running the Application</h3>
         <p>
-            The Joker CLI includes a server command and a build command. The server command makes it easy for you to build and serve the application locally.
+            The Joker CLI includes a server command and a build command. The server command facilitates local building and serving of the application.
         </p>
         <p>
-            We provide two commands,
+            By default, we provide two commands:
             <code>dev</code>
-            and
+            (development environment) and
             <code>build</code>
-            , representing the development environment and code building respectively.
+            (code compilation).
         </p>
         <ol>
             <li>
-                Navigate to the workspace folder, such as
+                Navigate to the workspace folder (e.g.,
                 <code>my-app</code>
-                .
+                ).
             </li>
         </ol>
-        <pre><code>cd my-app
+        <pre><code>cd my-app  
 </code></pre>
         <ol start="2">
             <li>Run the following command:</li>
         </ol>
-        <pre><code>npm run dev
+        <pre><code>npm run dev  
 </code></pre>
-        <p>After successful execution, you will see a simple sample page.</p>
-        <h3>Installing VSCODE and Plugins</h3>
+        <p>After successful execution, you will see a simple example page.</p>
+        <h3>Installing VSCODE and Extensions</h3>
         <p>
             Click
             <a href="https://code.visualstudio.com/" target="_blank">here</a>
-            to download VSCODE from the official website and install it.
+            to download and install VSCODE from the official website.
         </p>
         <p>
             Search for the
             <code>Joker Front Tools</code>
-            extension in the VSCODE app marketplace.
+            extension in the VSCODE Marketplace.
         </p>
         <p>
-            <img src="/base/vscode-extend-install.png" alt="Installing VSCODE Plugin" />
+            <img src="/base/vscode-extend-install.png" alt="Install VSCODE Extension" />
         </p>
         <p>
             Be sure to install the
             <code>Joker Front Tools</code>
-            extension, which provides:
+            extension, which provides the following features:
         </p>
         <ul>
-            <li>Highlighting for SFC Joker single-file components</li>
+            <li>Syntax highlighting for Joker SFC (Single File Components)</li>
             <li>Joker code formatting</li>
             <li>Joker code hints</li>
-            <li>Joker code checking</li>
+            <li>Joker code linting</li>
         </ul>
         <p>
-            In addition, it provides many basic development assistance capabilities, and this extension will greatly improve development efficiency.
+            Additionally, it offers many foundational development aids, significantly improving development efficiency.
         </p>
         <h3>Next Steps</h3>
         <p>
-            For a detailed introduction to the basic concepts and terms of the Joker single-page application architecture and design principles, refer to the basic concepts section of Joker.
+            For a comprehensive introduction to the basic concepts and design principles of Joker's single-page application architecture, refer to the Joker Fundamentals section.
         </p>
         <p>
-            Go through the development tutorial, which is a complete hands-on exercise that will teach you the process of developing applications using the Joker CLI and gradually introduce important subsystems.
+            Go through the development tutorial—a hands-on exercise that will guide you through the process of application development using the Joker CLI, introducing key subsystems step by step.
         </p>
-        <p>To learn more about using the Joker CLI, refer to the CLI overview.</p>
+        <p>For more information about using the Joker CLI, see the CLI Overview.</p>
         <BottomNav />
     </div>
 </template>

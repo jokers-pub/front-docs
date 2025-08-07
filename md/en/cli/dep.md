@@ -1,25 +1,25 @@
-## Dependency Pre-building
+## Dependency Pre-Bundling
 
-Joker CLI scans and identifies the dependencies in `node_modules` of the project when the project starts, and uses an asynchronous method to silently compile these packages in advance.
+The Joker CLI scans and identifies dependencies in the `node_modules` directory during project initialization, compiling these packages ahead of time in a silent asynchronous manner.
 
 ### Purpose
 
-The reasons why Joker CLI adopts dependency pre-building are as follows:
+The rationale behind Joker CLI's dependency pre-bundling includes:
 
--   **CommonJS or UMD**: The development server of Joker CLI treats all code as native **ES** modules during runtime. This requires it to intelligently convert dependencies in `CommonJS` or `UMD` formats so that they can be used as **ES** modules. When converting `CommonJS` modules, Joker CLI uses a sophisticated import analysis technique to ensure that even in the case of dynamic exports, named imports can be seamlessly compatible, thus guaranteeing a smooth experience during development.
+- **`CommonJS or UMD`**: The Joker CLI development server treats all code as native **ES** modules during runtime. This necessitates intelligent conversion of `CommonJS or UMD`-formatted dependencies to be compatible as **ES** modules. When handling `CommonJS` modules, Joker CLI employs sophisticated import analysis to ensure seamless compatibility with named imports, even for dynamically exported modules, thereby guaranteeing a smooth development experience.
 
--   **Performance**: To improve the page loading speed, Joker CLI adopts an optimization strategy of integrating ESM dependencies containing a large number of internal modules into a single module. This approach can significantly reduce the number of module requests, thereby accelerating the page loading speed.
+- **`Performance`**: To enhance page loading speed, Joker CLI adopts an optimization strategy by consolidating ESM dependencies with numerous internal modules into a single module. This approach significantly reduces the number of module requests, thereby accelerating page load times.
 
-    Take `lodash-es` as an example. This library contains more than 600 independent modules. In the traditional ES module import method, if we import the `debounce` function, the browser will have to initiate more than 600 independent HTTP requests. Although the server may be able to handle these requests easily, a large number of network requests will cause network congestion on the browser side, which in turn affects the page loading speed.
-    However, through the pre-building function of Joker CLI, `lodash-es` can be integrated into a single module. In this way, we only need to initiate one HTTP request to load the entire library, greatly reducing network latency and improving the user experience.
+  For example, take the `lodash-es` library, which contains over 600 individual modules. In a traditional ES module import scenario, importing the `debounce` function would trigger the browser to initiate more than 600 separate HTTP requests. While the server might easily handle these requests, the sheer volume of network traffic would congest the browser-side network, adversely affecting page load performance.  
+  However, with Joker CLI's pre-bundling feature, `lodash-es` is consolidated into a single module. This means only one HTTP request is needed to load the entire library, drastically reducing network latency and improving the user experience.
 
 ### Cache
 
-Joker CLI stores the pre-compiled files in `node_modules/.joker/deps`. This file is divided into two directories, `server` and `build_dist`, according to the running command, corresponding to the development-state service cache and the build-time cache respectively.
+Joker CLI stores pre-bundled files in `node_modules/.joker/deps`. These files are categorized into `server` and `build_dist` directories based on the command executed, corresponding to development server cache and build-time cache, respectively.
 
 ![DEP_CACHE](/cli/dep_cache.png)
 
-The `_manifest.json` file is used to record the information and versions of all caches.
+The `_manifest.json` file records all cache information and versions:
 
 ```json
 {
@@ -62,4 +62,4 @@ The `_manifest.json` file is used to record the information and versions of all 
 }
 ```
 
-> If for some reason you want to force Joker CLI to rebuild the dependencies, you can manually delete the `node_modules/.joker` cache directory.
+> If you need to force Joker CLI to rebuild dependencies for any reason, you can manually delete the `node_modules/.joker` cache directory.

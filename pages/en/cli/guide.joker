@@ -2,57 +2,61 @@
     <div ref="container" class="joker-demo-container">
         <h2>Quick Start</h2>
         <p>
-            Joker CLI currently has the functions of development and production build. Users can execute simple commands to quickly utilize its various capabilities.
+            Joker CLI currently supports both development and production build capabilities. Users can execute concise commands to quickly utilize its various features.
         </p>
         <p>
-            We support quickly executing Joker commands through command - line options. We also support more configurations through the
+            We support running Joker commands quickly via command options, and we also support configurations through the
             <code>joker.config.js</code>
-            configuration file. You can refer to the [Configuration File](/cli/setting - public) chapter for details.
+            file for more advanced settings. For configuration details, refer to the
+            <a href="/cli/setting-public" target="_blank">Configuration File</a>
+            section.
         </p>
-        <h3>Installation and Usage</h3>
+        <h3>Installation &amp; Usage</h3>
         <ol>
             <li>
-                First, install Joker CLI in the project using a package management tool such as
+                First, install Joker CLI in your project using a package manager like
                 <code>npm</code>
                 or
                 <code>pnpm</code>
                 .
             </li>
         </ol>
-        <pre><code class="language-bash">pnpm add @joker.front/cli
+        <pre><code class="language-bash">pnpm add @joker.front/cli  
 </code></pre>
         <ol start="2">
             <li>
-                After the installation is complete, we can configure our commands in
+                After installation, you can configure commands in your
                 <code>package.json</code>
                 :
             </li>
         </ol>
-        <pre><code class="language-json">{
-    &quot;scripts&quot;: {
-        &quot;dev&quot;: &quot;joker&quot;,
-        &quot;build&quot;: &quot;joker build --config=build.config.js&quot;
-    }
-}
+        <pre><code class="language-json">{  
+    &quot;scripts&quot;: {  
+        &quot;dev&quot;: &quot;joker&quot;,  
+        &quot;build&quot;: &quot;joker build --config=build.config.js&quot;  
+    }  
+}  
 </code></pre>
         <ol start="3">
             <li>
-                We can start our development service by running
+                Run
                 <code>npm run dev</code>
-                in the project.
+                in the project to start the development server.
             </li>
         </ol>
         <h3>server [Command]</h3>
         <p>
             The
             <code>server</code>
-            command is our development service. We can directly execute the
+            command launches the development server. Simply run
             <code>joker</code>
-            command to start the server development service.
+            to start it.
         </p>
-        <pre><code class="language-bash">joker [root]
+        <pre><code class="language-bash">joker [root]  
 </code></pre>
-        <p>Options</p>
+        <p>
+            <strong>Options</strong>
+        </p>
         <table class="mkd-table">
             <thead>
                 <tr>
@@ -66,8 +70,9 @@
                         <code>--config &lt;file&gt;</code>
                     </td>
                     <td>
-                        Use the specified configuration file
-                        <code>(string)</code>
+                        Specify a configuration file (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -75,17 +80,21 @@
                         <code>--base &lt;path&gt;</code>
                     </td>
                     <td>
-                        Public base path
-                        <code>(default: /)(string)</code>
+                        Public base path (default:
+                        <code>/</code>
+                        ) (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <code>--log &lt;leve&gt;</code>
+                        <code>--log &lt;level&gt;</code>
                     </td>
                     <td>
-                        Log output level
+                        Log level (
                         <code>[silent / error / warn / info / debug]</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -93,8 +102,9 @@
                         <code>--mode &lt;mode&gt;</code>
                     </td>
                     <td>
-                        Set the environment mode
-                        <code>(string)</code>
+                        Set the environment mode (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -102,8 +112,9 @@
                         <code>--host [host]</code>
                     </td>
                     <td>
-                        Specify the host name
-                        <code>(string)</code>
+                        Specify the hostname (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -111,8 +122,9 @@
                         <code>--port &lt;port&gt;</code>
                     </td>
                     <td>
-                        Specify the port
-                        <code>(number)</code>
+                        Specify the port (
+                        <code>number</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -120,16 +132,23 @@
                         <code>--open [path]</code>
                     </td>
                     <td>
-                        Whether to open the browser by default. You can specify a custom address
-                        <code>(default: true)(boolean / string)</code>
+                        Automatically open the browser (default:
+                        <code>true</code>
+                        ) (
+                        <code>boolean</code>
+                        /
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
             </tbody>
         </table>
-        <h3>build [Build]</h3>
-        <pre><code class="language-bash">joker build [root]
+        <h3>build [Command]</h3>
+        <pre><code class="language-bash">joker build [root]  
 </code></pre>
-        <p>Options</p>
+        <p>
+            <strong>Options</strong>
+        </p>
         <table class="mkd-table">
             <thead>
                 <tr>
@@ -143,8 +162,9 @@
                         <code>--config &lt;file&gt;</code>
                     </td>
                     <td>
-                        Use the specified configuration file
-                        <code>(string)</code>
+                        Specify a configuration file (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -152,17 +172,21 @@
                         <code>--base &lt;path&gt;</code>
                     </td>
                     <td>
-                        Public base path
-                        <code>(default: /)(string)</code>
+                        Public base path (default:
+                        <code>/</code>
+                        ) (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <code>--log &lt;leve&gt;</code>
+                        <code>--log &lt;level&gt;</code>
                     </td>
                     <td>
-                        Log output level
+                        Log level (
                         <code>[silent / error / warn / info / debug]</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -170,8 +194,9 @@
                         <code>--mode &lt;mode&gt;</code>
                     </td>
                     <td>
-                        Set the environment mode
-                        <code>(string)</code>
+                        Set the environment mode (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -179,8 +204,11 @@
                         <code>--outDir &lt;dir&gt;</code>
                     </td>
                     <td>
-                        Output directory
-                        <code>(default: dist)(string)</code>
+                        Output directory (default:
+                        <code>dist</code>
+                        ) (
+                        <code>string</code>
+                        )
                     </td>
                 </tr>
                 <tr>
@@ -188,16 +216,23 @@
                         <code>--sourcemap</code>
                     </td>
                     <td>
-                        Output source map files after building
-                        <code>(default: false)(boolean / &quot;inline&quot; / &quot;hidden&quot;)</code>
+                        Generate source map files (default:
+                        <code>false</code>
+                        ) (
+                        <code>boolean</code>
+                        /
+                        <code>&quot;inline&quot;</code>
+                        /
+                        <code>&quot;hidden&quot;</code>
+                        )
                     </td>
                 </tr>
             </tbody>
         </table>
-        <h3>create [Create a Joker Project]</h3>
-        <pre><code class="language-bash">joker create [name]
+        <h3>create [Initialize a Joker Project]</h3>
+        <pre><code class="language-bash">joker create [name]  
 </code></pre>
-        <p>We can use this command to quickly create a Joker development project.</p>
+        <p>Quickly create a new Joker project using this command.</p>
         <BottomNav />
     </div>
 </template>

@@ -1,101 +1,100 @@
 ## Conditional Rendering
 
-This chapter mainly introduces how to implement a logical branch in the `template` template.
+This chapter mainly introduces how to implement logical branching in the `template`.
 
 ### if
 
-In the template, use `@('@if(condition){... }')` to implement a logical branch. It is used to conditionally render a block of content. This content will only be rendered when the expression of the directive returns a truthy value. The condition in `if(condition)` can be a value, an expression, a property, or a method call.
+Use `@('@if(condition)'){ ... }` in templates to implement logical branches. It is used to conditionally render a block of content. The content block will only be rendered when the directive's expression evaluates to a truthy value. The `if(condition)` condition can be a value, expression, property, or method call.
 
 ```xml
 @if(value){
-    <p>This is a paragraph</p>
+    <p>I am a paragraph</p>
 }
 ```
 
-From the above code example, it can be seen that the syntax is the same as that of `if` in JavaScript, except that the `if / else if / else` directives provided by Joker must use `{}` to enclose your content, and the curly braces **cannot be omitted**.
+As seen in the code example above, the syntax is the same as using if in JavaScript, except that Joker's `if / else if / else` directives must use `{}` to wrap your content. The curly braces **cannot be omitted**.
 
 !!!demo1!!!
 
 ### else if
 
-`else if` cannot exist independently. It must be used together with the `if` directive. When using `else if`, there is no need to add `@` in front. The start of `if` already indicates the start of a directive, and `else if` is just a logical branch syntax.
+`else if` cannot exist independently. It must be used together with the `if` directive. When using `else if`, there is no need to prefix it with `@`. The start of `if` already indicates the beginning of a directive, and `else if` is just a syntax for logical branching.
 
-**else if** and **if** must be adjacent and at the same level. They cannot be associated across positions or levels.
+**else if** and **if** must be adjacent siblings; they cannot be separated by hierarchy or cross-level association.
 
 ```xml
-@if(value === 1){
-    <p>This is paragraph one</p>
+@if(value===1){
+    <p>I am paragraph one</p>
 }
-else if(value === 2){
-    <p>This is paragraph two</p>
+else if(value===2){
+    <p>I am paragraph two</p>
 }
-else if(value === 3){
-    <p>This is paragraph three</p>
+else if(value===3){
+    <p>I am paragraph three</p>
 }
 ...
 ```
 
 !!!demo2!!!
 
-> It is important to note that the order of if conditions is evaluated from top to bottom. If a preceding condition evaluates to true, subsequent else if conditions will not be executed (despite their expressions being evaluated, as discussed later), even if they would also resolve to true.
+> It is worth noting that the evaluation order is top-down. If a preceding condition evaluates to true, even if a later else if condition is also true, it will not be rendered (but the condition will still execute—see below).
 
-Here, it should be noted that **if** and **else if** in `template` do not execute from top to bottom every time like our traditional coding operation mechanism. Although we have implemented a top-down condition operation mechanism and controlled its rendering internally, the judgment conditions in **if** and **else if** will be run and their results will be tried to be parsed every time. Therefore, the **constraint conditions should be independent rather than related** to achieve the `extreme responsive performance experience of local condition updates in else if`. Let's take a look at an example:
+It is important to understand that **if** and **else if** in `template` do not execute top-down in the same way as traditional coding runtime mechanisms. Although we internally implement a top-down conditional execution mechanism to control rendering, the conditions in **if** and **else if** will run and attempt to resolve results every time. Therefore, **constraints should be independent rather than interrelated**. The purpose is to enable `local condition updates for ultimate responsive performance experience`. Let's look at an example for clarity:
 
 ```xml
-@if(array === undefined){
-    <p>This is paragraph one</p>
+@if(array===undefined){
+    <p>I am paragraph one</p>
 }
-else if(array.length === 0){
-    <p>This is paragraph two</p>
+else if(array.length===0){
+    <p>I am paragraph two</p>
 }
 else {
-    <p>This is paragraph three</p>
+    <p>I am paragraph three</p>
 }
 ```
 
-From the above example, it can be seen that if `array` is `undefined`, the judgment condition in `else if` will report an error because it cannot read the `length` property. So the correct way to write it is:
+In the example above, if `array` is undefined, the evaluation condition in `else if` will throw an error because it cannot read the `length` property. Thus, the correct way to write it is:
 
 ```xml
-@if(array === undefined){
-    <p>This is paragraph one</p>
+@if(array===undefined){
+    <p>I am paragraph one</p>
 }
-else if(array && array.length === 0){
-    <p>This is paragraph two</p>
+else if(array && array.length===0){
+    <p>I am paragraph two</p>
 }
 else {
-    <p>This is paragraph three</p>
+    <p>I am paragraph three</p>
 }
 ```
 
 ### else
 
-The `else` keyword can form a pair with `if`, or it can form a pair with other `else if` statements in an `if-else` chain. When the `if` condition is not met, the program will continue to execute the code block following `else`. In an `if-else` chain, only the last `else` (if there is no `else if` statement) can exist independently, and other `else` must form a pair with `if` or `else if`.
+The `else` keyword can pair with `if` or other `else if` statements in an `if-else` chain. When the `if` condition is not satisfied, the program continues executing the code block after `else`. In an `if-else` chain, only the last `else` (if there are no `else if` statements) can exist independently. Other `else` statements must pair with `if` or `else if`.
 
 ```xml
-@if(value === 1){
-    <p>This is paragraph one</p>
+@if(value===1){
+    <p>I am paragraph one</p>
 }
-else if(value === 2){
-    <p>This is paragraph two</p>
+else if(value===2){
+    <p>I am paragraph two</p>
 }
 else {
-    <p>This is paragraph three</p>
+    <p>I am paragraph three</p>
 }
 ```
 
 !!!demo3!!!
 
-### In-depth Principles
+### Deep Dive into the Mechanism
 
-During conditional rendering, only the logical block whose first condition is met will be rendered. Otherwise, the `else` logical block will be rendered or nothing will be rendered (if there is no `else`). When we need to dynamically configure the display state of a component, its display and hiding are actually operations of **creating** and **destroying** a component.
+During conditional rendering, only the first matching logic block will be rendered. Otherwise, the `else` block will be rendered (if there is one) or nothing will be rendered (if there is no else). When dynamically configuring a component's display state, its appearance and disappearance actually involve **creation** and **destruction** operations of the component.
 
-Let's feel the actual working principle of the logical block through the following example:
+The following example demonstrates how logic blocks work in practice:
 
-This is the code of the child component
-
+**Subcomponent Code:**
 ```html
 <template>
-    <p>I'm the child component @props.name</p>
+    <p>I am a child component @props.name</p>
 </template>
 <script>
     import { Component } from "@joker.front/core";
@@ -106,13 +105,13 @@ This is the code of the child component
     }> {
         mounted() {
             Message({
-                message: `${this.props.name} has been initialized and mounted`,
+                message: `${this.props.name} is initialized and mounted`,
                 type: "success"
             });
         }
         beforeDestroy() {
             Message({
-                message: `${this.props.name} has been destroyed`,
+                message: `${this.props.name} is destroyed`,
                 type: "warning"
             });
         }
@@ -122,6 +121,6 @@ This is the code of the child component
 
 !!!demo4!!!
 
-Of course, you can also use `keep-alive` in `if` to meet the need for state retention during switching.
+Of course, you can also use `keep-alive` in if conditions to maintain state during switching when needed.
 
 !!!demo5!!!

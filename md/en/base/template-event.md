@@ -1,27 +1,27 @@
 ## Event Registration
 
-This chapter mainly introduces how to register interaction events for tags/components in the template.
+This section introduces how to register interactive events for tags/components in the template.
 
-### Listening for Events
+### Listening to Events  
 
-We can use the `@('@eventName')` directive to listen for DOM/component events and execute the corresponding JavaScript when the event is triggered.
+We can use the `@('@event-name')` directive to listen to DOM/component events and execute corresponding JavaScript when the event is triggered.
 
 ```html
 <button @click="handleClick">Button</button>
-```
+```  
 
-The above code example means that we register a `click` event for the `button` button, and the event handling function is **handleClick**
+The example above demonstrates registering a `click` event for a button with the event handler function **handleClick**.  
 
 !!!demo1!!!
 
-### Passing Parameters in Event Execution
+### Passing Event Parameters  
 
-There are two types of event parameters:
+There are two types of event parameters:  
 
--   One is the event object parameter, which is passed by [$trigger](/base/component-api). This parameter will flow within the component along with the event.
--   The other is the parameter of the event execution method. This parameter is used as the parameter of this event and will only take effect in the current component and this event.
+1. **Event Object Parameter**: This parameter is passed by [`$trigger`](/base/component-api) and propagates through components along with the event.  
+2. **Execution Event Method Parameter**: This parameter acts as the event argument, applying only to the current component and the ongoing event.  
 
-Let's see how to pass parameters in event execution:
+Here’s how to pass parameters during event execution:  
 
 ```html
 <template>
@@ -35,73 +35,73 @@ Let's see how to pass parameters in event execution:
         }
     }
 </script>
-```
+```  
 
-!!!demo2!!!
+!!!demo2!!!  
 
-### Introduction to VNode.Event
+### Introduction to VNode.Event  
 
-VNode.Event is the event handling object in Joker front-end. Whether it is an event actively responded to by JS or a native event trigger, this type will be passed as the first parameter to the event handling function.
+`VNode.Event` serves as the event handling object in **Joker Frontend**. Whether the event is actively triggered via JS or originates from a native event, this type is passed as the first parameter to the event handler function.  
 
-Among them, this object has a `data` property representing the parameter passed by the event. The value type can be specified through generics for convenient subsequent operations, and the default value is `undefined`.
+This object includes a `data` property, representing the event parameters. It can be typed using generics for ease of use in subsequent operations (default: `undefined`).  
 
-| Property Name   | Description                                            | Type                 |
-| --------------- | ------------------------------------------------------ | -------------------- |
-| eventName       | Event name                                             | string               |
-| event           | Native event object, depending on the running platform | any                  |
-| target          | The virtual node that responds to the event            | VNode.Node/undefined |
-| data            | Event parameter                                        | <T>:any              |
-| preventDefault  | Prevent the default event                              | function             |
-| stopPropagation | Prevent event propagation                              | function             |
+| Property         | Description                         | Type                   |
+|------------------|-------------------------------------|------------------------|
+| `eventName`      | Event name                        | `string`               |
+| `event`          | Native event object (platform-dependent) | `any`                  |
+| `target`         | The virtual node responding to the event | `VNode.Node`/`undefined` |
+| `data`           | Event parameter(s)                 | `<T>: any`             |
+| `preventDefault` | Prevents the default event         | `function`             |
+| `stopPropagation` | Stops event propagation           | `function`             |  
 
-### Event Modifiers
+### Event Modifiers  
 
-We provide a rich set of event modifiers to help developers handle logic more efficiently without delving into the complex details of DOM events.
+We provide a rich set of **event modifiers** to help developers handle logic more efficiently without delving into DOM event complexities.  
 
-Combined with Joker's VSCODE tool, optional modifiers can be automatically prompted after the event. Currently, the provided modifiers are:
+With **Joker's VSCODE tool**, suggested modifiers appear automatically when typing an event. The currently available modifiers include:  
 
-| Modifier | Description                                                                                                                                                                                                                                                                                                                        |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| stop     | Prevents event bubbling, equivalent to `event.stopPropagation()` in JavaScript                                                                                                                                                                                                                                                     |
-| prevent  | Prevents the default behavior from being executed (if the event is cancelable, cancel the event without stopping the further propagation of the event), equivalent to `event.preventDefault()` in JavaScript                                                                                                                       |
-| self     | Only triggers events within its own scope, excluding child elements. The handler is only triggered when `event.target` is the current element itself, that is, the event is not triggered from an internal element                                                                                                                 |
-| once     | Triggers only once and immediately removes the event after execution                                                                                                                                                                                                                                                               |
-| passive  | It is a parameter used to mark the event handler, telling the browser that the event handler will not be called                                                                                                                                                                                                                    |
-| outside  | The event is triggered only when clicking on an area outside of itself. This event is implemented through global event listening. It is recommended to use `outside` in conjunction with `if` to ensure that the element will be destroyed immediately. When the element is destroyed, the global event listening will be removed. |
+| Modifier   | Description                                                                                                                                                                        |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `stop`     | Stops event bubbling (equivalent to `event.stopPropagation()` in JavaScript).                                                                                                    |
+| `prevent`  | Prevents the default behavior (if the event can be canceled, it is canceled without stopping propagation; equivalent to `event.preventDefault()`).                               |
+| `self`     | Only triggers the event if the current element is the target. The handler does not fire if the event originates from child elements.                                             |
+| `once`     | Ensures the event fires only once and is then automatically removed.                                                                                                            |
+| `passive`  | Signals the browser that the event handler does not call `preventDefault()`, optimizing performance for passive event listeners.                                                   |
+| `outside`  | Triggers the event only when clicking an area **outside** the element. Implemented via global event listeners. Recommended to use with `if` to ensure proper cleanup.             |
 
-> Regarding the `outside` modifier, the monitoring logic of `outside` is that the event-triggering object in the actual output DOM is not inside (including containment) the node `and` is not in a containment relationship in the **VNode.Node** structure. For detailed scenarios, please refer to the **append-to** property in [Component Built-in Attributes](/base/template-property).
+> **Note on `outside`**: The `outside` modifier checks whether the triggered DOM event target is **not** within the node (including nested elements) **and** is also not a contained relationship in the **VNode.Node** structure. For details, refer to the **append-to** property in [Component Built-in Properties](/base/template-property).  
 
-When the event type is a keyboard event, the following modifiers are provided:
+For **keyboard events**, the following modifiers are available:  
 
-| Modifier | Description                        |
-| -------- | ---------------------------------- |
-| enter    | Enter key                          |
-| tab      | Tab key                            |
-| delete   | Includes delete and backspace keys |
-| esc      | Escape key                         |
-| space    | Space key                          |
-| up       | Up arrow key                       |
-| down     | Down arrow key                     |
-| left     | Left arrow key                     |
-| right    | Right arrow key                    |
+| Modifier | Key                     |
+|----------|-------------------------|
+| `enter`  | Enter key               |
+| `tab`    | Tab key                 |
+| `delete` | Delete/Backspace key    |
+| `esc`    | Escape key              |
+| `space`  | Spacebar                |
+| `up`     | Up arrow key            |
+| `down`   | Down arrow key          |
+| `left`   | Left arrow key          |
+| `right`  | Right arrow key         |  
 
-When the event type is a mouse event, we provide the following modifiers:
+For **mouse events**, we provide these modifiers:  
 
-| Modifier | Description        |
-| -------- | ------------------ |
-| left     | Left mouse button  |
-| right    | Right mouse button |
-| middle   | Middle mouse wheel |
+| Modifier | Mouse Action          |
+|----------|-----------------------|
+| `left`   | Left mouse button     |
+| `right`  | Right mouse button    |
+| `middle` | Middle mouse wheel    |  
 
-The following are system modifiers provided when the event is of keyboard/mouse type:
+**System Modifiers** (available for keyboard/mouse events):  
 
-| Modifier | Description |
-| -------- | ----------- |
-| ctrl     | Ctrl key    |
-| alt      | Alt key     |
-| shift    | Shift key   |
+| Modifier | Key            |
+|----------|----------------|
+| `ctrl`   | Ctrl key       |
+| `alt`    | Alt key        |
+| `shift`  | Shift key      |  
 
-It is worth noting that these modifiers can be used in combination. We can add multiple modifiers to an event to meet different scenario requirements. For example:
+**Note**: These modifiers can be **chained together** for a single event to accommodate different scenarios:  
 
 ```html
 <button @click.ctrl.prevent.stop="handleClick">Button</button>

@@ -2,13 +2,13 @@
     <div ref="container" class="joker-demo-container">
         <h2>Component Registration</h2>
         <p>
-            This chapter mainly introduces how to register components, including the registration mechanisms for private components and global components.
+            This section introduces how to register components, including the registration mechanisms for both private and global components.
         </p>
         <h3>Private Component Registration</h3>
         <p>
-            Configure private components within the current component by configuring the
+            Configure private components within the current component via the
             <code>component</code>
-            attribute. For the component registration mechanism, refer to
+            property. For detailed registration mechanisms, refer to
             <a href="/base/component-register" target="_blank">Component Registration</a>
             .
         </p>
@@ -47,9 +47,9 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            Component registration supports asynchronous operations. You can use the
-            <code>() =&gt; import('component.joker')</code>
-            method for asynchronous component references. Asynchronous components will not be loaded with the initialization of the parent component, but will be loaded only when the component needs to be rendered. For example:
+            Component registration supports asynchronous loading. You can use
+            <code>()=&gt;import('component.joker')</code>
+            for asynchronous component references. Asynchronously loaded components will not be loaded during the parent component's initialization but only when the component needs to be rendered. For example:
         </p>
         <pre><code class="language-html">&lt;template&gt;
     @if(false){
@@ -95,21 +95,21 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            From the above code and the console output (network), it can be seen that the asynchronous component will be loaded only when it is required to be loaded.
+            You can verify from the above code and console output (network) that the async component loads only when required.
         </p>
         <h3>Global Component Registration (registerGlobalComponent)</h3>
         <p>
-            The
+            The Core library provides the
             <code>registerGlobalComponent</code>
-            function is provided in the Core library to register global components. If a component is registered as a global component, it can be used in all components, avoiding repeated registration.
+            function for registering global components. Once registered, these components can be used across all components without repeated registrations.
         </p>
         <pre><code class="language-ts">import { registerGlobalComponent } from &quot;@joker.front/core&quot;;
 import MyComponent from &quot;./components/my-component.joker&quot;;
 
-// Register a single component
+// Single component registration
 registerGlobalComponent(&quot;my-componet&quot;, MyComponent);
 
-// Also supports registering multiple components
+// Supports batch registration
 registerGlobalComponent({
     &quot;my-componet&quot;: MyComponent,
     &quot;my-test-component&quot;: MyTestComponent,
@@ -117,10 +117,10 @@ registerGlobalComponent({
     //...
 });
 </code></pre>
-        <p>Let's look at an example of a global component:</p>
+        <p>Example of global component usage:</p>
         <pre><code class="language-ts">import { registerGlobalComponent } from &quot;@joker.front/core&quot;;
 
-// We register global components in the main.ts (entry) file
+// Register global components in main.ts (entry file)
 registerGlobalComponent({
     DemoRow: DemoRow
 });
@@ -135,22 +135,22 @@ registerGlobalComponent({
 </code></pre>
         </DemoContainer>
         <p>
-            Global component registration, like private component registration, supports the introduction of asynchronous components. Asynchronous components will not be loaded when the project starts, but will be loaded only before they are rendered.
+            Like private components, global component registration also supports asynchronous component imports. Async components won't load during application startup but only when they are required for rendering.
         </p>
         <blockquote>
             <p>
-                We do not restrict the location of using the
+                While the
                 <strong>registerGlobalComponent</strong>
-                function, but we still recommend using it in the entry file, so that it is clearer and faster to understand which global components a project has.
+                function can be used anywhere, we recommend using it in the entry file for better clarity and maintainability.
             </p>
         </blockquote>
-        <h3>Finding Global Components (getGlobalComponent)</h3>
+        <h3>Retrieving Global Components (getGlobalComponent)</h3>
         <p>
-            The Core also provides the
+            The Core library provides the
             <strong>getGlobalComponent</strong>
-            function to obtain global components. Through this method, we can dynamically determine whether the global component you need exists.
+            function to dynamically check and retrieve registered global components.
         </p>
-        <p>It should be noted that the return type of this method has three types:</p>
+        <p>Note that the return type can be one of three possibilities:</p>
         <ul>
             <li>
                 <strong>undefined</strong>
@@ -158,27 +158,26 @@ registerGlobalComponent({
             </li>
             <li>
                 <strong>ComponentConstructor</strong>
-                (the component class to be initialized)
+                (component class awaiting initialization)
             </li>
             <li>
                 <strong>ImportComponentConstructor</strong>
-                (the asynchronous component loading method)
+                (async component loader function)
             </li>
         </ul>
         <pre><code class="language-ts">getGlobalComponent(&quot;my-component&quot;);
 </code></pre>
-        <h3>Built-in Global Component (template)</h3>
+        <h3>Built-in Global Components (template)</h3>
         <p>
-            We internally provide a virtual container node. This node only serves as a container and displays the content within the container. The component itself will not output any elements.
-            We can use this component to achieve the grouping function. For example:
+            We provide a virtual container node that acts purely as a wrapper to display nested content without rendering any element (Element) itself. This component can be used for grouping purposes. Example:
         </p>
         <pre><code class="language-html">&lt;template&gt;
     &lt;ul&gt;
-        &lt;li&gt;I'm the fixed column 1&lt;/li&gt;
-        &lt;li&gt;I'm the fixed column 2&lt;/li&gt;
+        &lt;li&gt;Fixed Column 1&lt;/li&gt;
+        &lt;li&gt;Fixed Column 2&lt;/li&gt;
         &lt;template ref=&quot;test&quot;&gt;
-            &lt;li&gt;I'm column 3&lt;/li&gt;
-            &lt;li&gt;I'm column 4&lt;/li&gt;
+            &lt;li&gt;Column 3&lt;/li&gt;
+            &lt;li&gt;Column 4&lt;/li&gt;
         &lt;/template&gt;
     &lt;/ul&gt;
 &lt;/template&gt;
@@ -215,11 +214,11 @@ export default class extends Component {
 &lt;/style&gt;
 </code></pre>
         </DemoContainer>
-        <h3>Built-in Global Component (component)</h3>
+        <h3>Built-in Global Component (dynamic component)</h3>
         <p>
             The built-in
-            <code>component</code>
-            is used to render dynamic components.
+            <code>&lt;component&gt;</code>
+            is used for rendering dynamic components.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo5)">
             <pre><code class="language-html">&lt;template&gt;
@@ -262,14 +261,12 @@ button {
 </code></pre>
         </DemoContainer>
         <p>
-            You can specify the name of the current component through the
+            You can specify a component to render via its
             <code>name</code>
-            method. This value can be the name of a private component within the current component or the name of a global component. At the same time, changes in
-            <code>name</code>
-            will trigger the rendering of the component to render a new component.
+            , which can refer to either a private component or a global component. Changing the name will trigger a re-render with the new component.
         </p>
         <p>
-            You can use this component as a dynamic component container. Its parameter passing, event registration, etc. are the same as other components. It should be noted that, except for the
+            Use it as a dynamic component container. It handles props and events like regular components. Note that apart from
             <strong>keep-alive</strong>
             ,
             <strong>name</strong>
@@ -277,36 +274,36 @@ button {
             <strong>transition-name</strong>
             , and
             <strong>ref</strong>
-            attributes, all other attributes will be passed through to the component you actually render. The event handling mechanism is the same. We listen to the
+            , all other attributes are passed through to the actual rendered component. Event handling works similarly—we listen for
             <code>*</code>
-            event of the rendered component within this component (you can view the $on API) and then broadcast all events upward without handling or intercepting them.
+            events on the rendered component (see
+            <code>$on</code>
+            API) and propagate them upwards without processing or intercepting.
         </p>
         <p>
-            Of course, in addition to using
-            <strong>name</strong>
-            to render dynamic components, we also provide the
+            For advanced dynamic rendering scenarios, we also provide the
             <code>loadComponent</code>
-            API. You can call this method to implement a more complex rendering mechanism.
+            API:
         </p>
         <pre><code class="language-ts">import { Component, ComponentContainer } from &quot;@joker.front/core&quot;;
 
 export default class extends Component {
     testFunction() {
-        // Render the component
+        // Render component dynamically
         this.$getRef&lt;VNode.Component&lt;ComponentContainer&gt;&gt;(&quot;test&quot;)?.component.loadComponent(&quot;name&quot;);
     }
 }
 </code></pre>
         <p>
-            Since it is a dynamic component and supports maintaining data state (keep-alive), we also provide the
+            As it is inherently a dynamic component with state preservation (keep-alive), we also provide the
             <code>removeCache</code>
-            API to clear the cache of a rendered component.
+            API to clear cached data for previously rendered components.
         </p>
         <pre><code class="language-ts">import { Component, ComponentContainer } from &quot;@joker.front/core&quot;;
 
 export default class extends Component {
     testFunction() {
-        // Render the component
+        // Clear component cache
         this.$getRef&lt;VNode.Component&lt;ComponentContainer&gt;&gt;(&quot;test&quot;)?.component.removeCache(&quot;name&quot;);
     }
 }

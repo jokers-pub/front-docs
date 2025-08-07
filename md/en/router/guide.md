@@ -1,51 +1,52 @@
-## Getting Started
+## Getting Started  
 
-Next, we'll learn how to use Joker Router in a project through this section.
+In this section, we will explore how to use Joker Router in our projects.  
 
-> The following example is a simple case of first-level routing. Scenarios such as nested routing and route state preservation will be introduced in detail in subsequent tutorials. This section only serves as an introductory guide.
+> The following example demonstrates a simple single-level routing case. Nested routing, route state preservation, and other scenarios will be covered in later tutorials. This chapter serves only as an introductory guide.  
 
-### Create an Entry File/Layout File
+### Creating the Entry File/Layout File  
 
-In the `main entry` file **(App.joker)** of the project, we configure the `router-view` component in the `template` block. This component represents the rendering position of our dynamic components in the following.
+In the **main entry file (`App.joker`)** of the project, configure the `<router-view>` component in the `template` block. This component represents the rendering location for our dynamic components.  
 
-```html
-<template>
-    <h1>Welcome to use Joker Router</h1>
-    <div>
-        <p>Below is the component rendering block:</p>
-        <router-view></router-view>
-    </div>
-</template>
-```
+```html  
+<template>  
+    <h1>Welcome to Joker Router</h1>  
+    <div>  
+        <p>Below is our component rendering area:</p>  
+        <router-view></router-view>  
+    </div>  
+</template>  
+```  
 
-### Create a Component (Block Page)
+### Creating a Component (Block Page)  
 
-**What is a block page?** A page can consist of multiple different parts, such as the `header`, `menu`, `content block`, etc. Each block can be a partial page and the new page components will be updated on-demand when the route changes.
+**What is a Block Page?**  
+A page can consist of multiple different sections, such as the `header`, `menu`, `content block`, etc. Each block can be a partial page and will be updated on-demand when the route changes.  
 
-![Layout](/router/layout.png)
+![Layout](/router/layout.png)  
 
-For how to create a page, please refer to [Component Overview](/base/component).
+For instructions on creating pages, refer to: [Component Overview](/base/component).  
 
-### Initialize the Router and Register Routes
+### Initializing and Registering Routes  
 
-```js
-import { Router } from "@joker.front/rourter";
+```js  
+import { Router } from "@joker.front/rourter";  
 
-// Main entry file/main layout file
-import App from "./app.joker";
+// Main entry file / Main layout file  
+import App from "./app.joker";  
 
-// My block page
-import MyPage from "./my-page.joker";
+// My block page  
+import MyPage from "./my-page.joker";  
 
-new Router({
-    routes: [
-        { path: "/", redirect: "/index" },
-        { path: "/index", component: MyPage }
-    ]
-});
+new Router({  
+    routes: [  
+        { path: "/", redirect: "/index" },  
+        { path: "/index", component: MyPage }  
+    ]  
+});  
 
-// Initialize the main entry
-new App().$mount(document.getElementById("app"));
-```
+// Initializing the main entry  
+new App().$mount(document.getElementById("app"));  
+```  
 
-Joker Router depends on Joker Core, which provides the `<router-view>` routing component.
+Joker Router relies on Joker Core, which provides the `<router-view>` routing component.

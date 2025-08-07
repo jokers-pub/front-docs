@@ -2,34 +2,32 @@
     <div ref="container" class="joker-demo-container">
         <h2>Conditional Rendering</h2>
         <p>
-            This chapter mainly introduces how to implement a logical branch in the
+            This chapter mainly introduces how to implement logical branching in the
             <code>template</code>
-            template.
+            .
         </p>
         <h3>if</h3>
         <p>
-            In the template, use
+            Use
             <code>
-                @("@if(condition){... }")
+                @("@if(condition)"){...}
             </code>
-            to implement a logical branch. It is used to conditionally render a block of content. This content will only be rendered when the expression of the directive returns a truthy value. The condition in
+            in templates to implement logical branches. It is used to conditionally render a block of content. The content block will only be rendered when the directive's expression evaluates to a truthy value. The
             <code>if(condition)</code>
-            can be a value, an expression, a property, or a method call.
+            condition can be a value, expression, property, or method call.
         </p>
         <pre><code class="language-xml">@if(value){
-    &lt;p&gt;This is a paragraph&lt;/p&gt;
+    &lt;p&gt;I am a paragraph&lt;/p&gt;
 }
 </code></pre>
         <p>
-            From the above code example, it can be seen that the syntax is the same as that of
-            <code>if</code>
-            in JavaScript, except that the
+            As seen in the code example above, the syntax is the same as using if in JavaScript, except that Joker's
             <code>if / else if / else</code>
-            directives provided by Joker must use
+            directives must use
             <code>
                 {}
             </code>
-            to enclose your content, and the curly braces
+            to wrap your content. The curly braces
             <strong>cannot be omitted</strong>
             .
         </p>
@@ -63,28 +61,28 @@ export default class extends Component {
             <code>if</code>
             directive. When using
             <code>else if</code>
-            , there is no need to add
+            , there is no need to prefix it with
             <code>@</code>
-            in front. The start of
+            . The start of
             <code>if</code>
-            already indicates the start of a directive, and
+            already indicates the beginning of a directive, and
             <code>else if</code>
-            is just a logical branch syntax.
+            is just a syntax for logical branching.
         </p>
         <p>
             <strong>else if</strong>
             and
             <strong>if</strong>
-            must be adjacent and at the same level. They cannot be associated across positions or levels.
+            must be adjacent siblings; they cannot be separated by hierarchy or cross-level association.
         </p>
-        <pre><code class="language-xml">@if(value === 1){
-    &lt;p&gt;This is paragraph one&lt;/p&gt;
+        <pre><code class="language-xml">@if(value===1){
+    &lt;p&gt;I am paragraph one&lt;/p&gt;
 }
-else if(value === 2){
-    &lt;p&gt;This is paragraph two&lt;/p&gt;
+else if(value===2){
+    &lt;p&gt;I am paragraph two&lt;/p&gt;
 }
-else if(value === 3){
-    &lt;p&gt;This is paragraph three&lt;/p&gt;
+else if(value===3){
+    &lt;p&gt;I am paragraph three&lt;/p&gt;
 }
 ...
 </code></pre>
@@ -120,101 +118,91 @@ export default class extends Component {
         </DemoContainer>
         <blockquote>
             <p>
-                It should be noted that the
-                <code>if</code>
-                judgments are made in order from top to bottom. If the previous judgment is
-                <code>true</code>
-                , even if the conditions of the subsequent
-                <code>else if</code>
-                are also
-                <code>true</code>
-                , it will not be rendered (the single-judgment condition will be executed, see the following text).
+                It is worth noting that the evaluation order is top-down. If a preceding condition evaluates to true, even if a later else if condition is also true, it will not be rendered (but the condition will still execute—see below).
             </p>
         </blockquote>
         <p>
-            Here, it should be noted that
+            It is important to understand that
             <strong>if</strong>
             and
             <strong>else if</strong>
             in
             <code>template</code>
-            do not execute from top to bottom every time like our traditional coding operation mechanism. Although we have implemented a top-down condition operation mechanism and controlled its rendering internally, the judgment conditions in
+            do not execute top-down in the same way as traditional coding runtime mechanisms. Although we internally implement a top-down conditional execution mechanism to control rendering, the conditions in
             <strong>if</strong>
             and
             <strong>else if</strong>
-            will be run and their results will be tried to be parsed every time. Therefore, the
-            <strong>constraint conditions should be independent rather than related</strong>
-            to achieve the
-            <code>extreme responsive performance experience of local condition updates in else if</code>
-            . Let's take a look at an example:
+            will run and attempt to resolve results every time. Therefore,
+            <strong>constraints should be independent rather than interrelated</strong>
+            . The purpose is to enable
+            <code>local condition updates for ultimate responsive performance experience</code>
+            . Let's look at an example for clarity:
         </p>
-        <pre><code class="language-xml">@if(array === undefined){
-    &lt;p&gt;This is paragraph one&lt;/p&gt;
+        <pre><code class="language-xml">@if(array===undefined){
+    &lt;p&gt;I am paragraph one&lt;/p&gt;
 }
-else if(array.length === 0){
-    &lt;p&gt;This is paragraph two&lt;/p&gt;
+else if(array.length===0){
+    &lt;p&gt;I am paragraph two&lt;/p&gt;
 }
 else {
-    &lt;p&gt;This is paragraph three&lt;/p&gt;
+    &lt;p&gt;I am paragraph three&lt;/p&gt;
 }
 </code></pre>
         <p>
-            From the above example, it can be seen that if
+            In the example above, if
             <code>array</code>
-            is
-            <code>undefined</code>
-            , the judgment condition in
+            is undefined, the evaluation condition in
             <code>else if</code>
-            will report an error because it cannot read the
+            will throw an error because it cannot read the
             <code>length</code>
-            property. So the correct way to write it is:
+            property. Thus, the correct way to write it is:
         </p>
-        <pre><code class="language-xml">@if(array === undefined){
-    &lt;p&gt;This is paragraph one&lt;/p&gt;
+        <pre><code class="language-xml">@if(array===undefined){
+    &lt;p&gt;I am paragraph one&lt;/p&gt;
 }
-else if(array &amp;&amp; array.length === 0){
-    &lt;p&gt;This is paragraph two&lt;/p&gt;
+else if(array &amp;&amp; array.length===0){
+    &lt;p&gt;I am paragraph two&lt;/p&gt;
 }
 else {
-    &lt;p&gt;This is paragraph three&lt;/p&gt;
+    &lt;p&gt;I am paragraph three&lt;/p&gt;
 }
 </code></pre>
         <h3>else</h3>
         <p>
             The
             <code>else</code>
-            keyword can form a pair with
+            keyword can pair with
             <code>if</code>
-            , or it can form a pair with other
+            or other
             <code>else if</code>
             statements in an
             <code>if-else</code>
             chain. When the
             <code>if</code>
-            condition is not met, the program will continue to execute the code block following
+            condition is not satisfied, the program continues executing the code block after
             <code>else</code>
             . In an
             <code>if-else</code>
             chain, only the last
             <code>else</code>
-            (if there is no
+            (if there are no
             <code>else if</code>
-            statement) can exist independently, and other
+            statements) can exist independently. Other
             <code>else</code>
-            must form a pair with
+            statements must pair with
             <code>if</code>
             or
             <code>else if</code>
             .
         </p>
-        <pre><code class="language-xml">@if(value === 1){
-    &lt;p&gt;This is paragraph one&lt;/p&gt;
+        <pre><code class="language-xml">@if(value===1){
+    &lt;p&gt;I am paragraph one&lt;/p&gt;
 }
-else if(value === 2){
-    &lt;p&gt;This is paragraph two&lt;/p&gt;
+else if(value===2){
+    &lt;p&gt;I am paragraph two&lt;/p&gt;
 }
 else {
-    &lt;p&gt;This is paragraph three&lt;/p&gt;
+    &lt;p&gt;I am paragraph three&lt;/p&gt;
 }
 </code></pre>
         <DemoContainer component="@(components.DEMO_JOKER_demo3)">
@@ -250,22 +238,22 @@ export default class extends Component {
 &lt;/script&gt;
 </code></pre>
         </DemoContainer>
-        <h3>In-depth Principles</h3>
+        <h3>Deep Dive into the Mechanism</h3>
         <p>
-            During conditional rendering, only the logical block whose first condition is met will be rendered. Otherwise, the
+            During conditional rendering, only the first matching logic block will be rendered. Otherwise, the
             <code>else</code>
-            logical block will be rendered or nothing will be rendered (if there is no
-            <code>else</code>
-            ). When we need to dynamically configure the display state of a component, its display and hiding are actually operations of
-            <strong>creating</strong>
+            block will be rendered (if there is one) or nothing will be rendered (if there is no else). When dynamically configuring a component's display state, its appearance and disappearance actually involve
+            <strong>creation</strong>
             and
-            <strong>destroying</strong>
-            a component.
+            <strong>destruction</strong>
+            operations of the component.
         </p>
-        <p>Let's feel the actual working principle of the logical block through the following example:</p>
-        <p>This is the code of the child component</p>
+        <p>The following example demonstrates how logic blocks work in practice:</p>
+        <p>
+            <strong>Subcomponent Code:</strong>
+        </p>
         <pre><code class="language-html">&lt;template&gt;
-    &lt;p&gt;I'm the child component @props.name&lt;/p&gt;
+    &lt;p&gt;I am a child component @props.name&lt;/p&gt;
 &lt;/template&gt;
 &lt;script&gt;
     import { Component } from &quot;@joker.front/core&quot;;
@@ -276,13 +264,13 @@ export default class extends Component {
     }&gt; {
         mounted() {
             Message({
-                message: `${this.props.name} has been initialized and mounted`,
+                message: `${this.props.name} is initialized and mounted`,
                 type: &quot;success&quot;
             });
         }
         beforeDestroy() {
             Message({
-                message: `${this.props.name} has been destroyed`,
+                message: `${this.props.name} is destroyed`,
                 type: &quot;warning&quot;
             });
         }
@@ -328,9 +316,7 @@ export default class extends Component {
         <p>
             Of course, you can also use
             <code>keep-alive</code>
-            in
-            <code>if</code>
-            to meet the need for state retention during switching.
+            in if conditions to maintain state during switching when needed.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo5)">
             <pre><code class="language-html">&lt;template&gt;

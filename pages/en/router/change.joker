@@ -1,14 +1,14 @@
 <template>
     <div ref="container" class="joker-demo-container">
         <h2>Route Navigation</h2>
-        <p>This section mainly introduces how to perform route navigation and how to pass route parameters.</p>
+        <p>This section mainly introduces how to perform route navigation and pass route parameters.</p>
         <h3>Native Navigation</h3>
         <p>
-            We can directly achieve route navigation by leveraging the
+            We can use the
             <strong>href</strong>
             attribute of the
-            <code>a</code>
-            tag. Taking the
+            <code>&lt;a&gt;</code>
+            tag to achieve direct route navigation. Taking
             <code>Hash</code>
             mode as an example:
         </p>
@@ -22,55 +22,59 @@
         </DemoContainer>
         <h3>RouteLocationRaw [Type]</h3>
         <p>
-            In addition to the native link-based navigation, we also provide navigation methods such as
+            In addition to native link navigation, we also provide methods like
             <code>push</code>
             and
             <code>replace</code>
-            . When navigating via JavaScript methods, a parameter of type
+            for programmatic navigation. These JavaScript-based navigation methods require passing a
             <code>RouteLocationRaw</code>
-            must be passed as the target information for navigation. Let's first introduce the property specifications of this type.
+            type parameter as the target information for navigation. First, let's clarify the property specifications of this type.
         </p>
-        <pre><code class="language-ts">type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNameRaw;
+        <pre><code class="language-ts">type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNameRaw;  
 </code></pre>
         <p>
             Next, we'll use the
             <code>push</code>
-            method as an example to introduce the usage types of this parameter.
+            method as an example to illustrate the usage of this parameter.
         </p>
         <ol>
-            <li>string</li>
+            <li>
+                <strong>String</strong>
+            </li>
         </ol>
         <p>
-            We can directly set it to a string-based address. In the
-            <code>hash</code>
+            We can directly pass a string representing the target address. In
+            <code>Hash</code>
             mode, the
             <code>#</code>
-            can be omitted.
+            symbol can be omitted.
         </p>
-        <pre><code class="language-ts">push(&quot;router/init&quot;);
+        <pre><code class="language-ts">push(&quot;router/init&quot;);  
 </code></pre>
         <ol start="2">
-            <li>RouteLocationPathRaw [path Mode]</li>
+            <li>
+                <strong>RouteLocationPathRaw [Path Mode]</strong>
+            </li>
         </ol>
         <p>
-            Navigate in the
+            Navigation in
             <code>path</code>
-            mode and support various functional configurations.
+            mode supports various functional configurations.
         </p>
-        <pre><code class="language-ts">push({
-    path: &quot;router/init&quot;,
-    query: {
-        role: &quot;manager&quot;
-    },
-    refresh: true
-    //...
-});
+        <pre><code class="language-ts">push({  
+    path: &quot;router/init&quot;,  
+    query: {  
+        role: &quot;manager&quot;  
+    },  
+    refresh: true  
+    //...  
+});  
 </code></pre>
         <p>The complete properties of this type:</p>
         <table class="mkd-table">
             <thead>
                 <tr>
-                    <th>Property Name</th>
+                    <th>Property</th>
                     <th>Description</th>
                     <th>Type</th>
                 </tr>
@@ -78,25 +82,25 @@
             <tbody>
                 <tr>
                     <td>path</td>
-                    <td>Navigation address</td>
+                    <td>Target navigation address</td>
                     <td>string</td>
                 </tr>
                 <tr>
                     <td>replace</td>
-                    <td>Whether not to record this route in history</td>
+                    <td>Whether to skip recording this route in history</td>
                     <td>boolean</td>
                 </tr>
                 <tr>
                     <td>force</td>
-                    <td>Force navigation, generally used for forced refreshing of the same address</td>
+                    <td>Force navigation, usually used for refreshing the same address</td>
                     <td>boolean</td>
                 </tr>
                 <tr>
                     <td>refresh</td>
                     <td>
-                        Refresh the cache. When the page has
+                        Refresh cache—useful when pages have
                         <code>keepalive</code>
-                        , the cache can be refreshed via this property
+                        enabled
                     </td>
                     <td>boolean</td>
                 </tr>
@@ -108,49 +112,47 @@
                 <tr>
                     <td>hash</td>
                     <td>
-                        Use
-                        <code>hash</code>
-                        for parameter configuration in the
-                        <code>HTML History</code>
-                        mode
+                        Used for
+                        <code>HTML History Mode</code>
+                        to configure hash parameters
                     </td>
                     <td>string</td>
                 </tr>
                 <tr>
                     <td>query</td>
-                    <td>URL Query parameter passing</td>
+                    <td>URL Query parameters</td>
                     <td>object</td>
                 </tr>
             </tbody>
         </table>
         <ol start="3">
-            <li>RouteLocationNameRaw [name Mode]</li>
+            <li>
+                <strong>RouteLocationNameRaw [Name Mode]</strong>
+            </li>
         </ol>
         <p>
-            Navigate in the
+            Navigation in
             <code>name</code>
-            mode and support various functional configurations. For knowledge related to
+            mode supports various functional configurations. For details about the
             <code>name</code>
-            , please refer to the
-            <code>name</code>
-            property in
-            <a href="/router/registry" target="_blank">Register Routes</a>
-            .
+            attribute, refer to the
+            <a href="/router/registry" target="_blank">Route Registration</a>
+            section.
         </p>
-        <pre><code class="language-ts">push({
-    name: &quot;userlist&quot;,
-    query: {
-        role: &quot;manager&quot;
-    },
-    refresh: true
-    //...
-});
+        <pre><code class="language-ts">push({  
+    name: &quot;userlist&quot;,  
+    query: {  
+        role: &quot;manager&quot;  
+    },  
+    refresh: true  
+    //...  
+});  
 </code></pre>
         <p>The complete properties of this type:</p>
         <table class="mkd-table">
             <thead>
                 <tr>
-                    <th>Property Name</th>
+                    <th>Property</th>
                     <th>Description</th>
                     <th>Type</th>
                 </tr>
@@ -158,7 +160,7 @@
             <tbody>
                 <tr>
                     <td>name</td>
-                    <td>Target route name [named route]</td>
+                    <td>Target route name (named route)</td>
                     <td>string</td>
                 </tr>
                 <tr>
@@ -168,20 +170,20 @@
                 </tr>
                 <tr>
                     <td>replace</td>
-                    <td>Whether not to record this route in history</td>
+                    <td>Whether to skip recording this route in history</td>
                     <td>boolean</td>
                 </tr>
                 <tr>
                     <td>force</td>
-                    <td>Force navigation, generally used for forced refreshing of the same address</td>
+                    <td>Force navigation, usually used for refreshing the same address</td>
                     <td>boolean</td>
                 </tr>
                 <tr>
                     <td>refresh</td>
                     <td>
-                        Refresh the cache. When the page has
+                        Refresh cache—useful when pages have
                         <code>keepalive</code>
-                        , the cache can be refreshed via this property
+                        enabled
                     </td>
                     <td>boolean</td>
                 </tr>
@@ -193,43 +195,41 @@
                 <tr>
                     <td>hash</td>
                     <td>
-                        Use
-                        <code>hash</code>
-                        for parameter configuration in the
-                        <code>HTML History</code>
-                        mode
+                        Used for
+                        <code>HTML History Mode</code>
+                        to configure hash parameters
                     </td>
                     <td>string</td>
                 </tr>
                 <tr>
                     <td>query</td>
-                    <td>URL Query parameter passing</td>
+                    <td>URL Query parameters</td>
                     <td>object</td>
                 </tr>
             </tbody>
         </table>
         <blockquote>
             <p>
-                It's worth noting that only in the
+                Note: Only the
                 <code>name</code>
-                mode is it
-                <strong>allowed</strong>
-                to pass
+                mode
+                <strong>allows</strong>
+                passing
                 <code>params</code>
-                . In the
+                . In
                 <code>path</code>
                 mode,
                 <code>params</code>
-                will be used to parse dynamic parameters based on the current
+                are resolved based on the dynamic parameters in the current
                 <strong>path</strong>
                 .
             </p>
         </blockquote>
         <h3>push</h3>
         <p>
-            Navigate to an address. Internally, it calls
+            Navigates to a specified address. Internally, it uses
             <code>history.pushState</code>
-            to effectively change the URL.
+            to efficiently update the URL.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo2)">
             <pre><code class="language-html">&lt;template&gt;
@@ -252,17 +252,17 @@ export default class extends Component {
         <p>
             The
             <code>push</code>
-            method supports one parameter of type
+            method accepts one parameter of type
             <code>RouteLocationRaw</code>
             .
         </p>
         <h3>replace</h3>
         <p>
-            Similar to the
+            Similar to
             <code>push</code>
-            method, it uses
+            , it uses
             <code>history.replaceState</code>
-            to change the browser's URL, but it doesn't create a new entry in the history list. Instead, it replaces the current entry. This means that when the user clicks the back button, they won't return to the previous state but directly to the initial state.
+            to update the browser URL. However, it does not create a new history entry; instead, it replaces the current entry. This means that when users click the back button, they won't return to the previous state but will instead go back to the initial state.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo3)">
             <pre><code class="language-html">&lt;template&gt;
@@ -285,32 +285,30 @@ export default class extends Component {
         <p>
             The
             <code>replace</code>
-            method ignores the history of the current address. It supports one parameter of type
+            method disregards the current address in history. It accepts one parameter of type
             <code>RouteLocationRaw</code>
             .
         </p>
         <h3>go</h3>
-        <p>A navigation method that supports forward and backward navigation.</p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <p>A navigation method that supports forward and backward jumps.</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-router.go(1);
+router.go(1);   // Forward  
 
-router.go(-1);
+router.go(-1);  // Backward  
 </code></pre>
-        <p>
-            It supports an integer-type parameter. A positive number means navigating backward, and a negative number means navigating forward.
-        </p>
+        <p>It accepts an integer parameter—positive for forward navigation, negative for backward navigation.</p>
         <h3>back</h3>
-        <p>Navigate back to the previous level.</p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <p>Navigates back to the previous page.</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-router.back();
+router.back();  
 </code></pre>
         <h3>forward</h3>
-        <p>Navigate forward, which only takes effect when there is navigation history to return to.</p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <p>Navigates forward, but only if there is forward history available.</p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-router.forward();
+router.forward();  
 </code></pre>
         <BottomNav />
     </div>

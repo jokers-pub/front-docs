@@ -1,87 +1,87 @@
 ## router-view View Container
 
-This chapter mainly introduces the core component `<router-view>` in Joker Router. As a view container, it provides a rendering container for page components.
+This chapter introduces the core component in Joker Router: `<router-view>`, which serves as the view container providing the rendering space for page components.
 
-### What is a View Container
+### What is a View Container  
 
-We can split a page into multiple dynamically-rendered blocks and use the `view container <router-view>` to dynamically render the page components of these blocks.
+We can split a page into multiple dynamically rendered blocks and use the `<router-view>` view container to dynamically render the components for each block.  
 
-A page can consist of multiple different parts, such as the `header`, `menu`, `content block`, etc. Each block can be a partial page and will update new page components as needed when the route changes.
+A page can consist of different sections, such as: `header`, `menu`, `content area`, etc. Each section can be a partial page that updates its component as needed when routing changes.  
 
-![Layout](/router/layout.png)
+![Layout](/router/layout.png)  
 
-### How to Use
+### How to Use  
 
-We can add `<router-view>` to the page to create a dynamic view container and manage the rendering components of the view container through the Router's [configuration](/router/registry).
-
-```html
-<div>
-    <router-view></router-view>
-</div>
-```
-
-### Named View Containers
-
-We can configure multiple view containers on a page. To clearly define the rendering components of different containers, we set the `name` property to specify the component that the view container needs to render.
+We can add a `<router-view>` in a page to create a dynamic view container, and manage the rendered components of the view container via the Router's [configuration](/router/registry).  
 
 ```html
-<div>
-    <div class="top">
-        <router-view name="top"></router-view>
-    </div>
-    <div class="content">
-        <router-view name="content"></router-view>
-    </div>
-    <div class="bottom">
-        <router-view name="bottom"></router-view>
-    </div>
-</div>
-```
+<div>  
+    <router-view></router-view>  
+</div>  
+```  
 
-Named view containers usually need to work in conjunction with the `components` field in the route configuration. When multiple view components are defined in the route settings, these components can be rendered in their respective view containers according to the route matching.
+### Named View Containers  
 
-### Events [updated]
-
-The view container provides an `updated` event, which is triggered and executed after the view component is loaded and inserted into the view container.
+A page can have multiple view containers. To specify which component should be rendered in which container, we use the `name` attribute to associate the view container with its corresponding component.  
 
 ```html
-<template>
-    <router-view @updated="handleUpdated"></router-view>
-</template>
+<div>  
+    <div class="top">  
+        <router-view name="top"></router-view>  
+    </div>  
+    <div class="content">  
+        <router-view name="content"></router-view>  
+    </div>  
+    <div class="bottom">  
+        <router-view name="bottom"></router-view>  
+    </div>  
+</div>  
+```  
 
-<script>
-    import {Component} from "@joker.front/core";
-    import {RouterViewUpdatedEventData} from "@joker.front/router";
+Named view containers typically work in conjunction with the `components` field in the route configuration. When multiple view components are defined in the routing settings, these components can be rendered in their respective view containers based on route matching.  
 
-    export class extends Component{
-        handleUpdated(e:VNode.Event<RouterViewUpdatedEventData>){
-            //TODO: e.data
-        }
-    }
-</script>
-```
+### Events [updated]  
 
-The `RouterViewUpdatedEventData` as the parameter type of the **updated** event includes:
-
-| Attribute Name | Description                                                                                           | Type                                  |
-| -------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| deep           | The current level of the view container. For details, refer to [Nested Routes](/router/nested-routes) | number                                |
-| isLeaf         | Whether it is a leaf container. For details, refer to [Nested Routes](/router/nested-routes)          | boolean                               |
-| keepAlive      | Whether to preserve the state                                                                         | boolean                               |
-| component      | The component instance loaded in the current view container                                           | [Component](/base/component-property) |
-| currentRoute   | The current route information                                                                         | RouteLocation                         |
-| routeRecord    | The currently matched route record                                                                    | RouteRecord                           |
-
-### Passing of Blocks to be Rendered
-
-As a component, `<router-view>` also supports passing blocks to be rendered.
+The view container provides an `updated` event, which is triggered after the view component has finished loading and is mounted into the view container.  
 
 ```html
-<template>
-    <router-view>
-        <p>I am the template of the block to be rendered</p>
-    </router-view>
-</template>
-```
+<template>  
+    <router-view @updated="handleUpdated"></router-view>  
+</template>  
 
-As can be seen from the above example, we will pass the [section](/base/template-section) in `router-view` to the loaded component and let the rendering component perform the corresponding rendering.
+<script>  
+    import {Component} from "@joker.front/core";  
+    import {RouterViewUpdatedEventData} from "@joker.front/router";  
+
+    export class extends Component{  
+        handleUpdated(e:VNode.Event<RouterViewUpdatedEventData>){  
+            //TODO: e.data  
+        }  
+    }  
+</script>  
+```  
+
+Here, `RouterViewUpdatedEventData` serves as the parameter type for the **updated** event, which includes:  
+
+| Property     | Description                                                                 | Type                                  |  
+| ------------ | -------------------------------------------------------------------------- | ------------------------------------- |  
+| deep         | The current view container hierarchy (see [Nested Routes](/router/nested-routes)) | number                                |  
+| isLeaf       | Whether it's a leaf container (see [Nested Routes](/router/nested-routes))  | boolean                               |  
+| keepAlive    | Whether to maintain state                                                  | boolean                               |  
+| component    | The currently mounted component instance                                   | [Component](/base/component-property) |  
+| currentRoute | Current route information                                                  | RouteLocation                         |  
+| routeRecord  | Matched route record                                                       | RouteRecord                           |  
+
+### Slot Rendering  
+
+`<router-view>` as a component also supports slot content passing.  
+
+```html
+<template>  
+    <router-view>  
+        <p>I am the slot template to be rendered</p>  
+    </router-view>  
+</template>  
+```  
+
+The example above shows that the [section](/base/template-section) inside `router-view` will be passed to the mounted component, which then handles the corresponding rendering logic.

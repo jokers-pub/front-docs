@@ -1,12 +1,12 @@
-## Overview of Joker Component Styles
+## Joker Component Styling Overview
 
-This chapter mainly introduces the rendering styles of the component template. We can use the `style` tag to add styles to the template.
+This section introduces the rendering styles for component templates. We can use the `style` tag to add styles to template rendering.
 
-### Overview
+### Overview 
 
-The `style` tag supports three types of style languages. By default, it is `css`, and in addition, it also includes `scss` and `less`. We can switch the style language by configuring the `lang` attribute of the `style` tag (after switching, the Joker Front Tools VSCODE extension will also automatically switch the corresponding style highlighting and code-checking mechanisms). Now, let's take a look at an example:
+The style tag supports three styling languages by default: `css`, along with `scss` and `less`. We can switch between styling languages by configuring the **lang** attribute of the style tag (after switching, the Joker Front Tools VSCode extension will automatically apply the corresponding syntax highlighting and code inspection). Let's look at an example:
 
-```html
+```html  
 <style lang="scss">
     div {
         span {
@@ -16,9 +16,9 @@ The `style` tag supports three types of style languages. By default, it is `css`
 </style>
 ```
 
-### Style Scope
+### Scoped Styles
 
-In addition to the `lang` attribute, the `style` tag also provides the `scoped` style. When the `<style>` tag has the `scoped` attribute, its CSS will only affect the elements of the current component, which is similar to the style encapsulation in Shadow DOM. There are some precautions when using it, but the advantage is that no polyfill is required. Its implementation method is through PostCSS to transform the following content:
+In addition to the lang attribute, the style tag also provides the `scoped` attribute. When a <style> tag has the scoped attribute, its CSS will only affect elements within the current component, similar to style encapsulation in Shadow DOM. There are a few caveats when using it, but the benefit is that it requires no polyfill. The implementation works via PostCSS to transform the following:  
 
 ```html
 <template>
@@ -36,7 +36,7 @@ Into:
 ```html
 <template>
     <div class="example" data-scoped-981d2c8a>Hello</div>
-</template>
+</template>  
 <style>
     .example[data-scoped-981d2c8a] {
         color: red;
@@ -44,28 +44,28 @@ Into:
 </style>
 ```
 
-Using the style scope can effectively isolate the styles between components.
+Scoped styles effectively isolate styles between components.
 
-### Style Penetration
+### Style Deep Penetration  
 
-After using `scoped`, the styles of the parent component will not penetrate into the child component. However, the root node of the child component will be affected by both the scoped styles of the parent component and the scoped styles of the child component. This design allows the parent component to adjust the style of the root element of its child component from a layout perspective.
+With scoped enabled, parent component styles won't propagate into child components. However, a child component's root node will be affected by both the parent's scoped styles and its own scoped styles. This design allows parents to adjust child root element styles from a layout perspective.
 
-Of course, in some specific scenarios where we need to change the style of a child component with `scoped` from the parent node, we can use `:deep()` to penetrate the style and achieve the style change of the child component. For example:
+For certain use cases where a parent needs to modify styles of a child component with scoped, we can use `:deep()` to penetrate styles and alter child component styles. For example:  
 
 ```html
 <style scoped>
     .a :deep(.b) {
-        /*... */
+        /* ... */  
     }
 </style>
 ```
 
-The above code will be compiled into:
+The above code will be compiled into:  
 
 ```css
-.a[data-scoped-981d2c8a].b {
-    /*... */
+.a[data-scoped-981d2c8a] .b {
+    /* ... */
 }
 ```
 
-We often use style penetration to control the styles of child components. Of course, we can also use style penetration in the child component to change the style of the **block template of the parent container**.
+We frequently use style deep penetration to control child component styling. It can also be used in child components to modify **parent container block template** styles.

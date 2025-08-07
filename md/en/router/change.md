@@ -1,134 +1,134 @@
-## Route Navigation
+## Route Navigation  
 
-This section mainly introduces how to perform route navigation and how to pass route parameters.
+This section mainly introduces how to perform route navigation and pass route parameters.  
 
-### Native Navigation
+### Native Navigation  
 
-We can directly achieve route navigation by leveraging the **href** attribute of the `a` tag. Taking the `Hash` mode as an example:
+We can use the **href** attribute of the `<a>` tag to achieve direct route navigation. Taking `Hash` mode as an example:  
 
-!!!demo1!!!
+!!!demo1!!!  
 
-### RouteLocationRaw [Type]
+### RouteLocationRaw [Type]  
 
-In addition to the native link-based navigation, we also provide navigation methods such as `push` and `replace`. When navigating via JavaScript methods, a parameter of type `RouteLocationRaw` must be passed as the target information for navigation. Let's first introduce the property specifications of this type.
+In addition to native link navigation, we also provide methods like `push` and `replace` for programmatic navigation. These JavaScript-based navigation methods require passing a `RouteLocationRaw` type parameter as the target information for navigation. First, let's clarify the property specifications of this type.  
 
-```ts
-type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNameRaw;
-```
+```ts  
+type RouteLocationRaw = string | RouteLocationPathRaw | RouteLocationNameRaw;  
+```  
 
-Next, we'll use the `push` method as an example to introduce the usage types of this parameter.
+Next, we'll use the `push` method as an example to illustrate the usage of this parameter.  
 
-1. string
+1. **String**  
 
-We can directly set it to a string-based address. In the `hash` mode, the `#` can be omitted.
+We can directly pass a string representing the target address. In `Hash` mode, the `#` symbol can be omitted.  
 
-```ts
-push("router/init");
-```
+```ts  
+push("router/init");  
+```  
 
-2. RouteLocationPathRaw [path Mode]
+2. **RouteLocationPathRaw [Path Mode]**  
 
-Navigate in the `path` mode and support various functional configurations.
+Navigation in `path` mode supports various functional configurations.  
 
-```ts
-push({
-    path: "router/init",
-    query: {
-        role: "manager"
-    },
-    refresh: true
-    //...
-});
-```
+```ts  
+push({  
+    path: "router/init",  
+    query: {  
+        role: "manager"  
+    },  
+    refresh: true  
+    //...  
+});  
+```  
 
-The complete properties of this type:
+The complete properties of this type:  
 
-| Property Name | Description                                                                                    | Type         |
-| ------------- | ---------------------------------------------------------------------------------------------- | ------------ |
-| path          | Navigation address                                                                             | string       |
-| replace       | Whether not to record this route in history                                                    | boolean      |
-| force         | Force navigation, generally used for forced refreshing of the same address                     | boolean      |
-| refresh       | Refresh the cache. When the page has `keepalive`, the cache can be refreshed via this property | boolean      |
-| state         | Route state data                                                                               | HistoryState |
-| hash          | Use `hash` for parameter configuration in the `HTML History` mode                              | string       |
-| query         | URL Query parameter passing                                                                    | object       |
+| Property  | Description                                                  | Type         |  
+| --------- | ------------------------------------------------------------ | ------------ |  
+| path      | Target navigation address                                    | string       |  
+| replace   | Whether to skip recording this route in history              | boolean      |  
+| force     | Force navigation, usually used for refreshing the same address | boolean      |  
+| refresh   | Refresh cache—useful when pages have `keepalive` enabled     | boolean      |  
+| state     | Route state data                                             | HistoryState |  
+| hash      | Used for `HTML History Mode` to configure hash parameters    | string       |  
+| query     | URL Query parameters                                         | object       |  
 
-3. RouteLocationNameRaw [name Mode]
+3. **RouteLocationNameRaw [Name Mode]**  
 
-Navigate in the `name` mode and support various functional configurations. For knowledge related to `name`, please refer to the `name` property in [Register Routes](/router/registry).
+Navigation in `name` mode supports various functional configurations. For details about the `name` attribute, refer to the [Route Registration](/router/registry) section.  
 
-```ts
-push({
-    name: "userlist",
-    query: {
-        role: "manager"
-    },
-    refresh: true
-    //...
-});
-```
+```ts  
+push({  
+    name: "userlist",  
+    query: {  
+        role: "manager"  
+    },  
+    refresh: true  
+    //...  
+});  
+```  
 
-The complete properties of this type:
+The complete properties of this type:  
 
-| Property Name | Description                                                                                    | Type         |
-| ------------- | ---------------------------------------------------------------------------------------------- | ------------ |
-| name          | Target route name [named route]                                                                | string       |
-| params        | Route parameters                                                                               | object       |
-| replace       | Whether not to record this route in history                                                    | boolean      |
-| force         | Force navigation, generally used for forced refreshing of the same address                     | boolean      |
-| refresh       | Refresh the cache. When the page has `keepalive`, the cache can be refreshed via this property | boolean      |
-| state         | Route state data                                                                               | HistoryState |
-| hash          | Use `hash` for parameter configuration in the `HTML History` mode                              | string       |
-| query         | URL Query parameter passing                                                                    | object       |
+| Property  | Description                                                  | Type         |  
+| --------- | ------------------------------------------------------------ | ------------ |  
+| name      | Target route name (named route)                              | string       |  
+| params    | Route parameters                                             | object       |  
+| replace   | Whether to skip recording this route in history              | boolean      |  
+| force     | Force navigation, usually used for refreshing the same address | boolean      |  
+| refresh   | Refresh cache—useful when pages have `keepalive` enabled     | boolean      |  
+| state     | Route state data                                             | HistoryState |  
+| hash      | Used for `HTML History Mode` to configure hash parameters    | string       |  
+| query     | URL Query parameters                                         | object       |  
 
-> It's worth noting that only in the `name` mode is it **allowed** to pass `params`. In the `path` mode, `params` will be used to parse dynamic parameters based on the current **path**.
+> Note: Only the `name` mode **allows** passing `params`. In `path` mode, `params` are resolved based on the dynamic parameters in the current **path**.  
 
-### push
+### push  
 
-Navigate to an address. Internally, it calls `history.pushState` to effectively change the URL.
+Navigates to a specified address. Internally, it uses `history.pushState` to efficiently update the URL.  
 
-!!!demo2!!!
+!!!demo2!!!  
 
-The `push` method supports one parameter of type `RouteLocationRaw`.
+The `push` method accepts one parameter of type `RouteLocationRaw`.  
 
-### replace
+### replace  
 
-Similar to the `push` method, it uses `history.replaceState` to change the browser's URL, but it doesn't create a new entry in the history list. Instead, it replaces the current entry. This means that when the user clicks the back button, they won't return to the previous state but directly to the initial state.
+Similar to `push`, it uses `history.replaceState` to update the browser URL. However, it does not create a new history entry; instead, it replaces the current entry. This means that when users click the back button, they won't return to the previous state but will instead go back to the initial state.  
 
-!!!demo3!!!
+!!!demo3!!!  
 
-The `replace` method ignores the history of the current address. It supports one parameter of type `RouteLocationRaw`.
+The `replace` method disregards the current address in history. It accepts one parameter of type `RouteLocationRaw`.  
 
-### go
+### go  
 
-A navigation method that supports forward and backward navigation.
+A navigation method that supports forward and backward jumps.  
 
-```ts
-import { router } from "@joker.front/router";
+```ts  
+import { router } from "@joker.front/router";  
 
-router.go(1);
+router.go(1);   // Forward  
 
-router.go(-1);
-```
+router.go(-1);  // Backward  
+```  
 
-It supports an integer-type parameter. A positive number means navigating backward, and a negative number means navigating forward.
+It accepts an integer parameter—positive for forward navigation, negative for backward navigation.  
 
-### back
+### back  
 
-Navigate back to the previous level.
+Navigates back to the previous page.  
 
-```ts
-import { router } from "@joker.front/router";
+```ts  
+import { router } from "@joker.front/router";  
 
-router.back();
-```
+router.back();  
+```  
 
-### forward
+### forward  
 
-Navigate forward, which only takes effect when there is navigation history to return to.
+Navigates forward, but only if there is forward history available.  
 
-```ts
-import { router } from "@joker.front/router";
+```ts  
+import { router } from "@joker.front/router";  
 
-router.forward();
+router.forward();  
 ```

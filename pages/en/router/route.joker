@@ -1,54 +1,54 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Route Information</h2>
+        <h2>Routing Information</h2>
         <p>
-            This chapter mainly introduces how to obtain the current route information and what attributes are included in the route information.
+            This section primarily introduces how we obtain current routing information and the attributes contained within the routing information.
         </p>
         <h3>How to Use</h3>
         <p>
-            We can obtain the
+            We can retrieve the
             <strong>route</strong>
-            object from the initialized instance of Joker Router or the
+            object either during Joker Router initialization or via the
             <code>router</code>
-            . This object represents our current route information.
+            instance. This object represents our current routing information.
         </p>
         <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
 
-// Get the route
+// Get the route object
 router.route;
 </code></pre>
         <h3>How to Monitor Route Changes</h3>
         <p>
-            It's worth noting that the
+            It’s important to note that the
             <code>router.route</code>
             object is a
-            <code>ShallowObserver data shallow proxy hijacking</code>
-            object. If you're not familiar with this feature, you can learn about it in
+            <strong>Shallow Observer data shallow proxy</strong>
+            object. If you're unfamiliar with this feature, you can learn more in the
             <a href="/base/observer" target="_blank">Data Proxy</a>
-            .
+            section.
         </p>
         <p>
-            Since this object is reactive data, we can determine the current route change by
+            Since this object is reactive, we can detect route changes by
             <a href="/base/watcher" target="_blank">subscribing</a>
-            to the data change.
+            to data updates.
         </p>
         <pre><code class="language-ts">new Watcher(
     () =&gt; router.route.value,
     () =&gt; {
-        // The route has changed
+        // Route changed
     }
 );
 </code></pre>
         <h3>Attribute List</h3>
         <p>
-            The following is the data list of
+            Below is the data structure of the
             <code>route</code>
-            :
+            object:
         </p>
         <table class="mkd-table">
             <thead>
                 <tr>
-                    <th>Attribute Name</th>
+                    <th>Attribute</th>
                     <th>Description</th>
                     <th>Type</th>
                 </tr>
@@ -59,32 +59,32 @@ router.route;
                     <td>
                         The
                         <code>name</code>
-                        value of the named route
+                        value of a named route
                     </td>
                     <td>string / symbol</td>
                 </tr>
                 <tr>
                     <td>path</td>
                     <td>
-                        The final accessed address (corresponding to the
+                        The final accessed path (corresponding to the
                         <code>path</code>
-                        in the router configuration. The difference is that this value does not contain dynamic parameters and is a decompiled string)
+                        in router configuration, excluding dynamic parameters)
                     </td>
                     <td>string</td>
                 </tr>
                 <tr>
                     <td>fullPath</td>
-                    <td>The complete accessed address</td>
+                    <td>The complete accessed path</td>
                     <td>string</td>
                 </tr>
                 <tr>
                     <td>query</td>
-                    <td>URL Query parameters</td>
+                    <td>URL query parameters</td>
                     <td>object</td>
                 </tr>
                 <tr>
                     <td>hash</td>
-                    <td>The browser hash value</td>
+                    <td>Browser hash value</td>
                     <td>string</td>
                 </tr>
                 <tr>
@@ -94,36 +94,36 @@ router.route;
                 </tr>
                 <tr>
                     <td>meta</td>
-                    <td>Route data metadata, used to store some static values of the current route entry</td>
+                    <td>Route metadata, used to store static values associated with the current route</td>
                     <td>object</td>
                 </tr>
                 <tr>
                     <td>redirectedFrom</td>
-                    <td>The source of the redirection</td>
+                    <td>Redirect source</td>
                     <td>RouteLocationBase/undefined</td>
                 </tr>
                 <tr>
                     <td>matched</td>
-                    <td>The collection of route records matched by the current address</td>
+                    <td>The collection of matched route records for the current path</td>
                     <td>RouteRecord[]</td>
                 </tr>
             </tbody>
         </table>
         <h3>matched [Matched Route Collection]</h3>
         <p>
-            To understand the concept of
+            To fully understand the
             <code>matched</code>
-            in-depth, we need to explore its principle carefully. Next, I'll explain the working mechanism of
+            concept, let’s delve into its underlying principles. The following example will explain how
             <code>matched</code>
-            in detail through a specific example.
+            works in detail.
         </p>
-        <p>When we have a nested route scenario, for example:</p>
+        <p>Consider a scenario with nested routes:</p>
         <pre><code class="language-ts">new Router({
     routes: [
         {
             path: &quot;/base&quot;,
             component: ChildrenLayout,
-            children: [
+            childrens: [
                 { path: &quot;page1&quot;, component: () =&gt; import(&quot;./page1.joker&quot;) },
                 { path: &quot;page2&quot;, component: () =&gt; import(&quot;./page2.joker&quot;) }
             ]
@@ -132,27 +132,27 @@ router.route;
 });
 </code></pre>
         <p>
-            When we access
+            When accessing
             <code>/base/page1</code>
             , the
             <code>matched</code>
-            of the current route will contain two records, which are:
+            array of the current route will contain two entries:
         </p>
         <pre><code class="language-ts">[
     {
         path: &quot;/base&quot;
-        //...
+        // ...
     },
     {
         path: &quot;page1&quot;
-        //...
+        // ...
     }
 ];
 </code></pre>
         <p>
-            From this example, we can see that
+            This example demonstrates that
             <code>matched</code>
-            stores all the route entry records matched by the current route and records them in order according to the hierarchy.
+            stores all matched route records in hierarchical order.
         </p>
         <BottomNav />
     </div>

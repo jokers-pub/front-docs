@@ -1,70 +1,70 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Route Events/States</h2>
+        <h2>Routing Events/States</h2>
         <p>
-            This section mainly explores the events involved in the route navigation process and their applications. Leveraging these events can help us achieve various complex functions and optimizations.
+            This chapter primarily discusses the events involved in routing navigation and their applications, leveraging these events enables the implementation of various complex functionalities and optimizations.
         </p>
-        <h3>isReady [Route Initialization Completed]</h3>
+        <h3>isReady [Routing Initialization Complete]</h3>
         <p>
-            During route initialization,
+            During routing initialization,
             <code>Joker Core</code>
-            initializes the view based on the current address and completes the first-time route loading.
+            performs view initialization based on the current address and completes the initial routing load.
         </p>
         <p>
             The
             <code>isReady</code>
-            method not only indicates the completion of class instantiation but also represents the success or failure of a route loading. Only after the route has completed its first-time loading can we consider the page route to be ready.
+            method not only indicates the completion of a class instantiation but also signifies the success or failure of an initial routing load. Only after the initial routing load is complete can the page routing be considered ready.
         </p>
-        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;  
 
-let appRouter = new Router({
-    //...
-});
+let appRouter = new Router({  
+    //...  
+});  
 
-appRouter.isReady().then(() =&gt; {
-    //TODO:
-});
+appRouter.isReady().then(() =&gt; {  
+    //TODO:  
+});  
 </code></pre>
         <p>
             The
             <code>isReady</code>
             function returns a
             <strong>Promise</strong>
-            object, allowing us to use the
+            object, allowing us to listen for the initial successful routing load via the
             <code>then</code>
-            method to listen for the successful first-time loading of the page route and the
+            method and handle the initial routing load failure using the
             <code>catch</code>
-            method to handle the failure of the first-time route loading.
+            method.
         </p>
-        <h3>errorCallbacks [Exception Handling]</h3>
+        <h3>errorCallbacks [Error Handling]</h3>
         <p>
             You can use the
             <code>errorCallbacks</code>
-            collection to listen for global route exceptions anywhere.
+            collection to monitor global routing exceptions from anywhere.
         </p>
-        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;  
 
-let appRouter = new Router({
-    //...
-});
+let appRouter = new Router({  
+    //...  
+});  
 
-appRouter.errorCallbacks.add((err, to, from) =&gt; {
-    //err: Error data
-    //to: Target address
-    //from: Source address
-});
+appRouter.errorCallbacks.add((err, to, from) =&gt; {  
+    //err: Error data  
+    //to: Target address  
+    //from: Source address  
+});  
 </code></pre>
         <p>
-            In addition to the native error type, the
+            The
             <code>err</code>
-            parameter may also be the internal
+            parameter may include not only native error types but also the internal
             <code>NavigationError</code>
-            error type. This type includes the following properties:
+            error type, which contains the following properties:
         </p>
         <table class="mkd-table">
             <thead>
                 <tr>
-                    <th>Property Name</th>
+                    <th>Property</th>
                     <th>Description</th>
                     <th>Type</th>
                 </tr>
@@ -73,7 +73,7 @@ appRouter.errorCallbacks.add((err, to, from) =&gt; {
                 <tr>
                     <td>type</td>
                     <td>Error type</td>
-                    <td>NavigationErrorTypes (The enum information will be introduced later)</td>
+                    <td>NavigationErrorTypes (introducted later)</td>
                 </tr>
                 <tr>
                     <td>from</td>
@@ -82,7 +82,7 @@ appRouter.errorCallbacks.add((err, to, from) =&gt; {
                 </tr>
                 <tr>
                     <td>to</td>
-                    <td>Target address RouteLocation</td>
+                    <td>Target address</td>
                     <td>RouteLocationRaw</td>
                 </tr>
             </tbody>
@@ -90,89 +90,89 @@ appRouter.errorCallbacks.add((err, to, from) =&gt; {
         <p>
             The
             <code>NavigationErrorTypes</code>
-            enum includes:
+            enumeration includes:
         </p>
-        <pre><code class="language-ts">export const enum NavigationErrorTypes {
-    /**Redirect */
-    REDIRECT,
-    /**Aborted */
-    ABORTED,
-    /**Cancelled */
-    CANCELLED,
-    /**Multiple identical ones without a clear target */
-    SAME,
-    /** No route record was matched */
-    MATCHER_NOT_FOUND = 4
-}
+        <pre><code class="language-ts">export const enum NavigationErrorTypes {  
+    /** Redirect **/  
+    REDIRECT,  
+    /** Aborted */  
+    ABORTED,  
+    /** Cancelled */  
+    CANCELLED,  
+    /** Multiple matches, no explicit target */  
+    SAME,  
+    /** No matching route record found */  
+    MATCHER_NOT_FOUND = 4  
+}  
 </code></pre>
         <p>
-            We can use the
+            You can use the
             <code>isNavigationError</code>
-            function provided by Joker Router to determine whether the current error object is of the
+            function provided by Joker Router to determine if the current error object is of type
             <code>NavigationError</code>
-            type.
+            .
         </p>
-        <pre><code class="language-ts">import { isNavigationError } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { isNavigationError } from &quot;@joker.front/router&quot;;  
 
-isNavigationError(err); //====&gt; true/false
+isNavigationError(err); //====&gt; true/false  
 </code></pre>
         <h3>beforeRouteCallbacks [Before Navigation]</h3>
         <p>
-            We can add listener functions to
+            You can add listener functions to
             <code>beforeRouteCallbacks</code>
-            to implement aspect-oriented event listening before route navigation. In this way, we can perform some custom operations before route navigation, such as verifying user permissions and logging. This method allows us to control the route navigation process more flexibly and optimize the performance and user experience of the application.
+            to implement aspect-oriented event monitoring before routing navigation. This allows you to perform custom operations such as user permission validation, logging, etc., before navigation occurs. This method provides greater flexibility in controlling the navigation process while optimizing application performance and user experience.
         </p>
-        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;  
 
-let appRouter = new Router({
-    //...
-});
+let appRouter = new Router({  
+    //...  
+});  
 
-appRouter.beforeRouteCallbacks.add((to, from, next) =&gt; {
-    //to: Target address
-    //from: Source address
-    //next: Execute the next step
-});
+appRouter.beforeRouteCallbacks.add((to, from, next) =&gt; {  
+    //to: Target address  
+    //from: Source address  
+    //next: Proceed to the next step  
+});  
 </code></pre>
         <p>
             For the event type
             <code>NavigationCallback</code>
-            , please refer to the summary at the end of this chapter.
+            , refer to the summary at the end of this chapter.
         </p>
         <h3>afterRouteCallbacks [After Navigation]</h3>
         <p>
             <code>afterRouteCallbacks</code>
-            serves as a hook after navigation. Its usage is basically the same as that of
+            serves as a post-navigation HOOK, with a usage pattern similar to
             <code>beforeRouteCallbacks</code>
-            , except that it doesn't have the
+            , except it lacks the
             <strong>next</strong>
             /
             <strong>return</strong>
-            mechanism to control the flow.
+            flow-control mechanism.
         </p>
-        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { Router } from &quot;@joker.front/router&quot;;  
 
-let appRouter = new Router({
-    //...
-});
+let appRouter = new Router({  
+    //...  
+});  
 
-appRouter.beforeRouteCallbacks.add((to, from, err) =&gt; {
-    //to: Target address
-    //from: Source address
-    //err: Error information. Refer to the error type description in errorCallbacks.
-});
+appRouter.beforeRouteCallbacks.add((to, from, err) =&gt; {  
+    //to: Target address  
+    //from: Source address  
+    //err: Error details (see error type explanation in `errorCallbacks`)  
+});  
 </code></pre>
         <blockquote>
             <p>
                 It should be noted that
                 <code>afterRouteCallbacks</code>
-                , as an aspect-oriented event for route navigation, reflects the state of route switching, not the completion state of page loading. If you want to listen for the completion state of the
-                <code>view container</code>
-                loading, you can use the
+                reflects the state of routing navigation, not the completion state of page loading. To monitor the loading completion state of the
+                <strong>view container</strong>
+                , use the
                 <strong>updated</strong>
                 event in
                 <a href="/router/router-view" target="_blank">router-view</a>
-                to listen.
+                .
             </p>
         </blockquote>
         <h3>beforeEnter / beforeLeave</h3>
@@ -180,78 +180,79 @@ appRouter.beforeRouteCallbacks.add((to, from, err) =&gt; {
             <code>beforeEnter</code>
             and
             <code>beforeLeave</code>
-            are two lifecycle hooks in Joker Router. They are specific configuration properties for route records. Different from global event listening, these hooks allow us to manage aspect-oriented events at the route-level for specific route items. By configuring these lifecycle hooks for individual routes, we can control the entry and exit behaviors of routes more precisely.
+            are lifecycle hooks in Joker Router, specific to route record configuration properties. Unlike global event listeners, these hooks allow for aspect-oriented event management at the individual route level. By configuring these lifecycle hooks for specific routes, we gain finer-grained control over navigation entry and exit behaviors.
         </p>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            path: &quot;/home/index&quot;,
-            component: IndexComponent,
-            beforeEnter: (to, from, next) =&gt; {
-                //TODO:
-            }
-        },
-        {
-            path: &quot;/home/index&quot;,
-            component: IndexComponent,
-            beforeEnter: [
-                (to, from) =&gt; {
-                    //TODO：
-                },
-                (to, from) =&gt; {
-                    //TODO：
-                }
-            ]
-        }
-    ]
-});
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            path: &quot;/home/index&quot;,  
+            component: IndexComponent,  
+            beforeEnter: (to, from, next) =&gt; {  
+                //TODO:  
+            }  
+        },  
+        {  
+            path: &quot;/home/index&quot;,  
+            component: IndexComponent,  
+            beforeEnter: [  
+                (to, from) =&gt; {  
+                    //TODO：  
+                },  
+                (to, from) =&gt; {  
+                    //TODO：  
+                }  
+            ]  
+        }  
+    ]  
+});  
 </code></pre>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            path: &quot;/home/index&quot;,
-            component: IndexComponent,
-            beforeLeave: (to, from, next) =&gt; {
-                //TODO:
-            }
-        },
-        {
-            path: &quot;/home/index&quot;,
-            component: IndexComponent,
-            beforeLeave: [
-                (to, from) =&gt; {
-                    //TODO：
-                },
-                (to, from) =&gt; {
-                    //TODO：
-                }
-            ]
-        }
-    ]
-});
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            path: &quot;/home/index&quot;,  
+            component: IndexComponent,  
+            beforeLeave: (to, from, next) =&gt; {  
+                //TODO:  
+            }  
+        },  
+        {  
+            path: &quot;/home/index&quot;,  
+            component: IndexComponent,  
+            beforeLeave: [  
+                (to, from) =&gt; {  
+                    //TODO：  
+                },  
+                (to, from) =&gt; {  
+                    //TODO：  
+                }  
+            ]  
+        }  
+    ]  
+});  
 </code></pre>
         <p>
             For the event type
             <code>NavigationCallback</code>
-            , please refer to the summary at the end of this chapter.
+            , refer to the summary at the end of this chapter.
         </p>
         <h3>NavigationCallback [Event Handling Type]</h3>
         <p>
+            As an event handling type,
             <code>NavigationCallback</code>
-            is the event-handling type. Both global events and route-item lifecycle events follow the specifications of this type.
+            adheres to a standardized specification, whether used in global events or route-specific lifecycle events.
         </p>
-        <pre><code class="language-ts">export type NavigationCallback = (
-    to: RouteLocation,
-    from: RouteLocation,
-    next: NavigationNextCallback
-) =&gt; Awaitable&lt;NavigationCallbackReturn&gt;;
+        <pre><code class="language-ts">export type NavigationCallback = (  
+    to: RouteLocation,  
+    from: RouteLocation,  
+    next: NavigationNextCallback  
+) =&gt; Awaitable&lt;NavigationCallbackReturn&gt;;  
 
-export type NavigationCallbackReturn = Error | RouteLocationRaw | boolean | undefined | void;
+export type NavigationCallbackReturn = Error | RouteLocationRaw | boolean | undefined | void;  
 </code></pre>
         <p>
-            This class returns a
+            This type returns a
             <code>Promise</code>
-            to achieve asynchronous processing.
+            to enable asynchronous processing.
         </p>
         <p>Parameter descriptions:</p>
         <table class="mkd-table">
@@ -275,32 +276,34 @@ export type NavigationCallbackReturn = Error | RouteLocationRaw | boolean | unde
                 </tr>
                 <tr>
                     <td>next</td>
-                    <td>Next operation, optional</td>
+                    <td>Next step (optional)</td>
                     <td>Function</td>
                 </tr>
             </tbody>
         </table>
         <p>
-            Since we can register multiple aspect-oriented events to
+            Since multiple aspect-oriented events can be registered with
             <code>beforeRouteCallbacks</code>
-            , we must control their flow order and state. We can decide whether to proceed to the next step through the method return value or the
+            , we must control their execution order and flow. This can be achieved via method return values or the
             <code>next</code>
-            function. Let's take a detailed look:
+            function to determine whether to proceed. Below is a detailed explanation:
         </p>
         <ol>
             <li>
-                The first way is to decide the flow through the method return value. In this mode, the third parameter
+                <strong>First Approach: Control flow via method return values</strong>
+                <br />
+                This approach does not require invoking the third parameter,
                 <code>next</code>
-                doesn't need to be executed.
+                .
             </li>
         </ol>
-        <pre><code class="language-ts">appRouter.beforeRouteCallbacks.add((to, from) =&gt; {
-    //return false;
-    //return new Error('Custom exception')
-    //return 'Redirect address';
-    //return {path:'Redirect address'}
-    //return true/undefined/... Execute the next hook
-});
+        <pre><code class="language-ts">appRouter.beforeRouteCallbacks.add((to, from) =&gt; {  
+    //return false;  
+    //return new Error('Custom error')  
+    //return 'Redirect address';  
+    //return {path: 'Redirect address'}  
+    //return true/undefined/... (proceed to next HOOK)  
+});  
 </code></pre>
         <p>Return type descriptions:</p>
         <table class="mkd-table">
@@ -314,70 +317,75 @@ export type NavigationCallbackReturn = Error | RouteLocationRaw | boolean | unde
                 <tr>
                     <td>false</td>
                     <td>
-                        Terminate the current navigation and trigger an error of type
+                        Terminates the current navigation and triggers a
                         <code>NavigationErrorTypes.ABORTED</code>
+                        error
                     </td>
                 </tr>
                 <tr>
                     <td>Error</td>
-                    <td>Terminate the current navigation and trigger an Error event</td>
+                    <td>Terminates the current navigation and triggers the Error event</td>
                 </tr>
                 <tr>
                     <td>string</td>
                     <td>
-                        Redirect to the specified address and trigger an error of type
+                        Redirects to the specified address and triggers a
                         <code>NavigationErrorTypes.REDIRECT</code>
+                        error
                     </td>
                 </tr>
                 <tr>
                     <td>object</td>
                     <td>
-                        Redirect to the specified address. The type conforms to
+                        Redirects to the specified address (must conform to
                         <a href="/router/change" target="_blank">RouteLocationRaw</a>
-                        , and trigger an error of type
+                        ) and triggers a
                         <code>NavigationErrorTypes.REDIRECT</code>
+                        error
                     </td>
                 </tr>
                 <tr>
-                    <td>Others</td>
-                    <td>Execute the next hook</td>
+                    <td>Other</td>
+                    <td>Proceeds to the next HOOK</td>
                 </tr>
             </tbody>
         </table>
         <ol start="2">
             <li>
-                The second way is to decide whether to proceed through the
-                <code>next</code>
-                function.
+                <strong>
+                    Second Approach: Control flow via the
+                    <code>next</code>
+                    function
+                </strong>
             </li>
         </ol>
-        <pre><code class="language-ts">appRouter.beforeRouteCallbacks.add((to, from, next) =&gt; {
-    //next(false);
-    //next(new Error('Custom exception'))
-    //next('Redirect address');
-    //next({path:'Redirect address'})
-    //next(true/undefined/...) Execute the next hook
-});
+        <pre><code class="language-ts">appRouter.beforeRouteCallbacks.add((to, from, next) =&gt; {  
+    //next(false);  
+    //next(new Error('Custom error'))  
+    //next('Redirect address');  
+    //next({path: 'Redirect address'})  
+    //next(true/undefined/...) (proceed to next HOOK)  
+});  
 </code></pre>
         <p>
-            It is recommended not to include other business code after the
+            It is recommended to avoid including additional business logic after executing the
             <code>next</code>
-            method is executed to ensure the clarity and focus of the process.
+            method to maintain clarity and focus.
         </p>
         <blockquote>
             <p>
-                Through the above two ways of controlling the flow, we can see that
+                From the above two flow-control methods, we see that
                 <code>beforeRouteCallbacks</code>
-                consists of multiple processing hooks. We will execute them one by one in order. Only after all hooks have been executed in sequence (without termination/redirection) will the current route navigation start.
+                consists of multiple processing HOOKs executed sequentially. Navigation proceeds only after all HOOKs complete (without termination/redirection).
             </p>
         </blockquote>
         <blockquote>
             <p>
-                We allow the use of
+                The use of
                 <code>async/await</code>
-                syntax in the method to handle
+                syntax within methods is supported for handling
                 <code>Promise</code>
-                and implement asynchronous business logic.
+                -based asynchronous logic.
             </p>
         </blockquote>
         <BottomNav />

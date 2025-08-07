@@ -2,340 +2,355 @@
     <div ref="container" class="joker-demo-container">
         <h2>Parameter Passing</h2>
         <p>
-            During route navigation, there are many ways to pass parameters. This chapter mainly introduces these parameter-passing methods and their usage scenarios.
+            During route navigation, there are multiple ways to pass parameters. This section mainly introduces these parameter-passing methods and their usage scenarios.
         </p>
-        <h3>Address Parameter Passing</h3>
+        <h3>URL Parameter Passing</h3>
         <p>
-            Depending on the
-            <code>History mode</code>
-            , the types of parameters passed in address parameter passing vary. They all include the following ways of passing values:
+            The types of parameter passing vary depending on the
+            <strong>History Mode</strong>
+            used. They include the following methods:
         </p>
         <ul>
             <li>
-                <code>URL Query</code>
-                : For example: example.html?param=1&amp;name=zohar.
+                <strong>URL Query</strong>
+                : For example,
+                <code>example.html?param=1&amp;name=zohar</code>
+                .
             </li>
             <li>
-                <code>Path Address Variable Matching</code>
-                : According to the variable configuration of
+                <strong>Path Variable Matching</strong>
+                : Based on the
                 <strong>path</strong>
-                , it is parsed into parameters at runtime and stored in the current route information.
+                variable configuration, parameters are parsed at runtime and stored in the current route information.
             </li>
             <li>
-                <code>Router props</code>
-                : Component parameters can be configured when registering the route, and passed to the page instance when the route is loaded.
+                <strong>Router Props</strong>
+                : Parameters can be configured when registering a route and passed to the page component instance when the route loads.
             </li>
             <li>
-                <code>Navigation Passing Values (name mode)</code>
-                : When navigating through methods such as
+                <strong>Navigation Parameter Passing (Name Mode)</strong>
+                : When navigating using methods like
                 <strong>push</strong>
-                /
+                or
                 <strong>replace</strong>
-                ,
+                , parameters can be passed via
                 <code>params</code>
-                can be passed through the name-based navigation mode.
+                in name-based navigation mode.
             </li>
         </ul>
         <blockquote>
             <p>
-                In the
-                <code>HTML History</code>
-                mode, since route matching is no longer based on
+                Note: In
+                <strong>HTML History</strong>
+                mode, since route matching no longer relies on
                 <strong>hash</strong>
-                , we can use
+                , the
                 <code>Hash</code>
-                to pass parameters in this mode.
+                method can also be used to pass parameters.
             </p>
         </blockquote>
-        <p>Next, we will introduce the usage and usage scenarios of these value-passing methods respectively.</p>
+        <p>Next, we will introduce the usage and scenarios of these parameter-passing methods in detail.</p>
         <h3>URL Query</h3>
         <p>
-            In the
-            <code>URL Query</code>
-            mode, we can use
-            <strong>?</strong>
-            to define page parameters. However, this mode may cause the page to refresh. We generally use this mode in scenarios such as multi-page applications or shared pages.
+            The
+            <strong>URL Query</strong>
+            mode allows parameters to be defined using
+            <code>?</code>
+            . However, this method may cause page refreshes. It is typically used in multi-page applications or scenarios like shareable pages.
         </p>
-        <h4>Parameter Passing</h4>
-        <p>Using the link mode:</p>
-        <pre><code class="language-html">&lt;a href=&quot;/index.html?user=zohar&amp;age=30&quot;&gt;DEMO&lt;/a&gt;
+        <h4>Passing Parameters</h4>
+        <p>Using a link:</p>
+        <pre><code class="language-html">&lt;a href=&quot;/index.html?user=zohar&amp;age=30&quot;&gt;DEMO&lt;/a&gt;  
 </code></pre>
-        <p>Using the method for navigation:</p>
-        <pre><code class="language-ts">push({
-    path: &quot;user/info&quot;,
-    query: {
-        user: &quot;zohar&quot;,
-        age: 30
-    }
-});
+        <p>Using method-based navigation:</p>
+        <pre><code class="language-ts">push({  
+    path: &quot;user/info&quot;,  
+    query: {  
+        user: &quot;zohar&quot;,  
+        age: 30  
+    }  
+});  
 </code></pre>
-        <h4>Parameter Retrieval</h4>
+        <h4>Retrieving Parameters</h4>
         <p>
-            We can obtain the Query parameters of the current route through the
+            Parameters can be retrieved using the
             <code>window.location.search</code>
-            property in JS. Of course, we can also obtain the parameters through
-            <code>router.route.value</code>
-            , where
+            property in JavaScript. Alternatively, they can be obtained via
+            <code>router.route.value.query</code>
+            . Further details about
             <code>router.route</code>
-            will be introduced in detail in the
+            are covered in the
             <a href="/router/route" target="_blank">Route Information</a>
-            chapter later.
+            section.
         </p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-// Obtain query parameters
-router.route.value.query;
+// Get query parameters  
+router.route.value.query;  
 </code></pre>
-        <h3>Address Variable Matching [path]</h3>
+        <h3>Path Variable Matching [path]</h3>
         <p>
-            Before understanding address variable matching, please first learn the
+            Before understanding path variable matching, please review the
             <code>path</code>
-            property rules in
+            attribute rules in
             <a href="/router/registry" target="_blank">Route Registration</a>
-            . This section mainly introduces how to use the
+            . This section focuses on how to use
             <strong>path</strong>
             rules to pass parameters.
         </p>
-        <h4>Parameter Passing</h4>
-        <p>For example, we configure a path with dynamic parameters:</p>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            path: &quot;/user/:userName/:userAge&quot;
-        }
-    ]
-});
-</code></pre>
-        <h4>Parameter Retrieval</h4>
+        <h4>Passing Parameters</h4>
         <p>
-            When we access the route
-            <code>#/user/zohar/30</code>
-            , we can obtain the parameters through
-            <code>router.route.value</code>
-            , where
-            <code>router.route</code>
-            will be introduced in detail in the
-            <a href="/router/route" target="_blank">Route Information</a>
-            chapter later.
+            Example of a dynamic parameterized
+            <code>path</code>
+            :
         </p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            path: &quot;/user/:userName/:userAge&quot;  
+        }  
+    ]  
+});  
+</code></pre>
+        <h4>Retrieving Parameters</h4>
+        <p>
+            When accessing the route
+            <code>#/user/zohar/30</code>
+            , parameters can be retrieved via
+            <code>router.route.value.params</code>
+            . More details about
+            <code>router.route</code>
+            are covered in the
+            <a href="/router/route" target="_blank">Route Information</a>
+            section.
+        </p>
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-// Obtain query parameters
-router.route.value.params;
+// Get route parameters  
+router.route.value.params;  
 
-/**
- * =====&gt; Output
- * {
- *     userName: 'zohar',
- *     userAge: '30'
- * }
- */
+/**  
+ * ====&gt; Output:  
+ * {  
+ *     userName: 'zohar',  
+ *     userAge: '30'  
+ * }  
+ */  
 </code></pre>
         <p>
-            It should be noted that since we are parsing parameters from the address (string), the type of all parameters should be
+            Note: Since parameters are parsed from the URL (a string), all parameter types will be
             <code>string</code>
             .
         </p>
-        <h3>Router props [Component Parameter Passing]</h3>
+        <h3>Router Props [Component Parameter Passing]</h3>
         <p>
             The
-            <code>Router props</code>
-            component-parameter-passing method is different from other methods. We pass the parameters to the component to be loaded as
+            <strong>Router Props</strong>
+            method differs from others as it passes parameters as
             <code>props</code>
+            to the target component.
+        </p>
+        <h4>Passing Parameters</h4>
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            path: &quot;/user/info&quot;,  
+            component: userComponent,  
+            props: {  
+                userName: &quot;zohar&quot;,  
+                userAge: 30  
+            }  
+        }  
+    ]  
+});  
+</code></pre>
+        <h4>Retrieving Parameters</h4>
+        <p>
+            Parameters can be retrieved via props in the rendered component
+            <strong>userComponent</strong>
             .
         </p>
-        <h4>Parameter Passing</h4>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            path: &quot;/user/info&quot;,
-            component: userComponent,
-            props: {
-                userName: &quot;zohar&quot;,
-                userAge: 30
-            }
-        }
-    ]
-});
-</code></pre>
-        <h4>Parameter Retrieval</h4>
-        <p>
-            We can obtain the parameters through props in the component
-            <strong>userComponent</strong>
-            rendered by this route.
-        </p>
-        <pre><code class="language-html">&lt;template&gt;
-    &lt;ul&gt;
-        &lt;li&gt;Name: @props.userName&lt;/li&gt;
-        &lt;li&gt;Age: @props.userAge&lt;/li&gt;
-    &lt;/ul&gt;
-&lt;/template&gt;
+        <pre><code class="language-html">&lt;template&gt;  
+    &lt;ul&gt;  
+        &lt;li&gt;Name: @props.userName&lt;/li&gt;  
+        &lt;li&gt;Age: @props.userAge&lt;/li&gt;  
+    &lt;/ul&gt;  
+&lt;/template&gt;  
 
-&lt;script&gt;
-    import { Component } from &quot;@joker.front/core&quot;;
+&lt;script&gt;  
+    import { Component } from &quot;@joker.front/core&quot;;  
 
-    export class extends Component&lt;{userName: string, userAge: number}&gt;{
-        //...
-    }
-&lt;/script&gt;
+    export class extends Component&lt;{ userName: string, userAge: number }&gt; {  
+        //...  
+    }  
+&lt;/script&gt;  
 </code></pre>
         <blockquote>
             <p>
-                This way of passing parameters is not shown in the
+                This method does not expose parameters in the
                 <strong>URL</strong>
-                , allowing us to handle it as an internal logic parameter. For example, in the following scenario, we have two routes pointing to the same page view component. In this case, we can use
+                , allowing them to be used as internal logic parameters. For example, when two routes point to the same view component,
                 <code>props</code>
-                to provide different parameters for these two routes, enabling different logical processing in the same view component.
+                can provide different parameters to the same component for distinct logic handling.
             </p>
         </blockquote>
-        <h3>Navigation Passing Values (name mode)</h3>
+        <h3>Navigation Parameter Passing (Name Mode)</h3>
         <p>
-            This mode uses the name-based mode in the router to pass parameters. The principle is basically the same as that of
-            <code>path</code>
-            dynamic parameters.
+            This method uses the
+            <strong>name</strong>
+            mode of the router to pass parameters, working similarly to dynamic
+            <strong>path</strong>
+            parameters.
         </p>
-        <h4>Parameter Passing</h4>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            name: &quot;userInfo&quot;,
-            path: &quot;/user/:userName/:userAge&quot;
-            //...
-        }
-    ]
-});
+        <h4>Passing Parameters</h4>
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            name: &quot;userInfo&quot;,  
+            path: &quot;/user/:userName/:userAge&quot;,  
+            //...  
+        }  
+    ]  
+});  
 </code></pre>
-        <p>When we use the push mode for navigation:</p>
-        <pre><code class="language-ts">push({
-    name: &quot;userInfo&quot;,
-    params: {
-        userName: &quot;zohar&quot;,
-        userAge: 30
-    }
-});
-</code></pre>
-        <h4>Parameter Retrieval</h4>
         <p>
-            When we access the route
+            When navigating using
+            <code>push</code>
+            :
+        </p>
+        <pre><code class="language-ts">push({  
+    name: &quot;userInfo&quot;,  
+    params: {  
+        userName: &quot;zohar&quot;,  
+        userAge: 30  
+    }  
+});  
+</code></pre>
+        <h4>Retrieving Parameters</h4>
+        <p>
+            When accessing
             <code>#/user/zohar/30</code>
-            , we can obtain the parameters through
-            <code>router.route.value</code>
-            , where
+            , parameters can be retrieved via
+            <code>router.route.value.params</code>
+            . More details about
             <code>router.route</code>
-            will be introduced in detail in the
+            are covered in the
             <a href="/router/route" target="_blank">Route Information</a>
-            chapter later.
+            section.
         </p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-// Obtain query parameters
-router.route.value.params;
+// Get route parameters  
+router.route.value.params;  
 
-/**
- * =====&gt; Output
- * {
- *     userName: 'zohar',
- *     userAge: '30'
- * }
- */
+/**  
+ * ====&gt; Output:  
+ * {  
+ *     userName: 'zohar',  
+ *     userAge: '30'  
+ * }  
+ */  
 </code></pre>
         <p>
-            It should be noted that when the
-            <code>path</code>
-            of a route item has a dynamic parameter configuration and also has a
-            <code>name</code>
-            property, Joker Router will try to
-            <code>reverse-translate</code>
-            the passed parameters into a
-            <code>string</code>
-            according to the
-            <code>path</code>
-            configuration in the underlying logic and display it as a new route in the browser address.
+            <strong>Important Note:</strong>
         </p>
-        <p>
-            If the parameters do not match or there are no dynamic parameters, the navigation will be carried out according to the path after the attempted conversion.
-        </p>
-        <p>For example:</p>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            name: &quot;userInfo&quot;,
-            path: &quot;/user/:userName/:userAge?&quot;
-            //...
-        },
-        {
-            name: &quot;userInfo2&quot;,
-            path: &quot;/user&quot;
-            //...
-        }
-    ]
-});
+        <ul>
+            <li>
+                If a route has dynamic parameters in its
+                <code>path</code>
+                and a
+                <code>name</code>
+                property, Joker Router attempts to
+                <strong>reverse-translate</strong>
+                the passed parameters into a
+                <code>string</code>
+                based on the
+                <code>path</code>
+                configuration, updating the browser URL accordingly.
+            </li>
+            <li>If parameters do not match or no dynamic parameters exist, navigation uses the converted path.</li>
+        </ul>
+        <p>Example:</p>
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            name: &quot;userInfo&quot;,  
+            path: &quot;/user/:userName/:userAge?&quot;,  
+            //...  
+        },  
+        {  
+            name: &quot;userInfo2&quot;,  
+            path: &quot;/user&quot;,  
+            //...  
+        }  
+    ]  
+});  
 
-push({
-    name: &quot;userInfo&quot;,
-    params: {
-        userName: &quot;zohar&quot;,
-        userAge: 30
-    }
-});
-// The URL will be changed to ==&gt; #/user/zohar/30 after navigation
+push({  
+    name: &quot;userInfo&quot;,  
+    params: {  
+        userName: &quot;zohar&quot;,  
+        userAge: 30  
+    }  
+});  
+// URL becomes ==&gt; #/user/zohar/30  
 
-push({
-    name: &quot;userInfo&quot;,
-    params: {
-        userName: &quot;zohar&quot;
-    }
-});
-// The URL will be changed to ==&gt; #/user/zohar after navigation
+push({  
+    name: &quot;userInfo&quot;,  
+    params: {  
+        userName: &quot;zohar&quot;  
+    }  
+});  
+// URL becomes ==&gt; #/user/zohar  
 
-push({
-    name: &quot;userInfo2&quot;,
-    params: {
-        userName: &quot;zohar&quot;,
-        userAge: 30
-    }
-});
-// The URL will still be ==&gt; #/user after navigation, and the parameters are passed implicitly
+push({  
+    name: &quot;userInfo2&quot;,  
+    params: {  
+        userName: &quot;zohar&quot;,  
+        userAge: 30  
+    }  
+});  
+// URL remains ==&gt; #/user (parameters passed implicitly)  
 </code></pre>
-        <h3>meta [Route Data Meta]</h3>
+        <h3>Meta [Route Metadata]</h3>
         <p>
-            We can configure some static values by setting
+            Static values can be configured in a route's
             <code>meta</code>
-            in the route item.
+            property.
         </p>
-        <h4>Parameter Passing</h4>
-        <pre><code class="language-ts">new Router({
-    routes: [
-        {
-            path: &quot;/user/userList&quot;,
-            meta: {
-                env: &quot;dev&quot;
-            }
-        }
-    ]
-});
+        <h4>Passing Parameters</h4>
+        <pre><code class="language-ts">new Router({  
+    routes: [  
+        {  
+            path: &quot;/user/userList&quot;,  
+            meta: {  
+                env: &quot;dev&quot;  
+            }  
+        }  
+    ]  
+});  
 </code></pre>
-        <h4>Parameter Retrieval</h4>
+        <h4>Retrieving Parameters</h4>
         <p>
-            We can obtain the parameters through
-            <code>router.route.value</code>
-            , where
+            Parameters can be retrieved via
+            <code>router.route.value.meta</code>
+            . More details about
             <code>router.route</code>
-            will be introduced in detail in the
+            are covered in the
             <a href="/router/route" target="_blank">Route Information</a>
-            chapter later.
+            section.
         </p>
-        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;
+        <pre><code class="language-ts">import { router } from &quot;@joker.front/router&quot;;  
 
-// Obtain query parameters
-router.route.value.meta;
+// Get meta parameters  
+router.route.value.meta;  
 
-/**
- * =====&gt; Output
- * {
- *     env: 'dev'
- * }
- */
+/**  
+ * ====&gt; Output:  
+ * {  
+ *     env: 'dev'  
+ * }  
+ */  
 </code></pre>
         <BottomNav />
     </div>

@@ -1,23 +1,25 @@
 <template>
     <div ref="container" class="joker-demo-container">
-        <h2>Overview of Joker Components</h2>
+        <h2>Joker Component Overview</h2>
         <p>
-            Components are the main building blocks of Joker applications. Each component consists of the following parts:
+            Components are the primary building blocks of Joker applications. Each component consists of the following parts:
         </p>
         <ul>
-            <li>An HTML template for declaring the content to be rendered on the page.</li>
-            <li>A TypeScript class for defining behavior.</li>
-            <li>CSS styles to be applied to the template.</li>
+            <li>An HTML template that declares what to render on the page</li>
+            <li>A TypeScript class that defines the behavior</li>
+            <li>CSS styles to be applied to the template</li>
         </ul>
         <p>This topic describes how to create and configure Joker components.</p>
         <p>
-            First, we need to clarify a concept that everything is a component. Whether it is a page or a functional component, it exists as a component, only the loading timing of the components is different.
+            First, we need to establish a core concept:
+            <strong>everything is a component</strong>
+            . Whether it's a page or a functional module, everything exists as a component - the only difference is the mounting timing.
         </p>
         <h3>Creating a Component</h3>
         <p>
-            Create a file with the suffix
+            Create a file with the
             <code>.joker</code>
-            . This file is a Single-File Component (SFC) of a component.
+            extension. This file represents a Single File Component (SFC).
         </p>
         <p>A component is composed of three parts:</p>
         <ol>
@@ -31,59 +33,47 @@
             </li>
             <li>
                 <code>&lt;style&gt;</code>
-                component style
+                component styles
             </li>
         </ol>
         <p>Let's introduce these three parts separately.</p>
-        <h3>template Template</h3>
+        <h3>Template</h3>
         <p>
-            Create a
-            <code>template</code>
-            tag within the
+            Inside the
             <code>.joker</code>
-            file (the
-            <code>template</code>
-            needs to be a top-level tag), which means the content within this tag is our render template. Please see the following example:
+            file, create a template tag (it must be a top-level tag) to define the rendering template. See the example below:
         </p>
         <pre><code class="language-html">&lt;template&gt;
-    &lt;div&gt;I'm the content&lt;/div&gt;
+    &lt;div&gt;I am content&lt;/div&gt;
 &lt;/template&gt;
 </code></pre>
         <p>
-            In the template,
+            In templates,
             <code>
                 @("@")
             </code>
-            represents a dynamic directive. Joker provides a rich set of dynamic directives. You can learn about them through the subsequent tutorial
+            represents dynamic directives. Joker provides a rich set of dynamic directives. You can learn more through the tutorial
             <a href="/base/template" target="_blank">here</a>
             .
         </p>
-        <h3>script Logic Script</h3>
+        <h3>Script Logic</h3>
         <p>
-            Create a
-            <code>script</code>
-            tag within the
+            Inside the
             <code>.joker</code>
-            file (the
-            <code>script</code>
-            needs to be a top-level tag), which means the content within this tag is our logic script. Please see the following example:
+            file, create a script tag (it must be a top-level tag) to define the component logic. See the example below:
         </p>
         <pre><code class="language-html">&lt;script&gt;
     import { Component } from &quot;@joker.front/core&quot;;
     export default class extends Component {
-        // The content here is our component logic
+        // Here lies our component logic  
     }
 &lt;/script&gt;
 </code></pre>
-        <h3>style Component Style</h3>
+        <h3>Component Styles</h3>
         <p>
-            Create a
-            <code>style</code>
-            tag within the
+            Inside the
             <code>.joker</code>
-            file (the
-            <code>style</code>
-            needs to be a top-level tag), which means the content within this tag is our component style. Please see the following example:
+            file, create a style tag (it must be a top-level tag) to define the component styles. See the example below:
         </p>
         <pre><code class="language-html">&lt;style&gt;
     .div {
@@ -92,9 +82,9 @@
 &lt;/style&gt;
 </code></pre>
         <p>
-            Through the
-            <code>JOKER FRONT TOOLS</code>
-            extension in VSCODE, you can quickly create basic component code. This extension provides default quick template hints to help you write Joker components more efficiently.
+            Using the
+            <strong>JOKER FRONT TOOLS</strong>
+            extension in VSCode, you can quickly generate basic component code snippets. This extension provides template hints by default to help you write Joker components more efficiently.
         </p>
         <p>
             <img src="/base/vscode-template.png" alt="vscode-template" />

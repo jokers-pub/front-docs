@@ -2,17 +2,15 @@
     <div ref="container" class="joker-demo-container">
         <h2>List Rendering</h2>
         <p>
-            This chapter will introduce how to implement loop logic in
+            This section will cover how to implement loop logic in
             <code>template</code>
             .
         </p>
-        <h3>for(let.. of..)</h3>
+        <h3>for(let .. of ..)</h3>
         <p>
             Using
             <code>for..of</code>
-            can quickly iterate over all items/values in an array/object. Its usage is the same as that in
-            <code>javascript</code>
-            .
+            allows quick iteration over all items/values in an array/object. Its usage is consistent with JavaScript.
         </p>
         <pre><code class="language-xml">&lt;template&gt;
     @for(let item of list){
@@ -29,10 +27,10 @@
     export default class extends Component {
         list = [&quot;Zhang San&quot;, &quot;Li Si&quot;, &quot;Wang Wu&quot;,...];
 
-        obj = {
-            userName: &quot;Zhang San&quot;,
-            age: 12
-        };
+        obj:{
+            userName:&quot;Zhang San&quot;,
+            age:12
+        }
     }
 &lt;/script&gt;
 </code></pre>
@@ -74,15 +72,14 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            From the above example, we can see that we defined an
-            <strong>item</strong>
-            property using
+            From the example above, we can see that we can use
             <code>let</code>
-            in the
+            to define an
+            <strong>item</strong>
+            property within the for loop, which only takes effect within the
             <code>for</code>
-            loop, and this property only takes effect within the
-            <code>for</code>
-            code block. Let's take a look at the scope of the value definition through the following example:
+            code block.
+            Let's look at the scope of value definitions through the following example:
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo2)">
             <pre><code class="language-html">&lt;template&gt;
@@ -108,20 +105,20 @@ export default class extends Component {
 &lt;/script&gt;
 </code></pre>
         </DemoContainer>
-        <h3>for(let.. in..)</h3>
+        <h3>fro(let .. in ..)</h3>
         <p>
             The
             <code>for..in</code>
-            directive is also a loop command. Different from
+            directive is another looping command. Unlike
             <code>for..of</code>
-            , the value it loops through is the
-            <strong>index</strong>
-            of the object/array.
+            , it iterates over the
+            <strong>indexes</strong>
+            of objects/arrays.
         </p>
         <p>
-            Let's look at the output of
+            Using the same example, let's see the output of
             <strong>for...in</strong>
-            with the same example:
+            :
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo3)">
             <pre><code class="language-html">&lt;template&gt;
@@ -161,13 +158,13 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>
-            As can be seen from the above example, the
+            As shown in the example, the
             <strong>item</strong>
             defined by
             <code>let</code>
-            represents the index of each item during the loop. Of course, we can also use expressions in the
+            represents the index of each item during iteration. Of course, we can also use expressions within the
             <code>for</code>
-            code block to complete the output of values:
+            code block to output values:
         </p>
         <pre><code class="language-xml">@for(let item in list){
     &lt;p&gt;@list[item]&lt;/p&gt;
@@ -212,27 +209,21 @@ export default class extends Component {
 &lt;/script&gt;
 </code></pre>
         </DemoContainer>
-        <p>In addition to the above usage, we also provide a full-parameter loop syntax:</p>
+        <p>In addition to the above usage, we also provide a full-parameter looping syntax:</p>
         <pre><code class="language-xml">@for(let (index,item) in list){
     &lt;p&gt;@list[index] ===  @item&lt;/p&gt;
 }
 </code></pre>
         <p>
-            When the value of
-            <code>let</code>
-            follows the
+            When the let value follows the
             <code>()</code>
-            rule, we will use the first parameter as the index key
-            <code>index</code>
-            and the second parameter as the item key
-            <code>item</code>
-            . This usage can only be used in the
+            pattern, the first parameter is treated as the index key, and the second parameter as the item key. This syntax can only be used in the
             <code>for in</code>
             directive.
         </p>
         <h3>for(..;..;..)</h3>
         <p>
-            In addition to the above two commonly used loop directives, we also provide a custom expression loop, allowing us to use custom expressions to achieve more complex loops.
+            Besides the two commonly used loop directives mentioned above, we also provide custom expression loops, allowing more complex iterations.
         </p>
         <p>For example:</p>
         <DemoContainer component="@(components.DEMO_JOKER_demo5)">
@@ -264,20 +255,14 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <blockquote>
-            <p>
-                We do not recommend modifying values that are not defined in the
-                <code>for</code>
-                loop within the expression.
-            </p>
+            <p>We do not recommend modifying values defined outside the for loop within expressions.</p>
         </blockquote>
-        <h3>In-depth Principles</h3>
-        <p>
-            In this section, we mainly introduce the data response mechanism and node update mechanism of the loop list.
-        </p>
+        <h3>Deep Dive into Principles</h3>
+        <p>This section mainly explains the data reactivity mechanism and node updating mechanism in list rendering.</p>
         <p>
             Since
             <code>Joker</code>
-            's data response processing associates the VNode with the actual output node, changes in data will immediately trigger corresponding node change operations. When we modify a certain item, only one DOM node change operation will be executed in the end, and nodes without changes will not perform update operations.
+            's data reactivity processing associates VNodes with actual output nodes, data changes will immediately trigger corresponding node updates. When modifying a specific item, only the DOM node changes related to that modification will be executed, while unchanged nodes will not undergo updates.
         </p>
         <DemoContainer component="@(components.DEMO_JOKER_demo6)">
             <pre><code class="language-html">&lt;template&gt;
@@ -330,26 +315,26 @@ button {
 </code></pre>
         </DemoContainer>
         <p>
-            When the list/object to be looped changes
-            <code>(in length)</code>
-            , we will perform a loop from the beginning. The
+            When the list/object to be iterated changes
+            <strong>in length</strong>
+            , we perform a full iteration from the beginning. The looped
             <strong>values</strong>
-            of the loop will be compared with the rendered values. If they are the same, no
+            are compared with previously rendered values. If they are the same, no
             <strong>Render</strong>
-            rendering will be performed. If there are changes, the rendered nodes will be destroyed and new nodes will be inserted. After the loop ends, the
-            <strong>extra nodes (when the current rendering length is less than the original length)</strong>
-            will be destroyed. It should be noted that the
+            operation is performed. If there are changes, the rendered nodes are destroyed and new nodes are inserted. After the loop completes, any
+            <strong>excess nodes (when the current rendering length is less than the original length)</strong>
+            are destroyed. It's worth noting that the
             <strong>value comparison</strong>
-            we mentioned earlier refers to the
-            <strong>value of the expression</strong>
-            rather than the virtual DOM comparison, and its response speed is extremely fast.
+            mentioned here refers to
+            <strong>expression values</strong>
+            rather than virtual DOM comparison, making this process extremely fast.
         </p>
         <p>
-            When changing the value of a property in the list/object
-            <strong>(not a length change)</strong>
-            , it will not trigger the list loop, and the rendering node of the
-            <strong>list item</strong>
-            will be directly updated.
+            When modifying property values within a list/object
+            <strong>without changing its length</strong>
+            , the list iteration is not triggered. Instead, only the rendering nodes of the
+            <strong>list items</strong>
+            are updated directly.
         </p>
         <BottomNav />
     </div>
