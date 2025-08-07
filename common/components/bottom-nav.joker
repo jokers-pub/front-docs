@@ -51,7 +51,7 @@ export default class extends Component {
 
         this.setMenus(moduleName);
 
-        let index = this.menus.findIndex((n) => n.path === this.currentRoutePath);
+        let index = this.menus.findIndex((n) => n.path === router.route.value.fullPath);
         if (index > -1) {
             this.prev = this.menus[index - 1];
         }
