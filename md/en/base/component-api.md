@@ -6,9 +6,9 @@ Our component development is based on the powerful library `@('@joker.front/core
 
 Before reading this chapter, you should have a basic understanding of the following:
 
--   [TypeScript Programming](https://www.typescriptlang.org/)
+- [TypeScript Programming](https://www.typescriptlang.org/)
 
--   [Joker Lifecycle](/base/component-lifecycle)
+- [Joker Lifecycle](/base/component-lifecycle)
 
 The built-in functions provided by Joker Core all start with `$`, such as: `this.$watch`, `$destroy`, etc. Next, let’s explore the built-in functions Joker Core provides:
 
@@ -27,8 +27,8 @@ Try the example below to experience component mounting.
 
 !!!demo1!!!
 
-| Parameter | Description                                               | Type                     | Default |
-| --------- | --------------------------------------------------------- | ------------------------ | ------- |
+| Parameter | Description                                                              | Type                    | Default |
+| --------- | ------------------------------------------------------------------------ | ----------------------- | ------- |
 | root      | The container to mount to, often used to mount a component to a DOM node | Element/VNode.Component | -       |
 
 > The `root` parameter is optional. If no `root` is provided, the component's template will not render, allowing it to exist purely as a functional mixin for additional features.
@@ -59,8 +59,8 @@ See how the destroy method works for state-preserving components:
 
 > Detailed explanations on data state preservation will be covered in a later chapter.
 
-| Parameter | Description          | Type    | Default |
-| --------- | -------------------- | ------- | ------- |
+| Parameter | Description              | Type    | Default |
+| --------- | ------------------------ | ------- | ------- |
 | force     | Whether to force destroy | Boolean | -       |
 
 ### Data Observation ($watch)
@@ -90,11 +90,11 @@ export default class extends Component {
 
 > Note: The observed value must be a hijacked property (properties within `model` are hijacked via `observer` operations before component mounting). For details on data hijacking, see [here](/base/observer).
 
-| Parameter       | Description                              | Type                                                                 | Default |
-| --------------- | ---------------------------------------- | -------------------------------------------------------------------- | ------- |
-| express        | The expression to observe                | Function                                                             | -       |
-| callback       | Callback function upon change            | `(nv:any, ov:any)=>void` (receives **new value** and **old value**) | -       |
-| forceCallBack | Force callback even if value is unchanged | boolean (optional, default `false`)                                  | -       |
+| Parameter     | Description                               | Type                                                                | Default |
+| ------------- | ----------------------------------------- | ------------------------------------------------------------------- | ------- |
+| express       | The expression to observe                 | Function                                                            | -       |
+| callback      | Callback function upon change             | `(nv:any, ov:any)=>void` (receives **new value** and **old value**) | -       |
+| forceCallBack | Force callback even if value is unchanged | boolean (optional, default `false`)                                 | -       |
 
 ### Node Observation ($watchNode)
 
@@ -124,10 +124,10 @@ export default class extends Component {
 
 !!!demo5!!!
 
-| Parameter  | Description                 | Type                                                                                                                                                                        | Default |
-| ---------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| ref       | The ref of the node to observe | string                                                                                                                                                                      | -       |
-| callback  | Change callback function    | `(node:VNode.Node, type:"append"/"remove"/"update"/"after-enter"/"after-leave", property:string)=>void` (receives **changed node**, **change type**, and **property value**) | -       |
+| Parameter | Description                    | Type                                                                                                                                                                         | Default |
+| --------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| ref       | The ref of the node to observe | string                                                                                                                                                                       | -       |
+| callback  | Change callback function       | `(node:VNode.Node, type:"append"/"remove"/"update"/"after-enter"/"after-leave", property:string)=>void` (receives **changed node**, **change type**, and **property value**) | -       |
 
 ### Fetching Nodes ($getRef and $getRefs)
 
@@ -142,7 +142,7 @@ this.$getRefs("ref");
 ```
 
 `$getRef` returns at most one VNode (the first match if multiple refs exist).  
-`$getRefs` returns all nodes with the specified `ref` in the current component (excluding child components).  
+`$getRefs` returns all nodes with the specified `ref` in the current component (excluding child components).
 
 Both methods support TypeScript generics (default `VNode.Node`), allowing specific node type returns for easier manipulation.
 
@@ -150,7 +150,7 @@ Both methods support TypeScript generics (default `VNode.Node`), allowing specif
 
 | Parameter | Description    | Type   | Default |
 | --------- | -------------- | ------ | ------- |
-| ref      | Node ref value | string | -       |
+| ref       | Node ref value | string | -       |
 
 > Additionally, the `$refs` property holds all marked nodes (see [`$refs` in Component Properties](/base/component-property)).
 
@@ -192,7 +192,7 @@ this.childrenComponent.$on("*", (e: VNode.Event) => {
         // Handle click
         return;
     }
-    
+
     // Forward other events
     this.$trigger(e.eventName, e.data, e);
 });
@@ -202,14 +202,14 @@ this.childrenComponent.$on("*", (e: VNode.Event) => {
 
 `VNode.Event` is the event handling object in Joker, passed as the first parameter in `$on`. Its `data` property holds event parameters (generics-supported).
 
-| Property         | Description                          | Type                 |
-| ---------------- | ------------------------------------ | -------------------- |
-| eventName       | Event name                          | string               |
-| event           | Native event object (platform-specific) | any                  |
-| target          | Target VNode of the event            | VNode.Node / undefined |
-| data            | Event parameters                     | `<T>`: any           |
-| preventDefault  | Prevents default event behavior       | function             |
-| stopPropagation | Stops event propagation               | function             |
+| Property        | Description                             | Type                   |
+| --------------- | --------------------------------------- | ---------------------- |
+| eventName       | Event name                              | string                 |
+| event           | Native event object (platform-specific) | any                    |
+| target          | Target VNode of the event               | VNode.Node / undefined |
+| data            | Event parameters                        | `<T>`: any             |
+| preventDefault  | Prevents default event behavior         | function               |
+| stopPropagation | Stops event propagation                 | function               |
 
 ### Event Registration and Triggering
 
@@ -320,7 +320,7 @@ this.$nodeTransition(
 );
 ```
 
-Example (using `@joker.front/ui` animations):
+Example (using `@('joker.front/ui')` animations):
 
 !!!demo9!!!
 

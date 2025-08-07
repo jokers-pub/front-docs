@@ -56,8 +56,7 @@
             <code>import.meta</code>
             . For backward compatibility with legacy browsers, Joker CLI provides the official
             <code>
-                @joker.front
-                /cli-plugin-legacy
+                @("@joker.front/cli-plugin-legacy")
             </code>
             plugin. For more details on production builds, refer to the relevant documentation.
         </p>

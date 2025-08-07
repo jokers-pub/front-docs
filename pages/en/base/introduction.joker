@@ -275,7 +275,7 @@ p.tip {
             <tbody>
                 <tr>
                     <td>
-                        <a href="/cli/introduction" target="_blank"><strong>@joker.front /cli</strong></a>
+                        <a href="/cli/introduction" target="_blank">@("@joker.front/cli")</a>
                     </td>
                     <td>
                         Joker’s scaffolding tool for running and building projects, utilizing
@@ -285,7 +285,7 @@ p.tip {
                 </tr>
                 <tr>
                     <td>
-                        <a href="/router/introduction" target="_blank"><strong>@joker.front /router</strong></a>
+                        <a href="/router/introduction" target="_blank">@("@joker.front/router")</a>
                     </td>
                     <td>
                         Joker’s routing library for managing page navigation, supporting features like page jumps, state passing, and keepalive.
@@ -293,7 +293,7 @@ p.tip {
                 </tr>
                 <tr>
                     <td>
-                        <a href="http://ui.jokers.pub" target="_blank"><strong>@joker.front /ui</strong></a>
+                        <a href="http://ui.jokers.pub" target="_blank">@("@joker.front/ui")</a>
                     </td>
                     <td>
                         Joker’s official PC-side component library, offering a complete set of interactive components for various business scenarios.

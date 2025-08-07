@@ -632,7 +632,7 @@ button {
         // Handle click
         return;
     }
-    
+
     // Forward other events
     this.$trigger(e.eventName, e.data, e);
 });
@@ -850,8 +850,7 @@ this.$syncProp('propsValue');
         <p>
             Example (using
             <code>
-                @joker.front
-                /ui
+                @("joker.front/ui")
             </code>
             animations):
         </p>
