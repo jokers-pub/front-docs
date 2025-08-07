@@ -231,7 +231,7 @@ export default class extends Component {
                 来进行表示。
             </p>
         </blockquote>
-        <h3>以 HTM 渲染</h3>
+        <h3>以 HTML 渲染</h3>
         <p>
             若想将字符串内容作为
             <code>HTML</code>
@@ -413,7 +413,7 @@ export default class extends Component {
             </p>
         </blockquote>
         <h3>注册全局方法</h3>
-        <p>Joker 自身已经集成了非常丰富的指令方法，当然你可以可以扩展一些全局方法，来方便项目的快速的开发。</p>
+        <p>Joker 自身已经集成了非常丰富的指令方法，当然你可以扩展一些全局方法，来方便项目的快速的开发。</p>
         <pre><code class="language-html">&lt;span&gt;合计：@Global.sum(1,2)&lt;/span&gt;
 </code></pre>
         <pre><code class="language-ts">import { registerGlobalFunction } from &quot;@joker.front/core&quot;;

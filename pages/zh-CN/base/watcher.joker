@@ -27,7 +27,7 @@ let watcher = new Watcher(ob, &quot;userName&quot;, (newValue, oldValue) =&gt; {
 ob.username = &quot;李四&quot;;
 </code></pre>
         <p>
-            我们可以可以通过自定义
+            我们可以通过自定义
             <code>Watcher</code>
             来实现对代理数据的订阅，如果使用
             <code>Watcher</code>
@@ -38,7 +38,7 @@ ob.username = &quot;李四&quot;;
             <a href="/base/component-api" target="_blank">组件</a>
             中的
             <code>$watch</code>
-            函数去实现数据订阅。使用这种方式你讲不需要考虑数据订阅的销毁，它会在组件销毁时被清理，当然你也可以在销毁前，主动去调用
+            函数去实现数据订阅。使用这种方式你不需要考虑数据订阅的销毁，它会在组件销毁时被清理，当然你也可以在销毁前，主动去调用
             <code>destroy()</code>
             销毁某个数据订阅规则。
         </p>

@@ -118,7 +118,7 @@ module.exports = {
             </li>
         </ul>
         <p>
-            当然你可以可以在 Joker CLI 提供的拆分规则之上扩展自己的逻辑，例如：我们想把
+            当然你可以在 Joker CLI 提供的拆分规则之上扩展自己的逻辑，例如：我们想把
             <code>dayjs</code>
             不合并到
             <strong>vendor</strong>

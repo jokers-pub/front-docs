@@ -76,7 +76,7 @@ let destroyEvent = userEvent.on(&quot;login&quot;, (e, userInfo) =&gt; {
                 <code>once</code>
                 来进行事件注册时，注册后会立即返回一个
                 <code>destroy销毁</code>
-                函数，可通过调用该函数来立即销毁本次注册的事件，当然你可以可以使用
+                函数，可通过调用该函数来立即销毁本次注册的事件，当然你可以使用
                 <code>off</code>
                 的方式来进行删除。
                 注册事件后，会立即返回一个销毁方法，可调用该销毁方法来注销该事件的注册。

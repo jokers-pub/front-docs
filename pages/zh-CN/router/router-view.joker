@@ -40,7 +40,7 @@
         <p>
             我们可以在一个页面中配置多个视图容器，为了明确不同容器的渲染组件，我们通过配置
             <code>name</code>
-            属性来设置该视图容器需要渲染的组件。：
+            属性来设置该视图容器需要渲染的组件。
         </p>
         <pre><code class="language-html">&lt;div&gt;
     &lt;div class=&quot;top&quot;&gt;

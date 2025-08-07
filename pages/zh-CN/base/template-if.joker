@@ -118,7 +118,7 @@ export default class extends Component {
         </DemoContainer>
         <blockquote>
             <p>
-                值的注意的是，if 判断的顺序是从上向下的，若前面的判断为 true 时，即时后面 else if 的条件也为 true，它也不会被渲染（单判断条件会执行，看后文）。
+                值的注意的是，if 判断的顺序是从上向下的，若前面的判断为 true 时，即时后面 else if 的条件也为 true，它也不会被渲染（但判断条件会执行，看后文）。
             </p>
         </blockquote>
         <p>

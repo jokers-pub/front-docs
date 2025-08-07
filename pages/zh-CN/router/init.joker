@@ -53,7 +53,7 @@ new Router({
             和
             <code>Hash history</code>
             历史模式详细内容可通过
-            <a href="/router/history-mode" target="_blank">历史记录模式</a>
+            <a href="/router/history" target="_blank">历史记录模式</a>
             去了解。
         </p>
         <h3>base [路由根]</h3>

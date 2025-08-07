@@ -637,7 +637,7 @@ if (router.route.value.meta.param === &quot;v1&quot;) {
             中的 props 进行了解。
         </p>
         <p>
-            props 属性会的配置需要根据
+            props 属性的配置需要根据
             <code>component/components</code>
             的不同而进行不同规则的配置，当我们使用
             <code>component</code>
