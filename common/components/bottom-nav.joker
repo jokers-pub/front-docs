@@ -25,7 +25,7 @@
             type="primary"
             target="_blank"
             href="https://github.com/jokers-pub/front-docs/edit/main/md/@(lang)@(currentRoutePath).md">
-            在Github上编辑此文档
+           @(lang === "zh-CN" ? "Github上编辑此文档" : "Edit this document on Github")
         </jk-link>
     </div>
 </template>
