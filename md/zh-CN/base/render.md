@@ -8,31 +8,31 @@
 
 下文中会提到`AST`和`VNode`两个关键词，我们可以在后面的章节去深入了解：
 
--   [AST](/base/ast) Joker 语法树。
+- [AST](/base/ast) Joker 语法树。
 
--   [VNode](/base/vnode) 虚拟节点树，用于将 AST 语法树按照组件数据渲染成结构化数据。
+- [VNode](/base/vnode) 虚拟节点树，用于将 AST 语法树按照组件数据渲染成结构化数据。
 
 ### 文件拆分
 
 我们在开发组件模板时，Joker 提供标准的 HTML 标签式 加 动态指令的开发规范，这些开发态的代码不会在浏览器中直接运行，浏览器不支持 Joker 提供的开发规范，当我们在运行时，我们会借助`Joker CLI`的编译将 Joker 文件进行转译，将 SFC 文件拆分为三个可被浏览器执行的文件：
 
--   `*.joker?type=script` 组件类
--   `*.joker?type=template` 组件渲染模板
--   `*,joker?type=style` 组件样式
+- `*.joker?type=script` 组件类
+- `*.joker?type=template` 组件渲染模板
+- `*,joker?type=style` 组件样式
 
 通过这三个文件来实现一个组件的运行，当然在实际的生产环境时，这三个文件会被合并压缩，只有在开发（DEV）环境时，才会出现这三种文件类型，这是因为`Joker CLI`采用的是`ES Module模块`加载机制，按需编译运行，详细内容可去 [Joker CLI](/cli) 查看。
 
 ### 渲染模板
 
-通过了解文件拆分规则，本节主要介绍下 templte 的渲染机制。
+通过了解文件拆分规则，本节主要介绍下 Template 的渲染机制。
 
 由于浏览器不识别 Joker 的语法，我们会在编译时，通过 CLI 对`template`内容进行编译转换，将其转换为 AST[]语法树，这些语法树会在组件需要装载时，通过`Parser`解析类以及当前组件的实例编译为`VNode.Node[]`虚拟 DOM 树，当构建完整个虚拟 DOM 树后，将在通过`Render`渲染类去做实际的渲染。
 
 ![render](/base/render.png)
 
--   `AST.Node[]`用于将 template 转换为可被 Joker Core 识别的数据。
+- `AST.Node[]`用于将 template 转换为可被 Joker Core 识别的数据。
 
--   `VNode.Node[]`用于存放当前渲染输出的结构化数据。
+- `VNode.Node[]`用于存放当前渲染输出的结构化数据。
 
 > Joker 文件转换为 AST.Node[]的过程只会在`DEV`、`Prod`的 CLI 过程中，实际生产构建后，产出物只有 JS 和 CSS，不再有模版解析成 AST 的过程。
 

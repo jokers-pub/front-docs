@@ -6,10 +6,10 @@
 
 部署到生产环境的构建版本假设目标浏览器能够兼容最新的 JavaScript 语言特性。Joker CLI 默认支持那些能够原生解析[ESM 脚本标签](https://caniuse.com/es6-module)、[执行 ESM 动态导入](https://caniuse.com/es6-module-dynamic-import)以及支持[import.meta](https://caniuse.com/mdn-javascript_operators_import_meta)的浏览器：
 
--   Chrome >=87
--   Firefox >=78
--   Safari >=14
--   Edge >=88
+- Chrome >=87
+- Firefox >=78
+- Safari >=14
+- Edge >=88
 
 您可以使用 [build.target](/cli/setting-build) 配置项来指定构建的目标浏览器版本，最低支持到 ES2015 标准。
 
@@ -63,10 +63,10 @@ joker build --outDir=./my-dist
 
 Joker CLI 默认提供了一套基础的拆分逻辑以及产物路径优化功能：
 
--   `node_module` 会合并成为**vendor**。
--   针对`import()`引用我们将按照引用路径去生成产物，而非全部输出到 dist 根目录。
+- `node_module` 会合并成为**vendor**。
+- 针对`import()`引用我们将按照引用路径去生成产物，而非全部输出到 dist 根目录。
 
-当然你可以可以在 Joker CLI 提供的拆分规则之上扩展自己的逻辑，例如：我们想把`dayjs`不合并到**vendor**，将它作为单独的包处理：
+当然你可以在 Joker CLI 提供的拆分规则之上扩展自己的逻辑，例如：我们想把`dayjs`不合并到**vendor**，将它作为单独的包处理：
 
 ```js
 module.exports = {

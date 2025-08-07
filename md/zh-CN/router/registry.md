@@ -432,8 +432,8 @@ new Router({
 
 通过上面例子可以看出，我们创建了一个`/user`路由，该路由下又存在两个子路由，若他们的**path**属性不是`/`开头，则按照拼接的方式进行子路由匹配规则的配置(**父路由 path/子路由 path**)。
 
--   /user/list
--   /user/info
+- /user/list
+- /user/info
 
 当子路由 **path** 规则以 **/**开头，则忽略父路由 path 配置，例如：
 
@@ -460,8 +460,8 @@ new Router({
 
 我们可以通过`component/components`这两个属性来配置当前路由需要装载的视图组件。他们两个的区别是：
 
--   `component`：当前路由只需要装载一个组件，也可以理解为布局文件中只有一个`<router-view>`标签。
--   `components`: 当前路由需要装载多个组件，布局文件中存在多个命名容器`<router-view>`。
+- `component`：当前路由只需要装载一个组件，也可以理解为布局文件中只有一个`<router-view>`标签。
+- `components`: 当前路由需要装载多个组件，布局文件中存在多个命名容器`<router-view>`。
 
 `<router-view>`，可通过查看[动态容器](/router/router-view)去学习了解。
 
@@ -507,7 +507,7 @@ new Router({
 
 `props`属性一般用作为`component/components`组件进行参数配置的，我们在**props**中配置的参数，会在组件初始化时作为 `props`进行传递，可以在[组件属性](/base/component-property)中的 props 进行了解。
 
-props 属性会的配置需要根据`component/components`的不同而进行不同规则的配置，当我们使用`component`单个组件时，我们的 props 既是组件的中的 props 的类型约束：
+props 属性的配置需要根据`component/components`的不同而进行不同规则的配置，当我们使用`component`单个组件时，我们的 props 既是组件的中的 props 的类型约束：
 
 ```ts
 new Router({
@@ -639,11 +639,11 @@ new Router({
 
 路由中的`keepalive`属性支持多种配置类型，不同的配置类型代表的含义不同（**默认 undefined**）：
 
--   `true`: 一直保持存活，可以通过[跳转](/router/change)时使用 **refresh** 属性进行缓存销毁刷新。
+- `true`: 一直保持存活，可以通过[跳转](/router/change)时使用 **refresh** 属性进行缓存销毁刷新。
 
--   `'once'`:代表只存活一次，该组件只会从缓存中渲染一次，第二次渲染时则按照新组件执行，一般适用于`高频访问+低频更新`的路由节点。
+- `'once'`:代表只存活一次，该组件只会从缓存中渲染一次，第二次渲染时则按照新组件执行，一般适用于`高频访问+低频更新`的路由节点。
 
--   `false/undefined`: 代表不做状态保持。
+- `false/undefined`: 代表不做状态保持。
 
 ```ts
 new Router({

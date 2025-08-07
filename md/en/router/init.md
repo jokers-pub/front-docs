@@ -38,7 +38,7 @@ new Router({
 });
 ```
 
-For detailed information about the `HTML history` and `Hash history` modes, please refer to [History Modes](/router/history-mode).
+For detailed information about the `HTML history` and `Hash history` modes, please refer to [History Modes](/router/history).
 
 ### base [Route Root]
 

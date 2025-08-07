@@ -8,13 +8,13 @@ When developing single-page applications (SPAs), we often encounter situations w
 
 ### How to Use
 
-We can configure the `keepalve` item of the route entry when registering the route. Setting this property to `true`/`'once'` can achieve route state preservation. Different configuration types have different meanings (**default is undefined**):
+We can configure the `keepalive` item of the route entry when registering the route. Setting this property to `true`/`'once'` can achieve route state preservation. Different configuration types have different meanings (**default is undefined**):
 
--   `true`: The component remains alive all the time. It can be destroyed and refreshed by using the **refresh** property when [navigating](/router/change).
+- `true`: The component remains alive all the time. It can be destroyed and refreshed by using the **refresh** property when [navigating](/router/change).
 
--   `'once'`: It means the component only lives once. The component will only be rendered from the cache once. The second time it is rendered, it will be executed as a new component. This is generally suitable for route nodes with `high-frequency access + low-frequency updates`.
+- `'once'`: It means the component only lives once. The component will only be rendered from the cache once. The second time it is rendered, it will be executed as a new component. This is generally suitable for route nodes with `high-frequency access + low-frequency updates`.
 
--   `false/undefined`: It means no state preservation is done.
+- `false/undefined`: It means no state preservation is done.
 
 ```ts
 new Router({

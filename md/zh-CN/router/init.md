@@ -38,7 +38,7 @@ new Router({
 });
 ```
 
-`HTML history`和`Hash history` 历史模式详细内容可通过 [历史记录模式](/router/history-mode) 去了解。
+`HTML history`和`Hash history` 历史模式详细内容可通过 [历史记录模式](/router/history) 去了解。
 
 ### base [路由根]
 

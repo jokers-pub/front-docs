@@ -8,8 +8,8 @@ AST 是 Joker 中 template 的结构化数据，它最终会结合组件实例�
 
 它的来源有两种：
 
--   通过 **单文件组件（SFC）** 中的 `<template>`标签来编写，编写规则请查看[模板](/base/template)，并通过**CLI**转换为 `AST.Node[]`。
--   通过 Core 中提供的`createText`,`createCommand`等方法使用**js**语法输出 AST.Node[]，并设置到组件 template 属性中。template 属性可查看[组件属性](/base/component-property)中的 template 属性介绍。
+- 通过 **单文件组件（SFC）** 中的 `<template>`标签来编写，编写规则请查看[模板](/base/template)，并通过**CLI**转换为 `AST.Node[]`。
+- 通过 Core 中提供的`createText`,`createCommand`等方法使用**js**语法输出 AST.Node[]，并设置到组件 template 属性中。template 属性可查看[组件属性](/base/component-property)中的 template 属性介绍。
 
 两种形式都可以输出 `AST.Node[]`，AST.Node 是 AST 的基础类模型，按照功能划分为：`Text`,`Element`,`Comment`,`Component`四种类型。其中 AST.Node 作为基础模型类，它本身具有以下属性：
 
@@ -256,7 +256,7 @@ createComponent(
 | attrs     | 标签属性 | object                                           | -      |
 | children  | 标签子集 | AST.Node[]                                       | -      |
 
-通过上面的介绍可以看出，它的作用只适用于已经明确确定的组件渲染，所以它只可以在 js 中去常见，而非在 `<template>` 中创建该类型节点。
+通过上面的介绍可以看出，它的作用只适用于已经明确确定的组件渲染，所以它只可以在 js 中去创建，而非在 `<template>` 中创建该类型节点。
 
 AST.Component 属性包括：
 

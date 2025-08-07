@@ -103,7 +103,7 @@ export default class extends Component {
 
 > 当需要渲染`@`符号时并后面会跟随字母时，可以使用`@('@(\"@\")')xxx`来进行表示。
 
-### 以 HTM 渲染
+### 以 HTML 渲染
 
 若想将字符串内容作为`HTML`进行渲染，你可以使用内部提供的`@Html('<p></p>')` API 函数去渲染。
 
@@ -211,7 +211,7 @@ export default class extends Component {
 
 ### 注册全局方法
 
-Joker 自身已经集成了非常丰富的指令方法，当然你可以可以扩展一些全局方法，来方便项目的快速的开发。
+Joker 自身已经集成了非常丰富的指令方法，当然你可以扩展一些全局方法，来方便项目的快速的开发。
 
 ```html
 <span>合计：@Global.sum(1,2)</span>

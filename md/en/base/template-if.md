@@ -37,7 +37,7 @@ else if(value === 3){
 
 !!!demo2!!!
 
-> It should be noted that the `if` judgments are made in order from top to bottom. If the previous judgment is `true`, even if the conditions of the subsequent `else if` are also `true`, it will not be rendered (the single-judgment condition will be executed, see the following text).
+> It is important to note that the order of if conditions is evaluated from top to bottom. If a preceding condition evaluates to true, subsequent else if conditions will not be executed (despite their expressions being evaluated, as discussed later), even if they would also resolve to true.
 
 Here, it should be noted that **if** and **else if** in `template` do not execute from top to bottom every time like our traditional coding operation mechanism. Although we have implemented a top-down condition operation mechanism and controlled its rendering internally, the judgment conditions in **if** and **else if** will be run and their results will be tried to be parsed every time. Therefore, the **constraint conditions should be independent rather than related** to achieve the `extreme responsive performance experience of local condition updates in else if`. Let's take a look at an example:
 
