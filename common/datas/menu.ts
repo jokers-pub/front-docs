@@ -395,7 +395,16 @@ export namespace MenuZhCN {
         {
             title: "插件",
             objectID: "4-1",
-            children: [{ objectID: "4-1-1", title: "请求", path: "/cn/requester" }]
+            description: "",
+            children: [
+                {
+                    objectID: "4-1-1",
+                    title: "请求",
+                    path: "/cn/requester",
+                    description:
+                        "Requester 是一个用于处理 HTTP 请求的类，提供了请求前置、后置和错误处理回调，支持请求缓存、超时处理、Mock 数据等功能，同时可自定义请求和响应数据的转换以及错误处理逻辑。"
+                }
+            ]
         }
     ];
 
@@ -815,7 +824,16 @@ export namespace MenuEn {
         {
             title: "Plugins",
             objectID: "4-1",
-            children: [{ objectID: "4-1-1", title: "Request", path: "/requester" }]
+            description: "",
+            children: [
+                {
+                    objectID: "4-1-1",
+                    title: "Request",
+                    path: "/requester",
+                    description:
+                        "Requester is a class designed to handle HTTP requests. It offers pre-request, post-request, and error-handling callbacks, supports features such as request caching, timeout handling, and Mock data. Additionally, it allows for customizing the transformation of request and response data, as well as the error-handling logic."
+                }
+            ]
         }
     ];
 
