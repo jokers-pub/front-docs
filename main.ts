@@ -29,5 +29,8 @@ let router = new Router({
         ...getRouters()
     ]
 });
+router.errorCallbacks.add(() => {
+    router.push({ path: "/", force: true });
+});
 
 new App().$mount(document.getElementById("app"));
