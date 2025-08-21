@@ -245,9 +245,9 @@ export default class extends Component {
 
 那我们怎么区分$root 和 $rootVNode 呢？
 
--   `$root`表示当前组件的装载容器，它是当容器被装载时（$mount）时作为参数传递并指定的，它可以是一个 HTML 的 Element，也可以是一个 VNode.Component。
+- `$root`表示当前组件的装载容器，它是当容器被装载时（$mount）时作为参数传递并指定的，它可以是一个 HTML 的 Element，也可以是一个 VNode.Component。
 
--   `$rootVNode`作为当前组件的顶级节点，它的类型一定是 VNode.Root，由于我们的渲染模板是不限制顶级标签个数的，所以必须由一个 VNode.Root 进行包裹，通过这个属性我们就提供向下查找节点等等的操作了。该属性的值会在模板渲染时才会创建，所以在`created`生命周期内无法获取到该属性的值。
+- `$rootVNode`作为当前组件的顶级节点，它的类型一定是 VNode.Root，由于我们的渲染模板是不限制顶级标签个数的，所以必须由一个 VNode.Root 进行包裹，通过这个属性我们就提供向下查找节点等等的操作了。该属性的值会在模板渲染时才会创建，所以在`created`生命周期内无法获取到该属性的值。
 
 例如，我们要获取当前组件所有 Element 节点
 
@@ -337,6 +337,23 @@ class extends Component {
         }
     }
 }
+```
+
+### 监听者 ($listeners)
+
+该属性为只读属性，代表当前组件所有事件监听者，如果你想判断组件是否监听了某个事件可以使用该属性进行判断。
+
+```ts
+class extends Component {
+    myFunction() {
+        if (this.$listeners.click) {
+            //外部监听了click事件
+        } else {
+            //未监听click事件
+        }
+    }
+}
+
 ```
 
 该属性类型为对象类型，其中`key`代表区块名称，`value`代表待渲染区块的对象数据，它的详细类型如下(SectionType)：

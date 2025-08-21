@@ -513,6 +513,19 @@ export default class extends Component {
     }
 }
 </code></pre>
+        <h3>监听者 ($listeners)</h3>
+        <p>该属性为只读属性，代表当前组件所有事件监听者，如果你想判断组件是否监听了某个事件可以使用该属性进行判断。</p>
+        <pre><code class="language-ts">class extends Component {
+    myFunction() {
+        if (this.$listeners.click) {
+            //外部监听了click事件
+        } else {
+            //未监听click事件
+        }
+    }
+}
+
+</code></pre>
         <p>
             该属性类型为对象类型，其中
             <code>key</code>

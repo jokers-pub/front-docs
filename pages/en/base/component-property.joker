@@ -48,25 +48,25 @@ export default class extends Component&lt;{
 }&gt; {
     propsOption = {
         money: {
-            //Required parameter  
-            required: true,  
-            //Type  
-            type: [String, Number],  
-            //Validation  
-            validate(val: any) {  
-                let value = parseInt(val);  
-                if (isNaN(value)) {  
-                    console.error(&quot;Please enter a valid type for 'money'&quot;);  
-                    return false;  
-                }  
-                return true;  
-            }  
-        },  
-        message: &quot;I am the default message&quot;,  
-        age: Boolean,  
-        zIndex: 1  
-    };  
-}  
+            //Required parameter
+            required: true,
+            //Type
+            type: [String, Number],
+            //Validation
+            validate(val: any) {
+                let value = parseInt(val);
+                if (isNaN(value)) {
+                    console.error(&quot;Please enter a valid type for 'money'&quot;);
+                    return false;
+                }
+                return true;
+            }
+        },
+        message: &quot;I am the default message&quot;,
+        age: Boolean,
+        zIndex: 1
+    };
+}
 </code></pre>
         <p>
             The example above demonstrates the rich capabilities of
@@ -138,7 +138,7 @@ export default class extends Component&lt;{
         <p>
             The above content explains how to define a component's parameters and their constraints. Next, let's see how to read these parameters.
         </p>
-        <pre><code class="language-ts">let money = this.props.money;  
+        <pre><code class="language-ts">let money = this.props.money;
 </code></pre>
         <p>
             The defined parameters can be accessed via the
@@ -156,12 +156,12 @@ export default class extends Component&lt;{
             <code>-</code>
             as the key. For example:
         </p>
-        <pre><code class="language-html">&lt;my-component success-message=&quot;I am a success message&quot; errorMessage=&quot;I am an error message&quot; /&gt;  
+        <pre><code class="language-html">&lt;my-component success-message=&quot;I am a success message&quot; errorMessage=&quot;I am an error message&quot; /&gt;
 </code></pre>
         <p>In the component, these values can be accessed in the following ways, all of which are valid:</p>
-        <pre><code class="language-ts">this.props.successMessage;  
-this.props[&quot;success-message&quot;];  
-this.props.errorMessage;  
+        <pre><code class="language-ts">this.props.successMessage;
+this.props[&quot;success-message&quot;];
+this.props.errorMessage;
 </code></pre>
         <p>
             Joker further optimizes boolean handling internally. To avoid redundant operations like
@@ -176,7 +176,7 @@ this.props.errorMessage;
             <strong>true</strong>
             . For example:
         </p>
-        <pre><code class="language-html">&lt;my-component checked /&gt;  
+        <pre><code class="language-html">&lt;my-component checked /&gt;
 </code></pre>
         <p>
             For more template syntax, refer to the
@@ -215,14 +215,14 @@ export default class extends Component {
 </code></pre>
         </DemoContainer>
         <p>Child component code:</p>
-        <pre><code class="language-html">&lt;template&gt; I am the child component. Your current input: @props.message &lt;/template&gt;  
-&lt;script&gt;  
-    import { Component } from &quot;@joker.front/core&quot;;  
+        <pre><code class="language-html">&lt;template&gt; I am the child component. Your current input: @props.message &lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
 
-    export default class extends Component&lt;{  
-        message: string  
-    }&gt; {}  
-&lt;/script&gt;  
+    export default class extends Component&lt;{
+        message: string
+    }&gt; {}
+&lt;/script&gt;
 </code></pre>
         <h3>Reactive Data (model)</h3>
         <p>
@@ -232,31 +232,31 @@ export default class extends Component {
             <code>model</code>
             property by default. This property is intercepted before mounting and provides reactive data capabilities.
         </p>
-        <pre><code class="language-ts">export default class extends Component {  
-    model = {  
-        value: &quot;&quot;  
-    };  
-}  
+        <pre><code class="language-ts">export default class extends Component {
+    model = {
+        value: &quot;&quot;
+    };
+}
 </code></pre>
         <p>
             Alternatively, you can use the
             <code>observer</code>
             method to define reactive data:
         </p>
-        <pre><code class="language-ts">export default class extends Component {  
-    list = observer({  
-        value: &quot;&quot;  
-    });  
+        <pre><code class="language-ts">export default class extends Component {
+    list = observer({
+        value: &quot;&quot;
+    });
 
-    created() {  
-        this.$watch(  
-            () =&gt; this.list,  
-            () =&gt; {  
-                //Value changed  
-            }  
-        );  
-    }  
-}  
+    created() {
+        this.$watch(
+            () =&gt; this.list,
+            () =&gt; {
+                //Value changed
+            }
+        );
+    }
+}
 </code></pre>
         <p>
             Since we use TypeScript standards, when the
@@ -265,20 +265,20 @@ export default class extends Component {
             <code>as</code>
             to specify the type for a property. For example:
         </p>
-        <pre><code class="language-ts">export default class extends Component {  
-    model: {  
-        value?: { key: string; value: number };  
-    } = {  
-        value: undefined  
-    };  
-}  
-//Equivalent to 👇👇👇 More convenient for complex or multiple properties  
-export default class extends Component {  
-    model = {  
-        value: undefined as { key: string; value: number } | undefined,  
-        message: &quot;&quot;  
-    };  
-}  
+        <pre><code class="language-ts">export default class extends Component {
+    model: {
+        value?: { key: string; value: number };
+    } = {
+        value: undefined
+    };
+}
+//Equivalent to 👇👇👇 More convenient for complex or multiple properties
+export default class extends Component {
+    model = {
+        value: undefined as { key: string; value: number } | undefined,
+        message: &quot;&quot;
+    };
+}
 </code></pre>
         <blockquote>
             <p>
@@ -295,18 +295,18 @@ export default class extends Component {
             <code>template</code>
             property to define templates. This allows us to create more complex rendering templates using JavaScript logic.
         </p>
-        <pre><code class="language-html">&lt;script&gt;  
-    import { Component, createElement, createText } from &quot;@joker.front/core&quot;;  
-    export default class extends Component {  
-        template = function () {  
-            let children = [];  
-            if (__DEV__) {  
-                children.push(createText(&quot;Content created via createText&quot;));  
-            }  
-            return [createElement(&quot;div&quot;, undefined, children)];  
-        };  
-    }  
-&lt;/script&gt;  
+        <pre><code class="language-html">&lt;script&gt;
+    import { Component, createElement, createText } from &quot;@joker.front/core&quot;;
+    export default class extends Component {
+        template = function () {
+            let children = [];
+            if (__DEV__) {
+                children.push(createText(&quot;Content created via createText&quot;));
+            }
+            return [createElement(&quot;div&quot;, undefined, children)];
+        };
+    }
+&lt;/script&gt;
 </code></pre>
         <DemoContainer component="@(components.DEMO_JOKER_demo2)">
             <pre><code class="language-html">&lt;script&gt;
@@ -331,20 +331,20 @@ export default class extends Component {
             <a href="/base/component-register" target="_blank">Component Registration</a>
             .
         </p>
-        <pre><code class="language-html">&lt;template&gt;  
-    &lt;MyComponent /&gt;  
-    &lt;MyAsyncComponent /&gt;  
-&lt;/template&gt;  
-&lt;script&gt;  
-    import { Component } from &quot;@joker.front/core&quot;;  
-    import MyComponent from &quot;./children.joker&quot;;  
-    export default class extends Component {  
-        component = {  
-            MyComponent,  
-            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)  
-        };  
-    }  
-&lt;/script&gt;  
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent /&gt;
+    &lt;MyAsyncComponent /&gt;
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
+    import MyComponent from &quot;./children.joker&quot;;
+    export default class extends Component {
+        component = {
+            MyComponent,
+            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+        };
+    }
+&lt;/script&gt;
 </code></pre>
         <DemoContainer component="@(components.DEMO_JOKER_demo3)">
             <pre><code class="language-html">&lt;template&gt;
@@ -370,20 +370,20 @@ export default class extends Component {
             <code>() =&gt; import('component.joker')</code>
             for asynchronous component references. Asynchronous components are not loaded during parent component initialization but are loaded only when the component needs to be rendered. For example:
         </p>
-        <pre><code class="language-html">&lt;template&gt;  
-    @if(false){  
-    &lt;MyAsyncComponent /&gt;  
-    }  
-&lt;/template&gt;  
-&lt;script&gt;  
-    import { Component } from &quot;@joker.front/core&quot;;  
+        <pre><code class="language-html">&lt;template&gt;
+    @if(false){
+    &lt;MyAsyncComponent /&gt;
+    }
+&lt;/template&gt;
+&lt;script&gt;
+    import { Component } from &quot;@joker.front/core&quot;;
 
-    export default class extends Component {  
-        component = {  
-            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)  
-        };  
-    }  
-&lt;/script&gt;  
+    export default class extends Component {
+        component = {
+            MyAsyncComponent: () =&gt; import(&quot;./async-children.joker&quot;)
+        };
+    }
+&lt;/script&gt;
 </code></pre>
         <DemoContainer component="@(components.DEMO_JOKER_demo4)">
             <pre><code class="language-html">&lt;template&gt;
@@ -455,22 +455,22 @@ export default class extends Component {
             <code>Element</code>
             nodes in the current component:
         </p>
-        <pre><code class="language-html">&lt;template&gt;  
-    &lt;div&gt;1&lt;/div&gt;  
-    &lt;div&gt;2&lt;/div&gt;  
-    &lt;div&gt;3&lt;/div&gt;  
-&lt;/template&gt;  
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;div&gt;1&lt;/div&gt;
+    &lt;div&gt;2&lt;/div&gt;
+    &lt;div&gt;3&lt;/div&gt;
+&lt;/template&gt;
 
-&lt;script&gt;  
-    //...  
-    //Get all Element nodes  
-    this.$rootVNode?.find((n) =&gt; n instanceof VNode.Element);  
+&lt;script&gt;
+    //...
+    //Get all Element nodes
+    this.$rootVNode?.find((n) =&gt; n instanceof VNode.Element);
 
-    //Search upward for the nearest Element node  
-    this.$rootVNode?.closest((n) =&gt; n instanceof VNode.Element);  
+    //Search upward for the nearest Element node
+    this.$rootVNode?.closest((n) =&gt; n instanceof VNode.Element);
 
-    //...  
-&lt;/script&gt;  
+    //...
+&lt;/script&gt;
 </code></pre>
         <p>
             For more details on
@@ -485,7 +485,7 @@ export default class extends Component {
             <code>$watchNode</code>
             API for observation).
         </p>
-        <pre><code class="language-ts">let count = this.$refs.refName?.count;  
+        <pre><code class="language-ts">let count = this.$refs.refName?.count;
 </code></pre>
         <p>
             Alternatively, use
@@ -509,22 +509,22 @@ export default class extends Component {
             <code>keep-alive</code>
             :
         </p>
-        <pre><code class="language-html">&lt;template&gt;  
-    &lt;MyComponent keep-alive /&gt;  
-&lt;/template&gt;  
+        <pre><code class="language-html">&lt;template&gt;
+    &lt;MyComponent keep-alive /&gt;
+&lt;/template&gt;
 </code></pre>
         <p>
             In the child component, use
             <strong>isKeepAlive</strong>
             to determine whether the component should maintain its state during rendering.
         </p>
-        <pre><code class="language-ts">export class extends Component {  
-    created() {  
-        if (this.isKeepAlive) {  
-            //TODO:...  
-        }  
-    }  
-}  
+        <pre><code class="language-ts">export class extends Component {
+    created() {
+        if (this.isKeepAlive) {
+            //TODO:...
+        }
+    }
+}
 </code></pre>
         <h3>Is Sleeping (isSleeped)</h3>
         <p>
@@ -536,15 +536,15 @@ export default class extends Component {
             <br />
             Use this property to check the component's current state, for example:
         </p>
-        <pre><code class="language-ts">export class extends Component {  
-    //Timer trigger function  
-    testMethod() {  
-        //Ignore execution if the component is sleeping.  
-        if (this.isSleeped) return;  
+        <pre><code class="language-ts">export class extends Component {
+    //Timer trigger function
+    testMethod() {
+        //Ignore execution if the component is sleeping.
+        if (this.isSleeped) return;
 
-        MessageBox.alert(&quot;Timer triggered.&quot;);  
-    }  
-}  
+        MessageBox.alert(&quot;Timer triggered.&quot;);
+    }
+}
 </code></pre>
         <h3>Rendering Sections ($sections)</h3>
         <p>
@@ -552,15 +552,15 @@ export default class extends Component {
             <a href="/base/template-section" target="_blank">Section Rendering</a>
             .
         </p>
-        <pre><code class="language-ts">class extends Component {  
-    myFunction() {  
-        if (this.$sections.top) {  
-            //A top section template was passed  
-        } else {  
-            //No top section template was passed  
-        }  
-    }  
-}  
+        <pre><code class="language-ts">class extends Component {
+    myFunction() {
+        if (this.$sections.top) {
+            //A top section template was passed
+        } else {
+            //No top section template was passed
+        }
+    }
+}
 </code></pre>
         <p>
             This property is of object type, where
@@ -571,6 +571,35 @@ export default class extends Component {
             <code>SectionType</code>
             ) is as follows:
         </p>
+        <h3>Listener ($listeners)</h3>
+        <p>
+            This property is
+            <strong>read-only</strong>
+            and represents all event listeners of the current component. If you want to determine whether a component has listened to a specific event, you can use this property for verification.
+        </p>
+        <pre><code class="language-ts">class extends Component {
+    myFunction() {
+        if (this.$listeners.click) {
+            // The click event is listened to externally
+        } else {
+            // The click event is not listened to
+        }
+    }
+}
+</code></pre>
+        <h3>Key Term Explanations</h3>
+        <ul>
+            <li>
+                <strong>Read-only property</strong>
+                : A property that can only be accessed (read) to get its value, and cannot be modified (written) directly in the code.
+            </li>
+            <li>
+                <strong>Event listener</strong>
+                : A function or method defined in the code that waits for a specific event (e.g., the
+                <code>click</code>
+                event here) to occur, and executes corresponding logic once the event is triggered.
+            </li>
+        </ul>
         <table class="mkd-table">
             <thead>
                 <tr>
