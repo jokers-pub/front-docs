@@ -24,7 +24,7 @@ let xmlContent = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <loc>https://front.jokers.pub</loc>
 </url>
 <url>
-<loc>https://front.jokers.pub/cn</loc>
+<loc>https://front.jokers.pub/en</loc>
 </url>
 ${result
     .map((n) => {

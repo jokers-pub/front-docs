@@ -12,11 +12,11 @@
                 @(lang === "zh-CN" ? "简单易学，性能卓越，多场景适配的 Web 前端框架。官方自带可视化开发工具，易于上手，高效开发。" : "A Web front-end framework that is easy to learn, offers excellent performance, and is adaptable to multiple scenarios. The official comes with a visual development tool that is easy to use and enables efficient development.")
             </p>
             <div class="nav-btns">
-                <a href="@(lang==='zh-CN'?'/cn':'')/base/introduction">
+                <a href="@(lang==='zh-CN'?'':'/en')/base/introduction">
                     @(lang === "zh-CN" ? "快速上手" : "Get Started")
                     <i class="jk-icon-right" />
                 </a>
-                <a href="https://jokers.pub@(lang==='zh-CN'?'/cn':'')" target="_blank" class="t1">
+                <a href="https://jokers.pub@(lang==='zh-CN'?'':'/en')" target="_blank" class="t1">
                     @(lang === "zh-CN" ? "Joker 全家桶" : "Joker Suite")
                 </a>
                 <a href="https://viscode.jokers.pub" target="_blank" class="t2">
