@@ -3,15 +3,14 @@ import { MenuEn, MenuZhCN } from "../common/datas/menu";
 import path from "node:path";
 
 let result: string[] = [];
-for (let item of MenuEn.allMenus) {
+for (let item of MenuZhCN.allMenus) {
     if (item.children?.length) {
         for (let cItem of item.children) {
             result.push(`https://front.jokers.pub` + cItem.path || "");
         }
     }
 }
-
-for (let item of MenuZhCN.allMenus) {
+for (let item of MenuEn.allMenus) {
     if (item.children?.length) {
         for (let cItem of item.children) {
             result.push(`https://front.jokers.pub` + cItem.path || "");
